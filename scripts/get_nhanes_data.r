@@ -47,29 +47,63 @@ nhanes_tables_all <- nhanesSearch("Respondent sequence number", namesonly=F) %>%
   mutate(Category=data_categories.labs[Component], Years=sprintf("%s-%s", Begin.Year, EndYear)) %>%
     select(Category, Component, Data.File.Name, Data.File.Description, Begin.Year, "End.Year"=EndYear, Years) %>%
     arrange(Category, Begin.Year) ; dim(nhanes_tables_all) # 1540 7
-nhanes_tables_all %>% fwrite("../data/raw/nhanes_tablelist_all.csv")
+
+## Add Tables NOT indexed on CDC website (included in nhanesSearch)
+nhanes_tables_addn <- rbind.data.frame(
+  c("BIOPRO_J", "Standard Biochemistry Profile", "2017-2018"),
+  c("P_BIOPRO", "Standard Biochemistry Profile", "2017-2020"),
+  c("BIOPRO_L", "Standard Biochemistry Profile", "2021-2023"),
+  c("TCHOL_J", "Cholesterol Total", "2017-2018"),
+  c("P_TCHOL", "Cholesterol Total", "2017-2020"),
+  c("TCHOL_L", "Cholesterol Total", "2021-2023"),
+  c("HDL_J", "Cholesterol - High - Density Lipoprotein (HDL)", "2017-2018"),
+  c("P_HDL", "Cholesterol - High - Density Lipoprotein (HDL)", "2017-2020"),
+  c("HDL_L", "Cholesterol - High - Density Lipoprotein (HDL)", "2021-2023"),
+  c("TRIGLY_L"))
+
+names(nhanes_tables_addn) <- c("Data.File.Name", "Data.File.Description", "Years") 
+nhanes_tables_addn <- nhanes_tables_addn %>% mutate(
+  Category = "LABORATORY", Component = "Laboratory", .before=1
+    ) %>% mutate(
+      Begin.Year = gsub("-.*","", Years), End.Year = gsub(".*-","", Years),
+      .before="Years"
+  )
+
+nhanes_tables_all <- nhanes_tables_all %>% bind_rows(nhanes_tables_addn)
+#nhanes_tables_all %>% fwrite("../data/raw/nhanes_tablelist_all.csv")
 #nhanes_tables_all <- fread("../data/raw/nhanes_tablelist_all.csv")
+
 
 ## =========================================================
 ## Make index of all nhanes VARIABLES, by category & year
 ## =========================================================
 
-## All NHANES Variables (1999-2023)
-nhanes_vars_all <- lapply(nhanes_tables_all$Data.File.Name, function(tab) {
-  category <- nhanes_tables_all %>% filter(Data.File.Name == tab) %>% pull(Category)
-  years <- nhanes_tables_all %>% filter(Data.File.Name == tab) %>% pull(Years)
-  tryCatch({
-    codebook.l <- nhanesCodebook(nh_table=tab) 
-    codebook <- lapply(1:length(codebook.l), function(i) { cbind.data.frame(
-      Variable.Name=codebook.l[[i]][[1]], 
-      Variable.Description=codebook.l[[i]][[3]]) }) %>% 
-        do.call(rbind.data.frame, .) %>% 
-      as.data.table() %>% mutate(Table=tab, Years=years, .before=1)
-  }, error = function(e) {
-    data.table(Category = category, Year=year, Table=tab, Error = conditionMessage(e))
-    return(NULL)
-    }) }) %>% bind_rows() ; dim(nhanes_vars_all) # 47685 5 
+list_nhanes_vars.fun <- function(nhanes_table_summary) {
+  lapply(nhanes_table_summary[["Data.File.Name"]], function(tab) {
+    category <- nhanes_table_summary %>% filter(Data.File.Name == tab) %>% pull(Category)
+    years <- nhanes_table_summary %>% filter(Data.File.Name == tab) %>% pull(Years)
+    tryCatch({
+      codebook.l <- nhanesCodebook(nh_table=tab) 
+      codebook <- lapply(1:length(codebook.l), function(i) { cbind.data.frame(
+        Variable.Name=codebook.l[[i]][[1]], 
+        Variable.Description=codebook.l[[i]][[3]]) }) %>% 
+          do.call(rbind.data.frame, .) %>% 
+        as.data.table() %>% mutate(Table=tab, Years=years, .before=1)
+    }, error = function(e) {
+      data.table(Category = category, Year=year, Table=tab, Error = conditionMessage(e))
+      return(NULL)
+      }) }) %>% 
+    bind_rows() 
+}
 
+# List nhanes variables for 'ALL' nhanes tables 
+nhanes_vars_all <- list_nhanes_vars.fun(nhanes_tables_all) ; dim(nhanes_vars_all) # 47685 5 
+nhanes_vars_lab_post2017 <- list_nhanes_vars.fun(
+  nhanes_tables_all %>% 
+    filter(Category == "LABORATORY" & Years %in% c("2017-2018", "2017-2020", "2021-2023")))
+  
+nhanes_vars_all <- nhanes_vars_all %>% bind_rows(nhanes_vars_lab_post2017) %>% unique()
+  
 # Merge in Categeories 
 nhanes_vars_all <- nhanes_vars_all %>% 
   left_join(nhanes_tables_all %>% select(Category, Table=Data.File.Name)) %>%
@@ -132,17 +166,14 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
   tab_data.l <- lapply(1:nrow(tables_by_cat), function(i) {
     
     tab <- tables_by_cat$Table[i] ; years = tables_by_cat$Years[i]
-    
-    # A) List all requested (and available) variables
-    vars_by_tab <- vars_by_cat %>% filter(Table == tab) %>% pull(Variable.Name)
-    vars_by_tab <- unique(c("SEQN", vars_by_tab))
-    datadict_tab <- datadict_cat %>% filter(variable %in% c(vars_by_tab))  
-    
     cat(sprintf("Downloading %s | %s [%s]\n", cat, tab, years))
     
     # B) Download table and requested variables
     tab_raw <- tryCatch({
-      nhanes(tab) %>% select(all_of(vars_by_tab)) %>%
+      tab_all <- nhanes(tab)
+      # Vars to select from table
+      vars_to_select <- names(tab_all)[c(which(names(tab_all) %in% c(datadict_cat %>% pull(variable))))]
+      tab_all %>% select("SEQN", all_of(vars_to_select)) %>%
         mutate(Years=years, .before=1) 
     }, error = function(e) {
       log_error("nhanes() download", table=tab, message=conditionMessage(e))
@@ -150,6 +181,10 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
     })
     
     if (is.null(tab_raw)) return(NULL)   # skip remainder for this table
+    
+    # Compile data dictionary for table
+    vars_by_tab <- names(tab_raw)
+    datadict_tab <- datadict_cat %>% filter(variable %in% c(vars_by_tab))  
     
     # C) Add descriptive names (to facilitate merging across dataset/years)
     new_var_names <- names(tab_raw) 
@@ -270,7 +305,6 @@ saveRDS(exam_tables.l, "../data/raw/exam_tables_all.rds")
 quest_tables.l <- build_nhanes_table(cat = "QUESTIONNAIRE", datadict = project_datadict)
 saveRDS(quest_tables.l, "../data/raw/quest_tables_all.rds")
 
-
 ## ====================================
 ## Create complete NHANES dataframe 
 ## ======================================
@@ -303,7 +337,6 @@ nhanes_vars_datadict <- lapply(table_cats, function(cat) {
 #remove.packages("dietaryindex")
 #remotes::install_github("jamesjiadazhan/dietaryindex", force = TRUE)
 library(dietaryindex)
-
 
 ## Load all dietary_data as a list ----------------------
 dr1iff_files <- c(nhanes_tables_all %>% filter(grepl("DR1IFF", Data.File.Name)) %>% pull(Data.File.Name))
@@ -434,12 +467,16 @@ nhanes_data_all <- full_join(
   demo_tables.l$data_table, lab_tables.l$data_table, by=c("SEQN", "Years")) %>% 
   left_join(exam_tables.l$data_table, by=c("SEQN", "Years")) %>%
   left_join(quest_tables.l$data_table, by=c("SEQN", "Years")) %>%
-  left_join(nhanes_dietindices, by=c("SEQN", "Years", "WTDRD1", "WTDRD1PP"))
+  left_join(nhanes_dietindices, by=c("SEQN", "Years"))
 
 nhanes_data_all %>% fwrite(., "../data/raw/nhanes_data_all.csv")
 
+nhanes_vars_datadict <- lapply(table_cats, function(cat) {
+  nhanes_tables_all.l[[cat]][["var_summary"]] %>% mutate(Category = cat, .before=1)
+}) %>% do.call(rbind.data.frame, .)
 
-## Write wrapper functions to search for NHANES variables
+
+## Write wrapper functions to search for NHANES variables ---------------
 search_nhanes_variables <- function(search_keywords, 
                                     search_columns = "Variable.Description",
                                     search_as = "AND", ignore_case=T) {
@@ -460,7 +497,6 @@ search_nhanes_variables <- function(search_keywords,
     arrange(Variable.Name, Table) 
 }
 
-search_nhanes_variables(c("urine", "albumin"), search_as = "AND")
-search_nhanes_variables("creatinine", search_as = "AND")
+
 ## EOF
 
