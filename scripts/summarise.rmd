@@ -55,8 +55,10 @@ ggplot_theme <- theme_bw() +
 
 ### Check variable harmonization across NHANES cycles
 
-First, check how many participants are available at each exam cycle with BOTH the interview & MEC components
-(Participants with interview only will NOT have laboratory or exam data)
+First, check how many participants (Age >18 years) are available at each exam cycle
+with BOTH the interview & MEC components 
+
+(**Participants with interview only will NOT have laboratory or exam data**)
 
 ```{r, check_participant_types}
 nhanes_participant_types <- nhanes_processed %>% 
@@ -123,14 +125,14 @@ Heatmap(
   # Function to print missing value if >10%
   cell_fun = function(j, i, x, y, width, height, fill) {
     pct_na <- as.numeric(na_summary.hm[i, j])
-    if (!is.na(pct_na) & pct_na>5) {
+    if (!is.na(pct_na) & pct_na>1) {
       grid.text(sprintf("%.1f", pct_na), x, y, gp = gpar(fontsize = 8, col = "black"))
       }
     })
 
 ```
-
-*Note:* Missingness would seem much higher if we did not account for participants that only completed the interviews:
+*Note:* Values are provided in the boxes when % missing > 1. 
+Missingness would seem much higher if we did not account for participants that only completed the interviews:
 
 ```{r, check_miss_2, echo=F}
 na_summary_all.hm <- na_summary %>% 
@@ -149,7 +151,7 @@ Heatmap(
   # Function to print missing value if >10%
   cell_fun = function(j, i, x, y, width, height, fill) {
     pct_na <- as.numeric(na_summary_all.hm[i, j])
-    if (!is.na(pct_na) & pct_na>5) {
+    if (!is.na(pct_na) & pct_na>1) {
       grid.text(sprintf("%.1f", pct_na), x, y, gp = gpar(fontsize = 7, col = "black"))
       }
     })
@@ -161,11 +163,11 @@ Heatmap(
 ##### Summarise strata distributions, across NHANES cycles
 
 ```{r, summarise_descript_1}
-# subset particiapnts to those with BOTH data types
+# subset participants to those aged >= 18 years with BOTH data types
 nhanes1 <- nhanes_processed %>% filter(RIDSTATR != "Interviewed only")
 
 # Check age, sex & race distributions by exam cycle
-vars_strata <- c(age="Age, years", age_gt65 = "Age >65 years", female="Female", 
+vars_strata <- c(age_gt65 = "Age <65 years", female="Female", 
                  racethn_addNHA = "Race/Ethnicity (add NHA)")
 
 # View table --------------
@@ -174,7 +176,7 @@ print_summary_table(var_strata = "Years", vars_to_summarize = vars_strata,
 ```
 
 \n
-#### Summarise disease exclusions across NHANES cycles:
+#### Summarise disease outcomes across NHANES cycles:
 
 * Include adults ages >30 and < 80
 * Exclude particiants with any CVD, ASCVD, CKD or Diabetes (un/diagnosed)
@@ -196,8 +198,8 @@ nhanes2 <- nhanes1 %>% filter(
 )
 
 # List clinical variables to check for quality/missingness --------
-vars_clin_cont <- c(age="Age, years", bmi="BMI, kg/m2", sbp_avg="SBP (average), mmHg", 
-                    dbp_avg="DBP (average), mmHg", tc="Total cholesterol, mg/dL", 
+vars_clin_cont <- c(age="Age, years", bmi="BMI, kg/m2", sbp_mean="SBP (average), mmHg", 
+                    dbp_mean="DBP (average), mmHg", tc="Total cholesterol, mg/dL", 
                     hdl="HDL-c, mg/dL", ldl="LDL-c, mg/dL", tg="Triglyeride, mg/dL",
                     hba1c="HbA1c (%)", uacr="UACR", egfr="eGFR", egfr_race = "eGFR (with race)")
 
@@ -236,7 +238,7 @@ do.call(cbind.data.frame, tab1_clin_byMED.l) %>%
 ```
 
 \n
-## Examine variable distributions among included participants
+## Examine histograms of continuous lab values
 
 ```{r, check_hist_all}
 # continuous variables to examine

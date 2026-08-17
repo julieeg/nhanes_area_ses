@@ -113,8 +113,9 @@ nhanes_demo_processed <- nhanes_data_raw %>%
   mutate(
     age_gt65 = ifelse(age>65,1,0),  
     age_gte16 = ifelse(age>=16,1,0),
-    age_gt65.lab = ifelse(age_gt65 == 1, "Above 65 years", "Below 65 years"),
     female = ifelse(gender == "Female", 1, 0)) %>%
+  mutate(age_gt65.lab = factor(ifelse(age_gt65 == 1, "Above 65 years", "Below 65 years"),
+                               levels=c("Below 65 years", "Above 65 years"))) %>%
   # Race/ethnicity --------------------
   mutate_at("racethn_addNHA", ~ifelse(.=="", racethn1, .)) %>%
   mutate(
@@ -592,67 +593,15 @@ nhanes_processed <- full_join(
   full_join(nhanes_lab_processed, by = c("SEQN", "Years")) %>%
   full_join(nhanes_quest_processed, by = c("SEQN", "Years")) %>%
   full_join(nhanes_diet_processed, by = c("SEQN", "Years")) %>%
-  full_join(nhanes_addn_processed, by = c("SEQN", "Years"))
-
-## =====================================================
-## Prepare PREVENT variables 
-## =====================================================
-
-## load PREVENTR
-library(preventr)
-
-## Add prevent-specific age and sbp values based on max/min
-nhanes_processed <- nhanes_processed %>% 
-  mutate(
-    prevent_age = ifelse(age>30 & age <80, age, NA),
-    prevent_sex = ifelse(female == 1, "female", "male"),
-    prevent_sbp = ifelse(sbp_mean>90 & sbp_mean<180, sbp_mean, NA),
-    prevent_bprx = ifelse(rx_use_bpmed=="Yes",1,0),
-    prevent_tc = ifelse(tc>130 & tc<320, tc, NA),
-    prevent_hdl = ifelse(hdl>20 & hdl<100, hdl, NA),
-    prevent_statin = ifelse(rx_use_statin=="Yes",1,0),
-    prevent_diab = diabetes,
-    prevent_smoking = ifelse(smoke_current == "Current smoker", 1, 0),
-    prevent_egfr = ifelse(egfr >15 & egfr <140, egfr, NA),
-    prevent_egfr_race = ifelse(egfr_race >15 & egfr_race <140, egfr_race, NA),
-    prevent_bmi = ifelse(bmi>=18.5 & bmi<=39.9, bmi, NA),
-    prevent_hba1c = ifelse(hba1c>=4.5 & hba1c <=15, hba1c, NA),
-    prevent_uacr = ifelse(uacr >= 0.1 & uacr <= 25000, uacr, NA)
-    ) 
-
+  full_join(nhanes_addn_processed, by = c("SEQN", "Years")) %>%
+  
+  ## Apply basic AGE restriction: >18 years
+  filter(age > 18)
+  
 nhanes_processed %>% saveRDS("../data/processed/nhanes_processed.rda")
 
 
-## =====================================================
-## Create analytical dataframes 
-## =====================================================
-
-# PREVENT variables ------------------------
-# prevent inputs, outcomes and strata
-prevent_nhanes_processed <- nhanes_processed %>%
-  select(base_vars, age,  age_gt65, female, racethn, racethn_addNHA, 
-         cvd, ascvd, ckd, copd, htn, diabetes, diabetes_undx, 
-         starts_with("prevent_")) %>%
-  ## Participant exclusions: Age range: <30 and >79 years
-  # No existing CVD, CKD, ASCVD, Diabetes (diagnosed or undiagnosed)
-  filter(!is.na(prevent_age) & 
-           cvd == 0 & ckd == 0 & ascvd == 0 & 
-           diabetes == 0 & diabetes_undx == 0
-         )
-
-
-## =====================================================
-## Create data dictionary for derived variables
-## =====================================================
-
-nhanes_vars_datadict %>% head()
-
-derived_vars_datadict <-
-  rbind.data.frame(
-    c("age_gt65", "female","racethn", "racethn_addNHA", "educ_level", "working")
-    
-
 ## EOF
-# Last Updated: 08-10-2026
+# Last Updated: 08-17-2026
 
 
