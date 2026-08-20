@@ -173,6 +173,8 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
       tab_all <- nhanes(tab)
       # Vars to select from table
       vars_to_select <- names(tab_all)[c(which(names(tab_all) %in% c(datadict_cat %>% pull(variable))))]
+      # Add relevant sample weights 
+      vars_to_select <- unique(c(names(tab_all)[which(startsWith(names(tab_all), "WT"))], vars_to_select)) 
       tab_all %>% select("SEQN", all_of(vars_to_select)) %>%
         mutate(Years=years, .before=1) 
     }, error = function(e) {
@@ -469,7 +471,14 @@ nhanes_data_all <- full_join(
   left_join(quest_tables.l$data_table, by=c("SEQN", "Years")) %>%
   left_join(nhanes_dietindices, by=c("SEQN", "Years"))
 
-nhanes_data_all %>% fwrite(., "../data/raw/nhanes_data_all.csv")
+## Delete unneccessary weighting variables
+nhanes_data_all_cleaned <- nhanes_data_all %>% 
+  select(-starts_with("WT")) %>% 
+  left_join(nhanes_data_all %>% select(
+    SEQN, wt, starts_with("WTINT"), starts_with("WTMEC"), starts_with("WTSAF"), 
+    starts_with("WTDR")), by = "SEQN")
+
+nhanes_data_all_cleaned %>% fwrite(., "../data/raw/nhanes_data_all.csv")
 
 nhanes_vars_datadict <- lapply(table_cats, function(cat) {
   nhanes_tables_all.l[[cat]][["var_summary"]] %>% mutate(Category = cat, .before=1)
