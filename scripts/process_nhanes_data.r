@@ -56,15 +56,26 @@ names(nhanes_yrs) <- c("", paste0("_", LETTERS[2:10]),"P_", "_L", "M_")
 ## Load project data dictionary to grab years, tables & variables of interest
 project_datadict <- readxl::read_xlsx("./nhanes_pullrequest_IndVsArea_07.30.2026.xlsx")
 
+## Load all nhanes tables & var descriptions
+table_cats <- c("demo", "lab", "exam", "quest")
+nhanes_tables_all.l <- lapply(table_cats, function(cat) {
+  readRDS(sprintf("../data/raw/%s_tables_all.rds", cat)) 
+}) ; names(nhanes_tables_all.l) <- table_cats
+
+nhanes_vars_datadict <- lapply(table_cats, function(cat) {
+  nhanes_tables_all.l[[cat]][["var_summary"]] %>% mutate(Category = cat, .before=1)
+}) %>% do.call(rbind.data.frame, .)
+
 
 ################################################################################
 ## NHANES Variable Cleaning and Data Set Preparation 
 ################################################################################
 
+
 base_vars <- names(nhanes_data_all %>% select(
   "Years", "SEQN", "RIDSTATR", starts_with("SD"), starts_with("WT"), -"wt")
   )
-  
+
 ## Apply age restriction: Adults, aged 18 or older
 nhanes_data_raw <- nhanes_data_all %>% 
   mutate_at("RIDSTATR", ~gsub("Both Int", "Both int", gsub("Only", "only", .))) 
@@ -76,6 +87,18 @@ nhanes_data_raw %>%
   # RIDSTATR                              n
   # Both interviewed and MEC examined 71669
   # Interviewed Only                   5381
+
+
+# Write generic function to recode missingness for questionnaire variables
+recode_nhanes_na.fun <- function(x) {
+  if(is.numeric(x)) {
+    x[x %in% c(777, 7777, 77777, 999, 9999, 99999)] <- NA_real_
+    return(x)
+  } else if(is.character(x)) {
+    x[x %in% c("Don't know", "Refused", "")] <- NA_character_
+    return(x)
+  } else {return(x)}
+}
 
 ## ==================================
 ## Prepare DEMOGRAPHICS variables 
@@ -110,6 +133,7 @@ work.vals <- c("Working"="Working at a job or business", "Looking for work" = "L
 
 ## Build nhanes_demo_processed --------------------------
 nhanes_demo_processed <- nhanes_data_raw %>% 
+  
   # Age & sex --------------------
   mutate(
     age_gte16 = ifelse(age>=16,1,0),
@@ -123,6 +147,7 @@ nhanes_demo_processed <- nhanes_data_raw %>%
   mutate(
     age_gt65.lab = factor(ifelse(age_gt65 == 1, "Above 65 years", "Below 65 years"),
                           levels=c("Below 65 years", "Above 65 years"))) %>%
+  
   # Race/ethnicity --------------------
   mutate_at("racethn_addNHA", ~ifelse(.=="", racethn1, .)) %>%
   mutate(
@@ -132,6 +157,7 @@ nhanes_demo_processed <- nhanes_data_raw %>%
     racethn_addNHA == "Other/Multi-Racial" & Years %in% c(nhanes_yrs[1:7]) ~ "Other/Multi-Racial/NHAsian",
     TRUE ~ racethn_addNHA)) %>%
   mutate(race_white = case_when(racethn == "NHW"~1, is.na(racethn) ~ NA, TRUE ~ 0)) %>%
+  
   # Education levels --------------------
   mutate(across(c(educ, educ_hhref), str_to_sentence)) %>%
   mutate(educ_level = educ %>% 
@@ -142,6 +168,7 @@ nhanes_demo_processed <- nhanes_data_raw %>%
            fct_recode(!!!educ_hh.labs) %>%
            fct_other(drop = c("", "Refused", "Don't know"), other_level=NA) %>%
            fct_relevel(educ_levels)) %>%
+  
   # Income level --------------------
   mutate_at(c("income_hh", "income_fam"), ~factor(gsub("er", "er ", gsub(" ", "", gsub(" to ", "-", .))))) %>% 
   mutate_at(c("income_hh", "income_fam"), ~factor(case_when(
@@ -152,6 +179,17 @@ nhanes_demo_processed <- nhanes_data_raw %>%
   mutate_at(c("income_hh", "income_fam"), ~case_when(
     . %in% c("", "Refused", "Don't know") ~ NA, 
     TRUE ~ .)) %>%
+  
+  # Family Income-Poverty Ratio (f-PIR) ---------------
+  mutate(
+    inc_to_pov_level = case_when(
+    inc_to_pov < 1 ~"Low income",
+    inc_to_pov >= 1 & inc_to_pov < 4 ~ "Middle income",
+    inc_to_pov >= 4 ~ "High income",
+    TRUE ~ NA)) %>%
+  mutate_at("inc_to_pov_level", ~ factor(., levels=c(
+    "Low income", "Middle income", "High income"))) %>%
+  
   # Working status & hours (if age ≥ 16 yrs) --------------------
   mutate(
     working = case_when(
@@ -163,12 +201,13 @@ nhanes_demo_processed <- nhanes_data_raw %>%
   mutate_at("working", ~factor(., levels=c(
     "Working at a job or business", "With a job or business but not at work",
     "Not working at a job or business", "Looking for work", "Age <16 y"))) %>%
+  
   select(base_vars, age, age_gte16, age_gt65, age_gt65.lab, age_3lvl, 
          gender, female, racethn, racethn_addNHA, racethn_combn, educ_level, 
-         educ_hhref, income_hh, income_fam, inc_to_pov, working, working_gt35hr)
+         educ_hhref, income_hh, income_fam, inc_to_pov, inc_to_pov_level,
+         working, working_gt35hr)
 
 demo_vars <- names(nhanes_demo_processed %>% select(-base_vars))
-
 
 ## ==================================
 ## Prepare EXAM variables 
@@ -257,17 +296,10 @@ calc_egfr_ckdepi_race.fun <- function(creatinine, age, female, black) {
   # creatinine in mg/dL, age in years, female = 1/0
   kappa <- ifelse(female==1, 0.7, 0.9)
   alpha <- ifelse(female==1, -0.329, -0.411)
-  
   female_mult <- ifelse(female==1, 1.018, 1)
   race_mult  <- ifelse(black==1, 1.159, 1)
   
   scr <- creatinine / kappa
-  eGFR <- 142 *
-    (pmin(scr, 1)^alpha) * 
-    (pmax(scr, 1)^-1.200) *
-    (0.9938^age) * 
-    female_mult
-  
   egfr_race <- 141 *
     (pmin(scr/kappa, 1) ^ alpha) *
     (pmax(scr/kappa, 1) ^ -1.209) *
@@ -369,7 +401,7 @@ rx_bpx <- c("pril", "sartan", "dipine", "thiazide", "lol", "osin",
 rx_diabx <- c("insulin", "metformin", "glipizide", "glyburide", "glimepiride", 
               "gliclazide", "tolbutamide", "chlorpropamide", "tolazamide", 
               "acetohexamide", "glinide", "glitazone", "gliptin") ; rx_diab <- rxq_drug %>%
-  filter(grepl(paste0(str_to_upper(rx_diabx_pf), collapse = "|"), RXDDRUG, ignore.case = TRUE)) %>%
+  filter(grepl(paste0(str_to_upper(rx_diabx), collapse = "|"), RXDDRUG, ignore.case = TRUE)) %>%
   select(RXDDRGID, RXDDRUG) %>% mutate(RXUSE = "diab") %>% 
   distinct()
 
@@ -535,8 +567,39 @@ nhanes_quest_pa_processed <- rbind.data.frame(
 
 
 # -----------------------------------------------------------------------
-## Behavioral Variables: Health Insurance, Smoking & Depression (PHQ)
+## Behavioral Variables: Smoking, Alcohol, Depression (PHQ), Insurance
 # -----------------------------------------------------------------------
+
+## Grab addn alcohol variables
+#alc_tables.l <- build_nhanes_table(cat = "QUESTIONNAIRE", 
+#                                   datadict = project_datadict %>% filter(grepl("q_alc", Varname)))
+#saveRDS(alc_tables.l, file = "../data/raw/alc_any_tables.rda")
+
+alc_tables.l <- readRDS("../data/raw/alc_any_tables.rda")
+alch_freq.labs <- c("Never in the last year"="Non-drinker", 
+                    "1 to 2 times in the last year"="Less than 1 per month",
+                    "3 to 6 times in the last year"="Less than 1 per month",
+                    "7 to 11 times in the last year"="Less than 1 per month",
+                    "Once a month"="Less than 1 per week" , 
+                    "2 to 3 times a month"="Less than 1 per week" , 
+                    "Once a week"="1-2 per week", "2 times a week"="1-2 per week",
+                    "3 to 4 times a week"="3-6 per week","Nearly every day"="3-6 per week",
+                    "Every day"="1 or more per day")
+
+## Grab addn HC use variables
+#hc_tables.l <- build_nhanes_table(cat = "QUESTIONNAIRE", 
+#                                   datadict = project_datadict %>% filter(grepl("q_hc", Varname)))
+#saveRDS(hc_tables.l, file = "../data/raw/hc_tables.rda")
+hc_tables.l <- readRDS("../data/raw/hc_tables.rda")
+
+hc_visit.labs <- c(
+  "None"="None", "1" = "1 visit", "2 to 3" = "2-3 visits", 
+  "4 to 5" = "4-5 visits", "4 to 9" = "4-5 visits",
+  "6 to 7" = "6-9 visits", "8 to 9" = "6-9 visits",
+  "10 to 12" = "10-12 visits", "13 or more" = "13 or more visits",
+  "13 to 15" = "13 or more visits", "16 or more" = "13 or more visits"
+  )
+
 
 ## Function to recode PHQ9 for Depression 
 recode_phq.fun <- function(x) {
@@ -554,22 +617,24 @@ recode_phq.fun <- function(x) {
 
 nhanes_quest_behav_processed <- nhanes_data_raw %>% 
   
-  ## Health Insurance: covered by ANY health insurance, yes/no?
-  mutate(
-    healthinsure_any = case_when(
-      q_insur_any %in% c("Don't know", "Refused", "") ~ NA,
-      TRUE ~ q_insur_any)) %>% 
+  ## Replace alc and hc variables after noting missing cycles -------------
+  select(-starts_with(c("q_alc", "q_hc_"))) %>% 
+  full_join(alc_tables.l$data_table, by = c("SEQN", "Years")) %>%
+  full_join(hc_tables.l$data_table, by = c("SEQN", "Years")) %>%
+    
+  ## Recode missing values for all questionnaire variables  -------------
+  mutate(across(c(
+    "q_feel_riskdiab", "q_genhealth_rating", "q_had_dialysis","q_sob_inclilne", 
+    "q_uninsur_pastyr", starts_with(c(
+      paste0("q_", c("hc_", "insur_", "phq_", "rest", "self", "smoke_", "told_", 
+                     "work", "wtloss"))) )), recode_nhanes_na.fun)) %>% 
   
-  ## Smoking: current smoker, yes/no
-  # Step 1) clean smoking status variable, for smoking cigarettes now (SMQ020)
-  mutate_at("q_smoke_current", ~case_when(
-    . %in% c("Every day", "Every day,") ~ "Every day",
-    . %in% c("Not at all", "Not at all?") ~ "Not at all",
-    . %in% c("Some days", "Some days, or") ~ "Some days",
-    TRUE ~ .)) %>%
-  # Step 2) Define from smoke_history (smoked ≥100 cigarettes in your life?; if
-  # (No --> smoke_status = N/A) & smoke_status (do you smoke cigarettes now?;
-  # (Every day, Smoke days, Not at all)
+  ## Smoking: current smoker, yes/no ---------------
+  # a. Clean 'smoking cigarettes now' (SMQ020)
+  mutate_at("q_smoke_current", ~gsub(",.*", "", gsub("[?]", "", .))) %>%
+  # b. Define from smoke_history (smoked ≥100 cigarettes in your life?);
+  #  - if smoke_history (≥100 cigs//life) == No, smoke_histrory not asked (N/A)
+  #  - if smoke_status (do you smoke cigarettes now?; Every day, Smoke days, Not at all)
   mutate(
     smoke_current = case_when(
       q_smoke_ever == "No" ~ "Never smoker", # Never-smoker (<100 cigarettes/lifetime)
@@ -577,20 +642,128 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
       q_smoke_ever == "Yes" & q_smoke_current %in% c("Some days", "Every day") ~ "Current smoker",
       TRUE ~ NA)) %>%
   
-  # Calculate total PHQ depression score
-  mutate(across(c(phq_vars), recode_dpq.fun)) %>%
-  mutate(phq9_total = rowSums(across(phq_vars))) %>%
+  ## Alcohol frequency, times per week  ---------------
+  mutate(across(starts_with(c("q_alc_any", "q_alc_f", "q_alc_dr")), recode_nhanes_na.fun)) %>% 
+  mutate(alch_everdrinker = case_when(
+    Years %in% c("2017-2018", "2017-2020", "2021-2023") ~ q_alc_any_life,
+    TRUE ~ case_when(
+      q_alc_any_yr == "Yes" | q_alc_any_life == "Yes" ~ "Yes",
+      q_alc_any_life == "No" ~ "No",
+      is.na(q_alc_any_yr) & is.na(q_alc_any_life) ~ NA,
+      TRUE ~ "No"))) %>% 
+  # Code frequency (ocassions per week) for pre/post-2017 --
+  mutate(
+    # Drinking occassions, per week/month/yr (q_alc_freq_unit)
+    alch_freq_wk_pre2017.num = case_when(
+      Years %in% c("2017-2018", "2017-2020", "2021-2023") ~ NA,
+      TRUE ~ case_when(
+        q_alc_freq_units == "Week" ~ as.numeric(q_alc_freq),
+        q_alc_freq_units == "Month" ~ as.numeric(q_alc_freq)/4.33,
+        q_alc_freq_units == "Year" ~ as.numeric(q_alc_freq)/52.14,
+        TRUE ~ as.numeric(q_alc_freq))),
+    alch_freq_wk_post2017.lab = case_when(
+      Years %in% c("2017-2018", "2017-2020", "2021-2023") ~ factor(
+        unname(alch_freq.labs[q_alc_freq]), levels=unique(unname(alch_freq.labs))),
+      TRUE ~ NA)) %>% 
+  mutate(
+    alch_freq_wk_pre2017.lab = factor(case_when(
+      alch_freq_wk_pre2017.num == 0 ~ "Non-drinker",
+      alch_freq_wk_pre2017.num > 0 & alch_freq_wk_pre2017.num < 1/4.33 ~ "Less than 1 per month",
+      alch_freq_wk_pre2017.num >= 1/4.33 & alch_freq_wk_pre2017.num < 1.5 ~ "Less than 1 per week",
+      alch_freq_wk_pre2017.num >= 1.5 & alch_freq_wk_pre2017.num < 2.5 ~ "1-2 per week",
+      alch_freq_wk_pre2017.num >= 2.5 & alch_freq_wk_pre2017.num < 6.5 ~ "3-6 per week",
+      alch_freq_wk_pre2017.num >= 6.5 ~ "1 or more per day",
+      TRUE ~ NA), levels=unique(unname(alch_freq.labs)))) %>% 
+  # Combine frequency/wk across exam cycles
+  mutate(
+    alch_freq_wk = case_when(
+      alch_everdrinker == "No" ~ "Never drinker",
+      Years %in% c("2017-2018", "2017-2020", "2021-2023") ~ alch_freq_wk_post2017.lab,
+      TRUE ~ alch_freq_wk_pre2017.lab)) %>% 
+ 
+  ## Health Insurance: covered by ANY health insurance, yes/no? ---------------
+  mutate(
+    insur_any = q_insur_any,
+    insur_private = case_when(
+      q_insur_private == "Covered by private insurance" ~ "Yes",
+      q_insur_private == "Yes" ~ "No",
+      TRUE ~ q_insur_private),
+    uninsur_lastyr = q_uninsur_pastyr) %>% 
   
-  ## Select raw & cleaned questionnaire variables 
-  select(SEQN, Years, healthinsure_any, smoke_current, phq9_total, starts_with("q_"), 
-         -starts_with("q_rx_"), -starts_with("q_mvpa"), -starts_with("q_vpa_"), 
-         -starts_with("q_mpa"))
+  # Anxiety/Depression (self-report & PHQ score) ------------------
+  mutate(across(c(phq_vars), recode_phq.fun)) %>% 
+  mutate(phq9_total = rowSums(across(phq_vars))) %>% 
+  mutate(across(c("q_anxiety", "q_depress"), ~case_when(
+    . == "Positive Diagnosis" ~ 1,
+    . == "Negative Diagnosis" ~ 0,
+    . == "" ~ NA))) %>%
+  rename_at(c("q_anxiety", "q_depress"), ~gsub("q_", "diagn_", .)) %>% 
+  
+  ## Told diabetes age; harmonize across cycles -------------
+  mutate(
+    told_diab_age = case_when(
+      Years %in% c("1999-2000", "2001-2002", "2003-2004") ~ q_told_diab_age2,
+      q_told_diab_age == 666 ~ 0.5, # 666 = Less than 1 year
+      TRUE ~ q_told_diab_age)
+  ) %>% 
+  
+  ## General health rating -------------
+  mutate(
+    genhealth = factor(
+      gsub(",.*", "", gsub("[?]", "", q_genhealth_rating)),
+      levels=c("Poor", "Fair", "Good", "Very good", "Excellent"))) %>%
+  
+  ## Health care utilization -------------
+  mutate(
+    # Have a usual place to go for health care?
+    hc_usualplace = case_when(
+      q_hc_place == "There is no place" ~ "No",
+      q_hc_place == "There is more than one place" ~ "More than 1 place",
+      TRUE ~ q_hc_place),
+    
+    # n of Doctor visits last year
+    hc_drvisits_lastyr = factor(
+      unname(hc_visit.labs[as.character(q_hc_drvisit)]), levels=c(
+        unique(unname(hc_visit.labs)))),
 
+    # n (overnight or longer) hospital admissions last year; only pre-2017
+    hc_admits_lastyr = case_when(
+      q_hc_admissions_pastyr == "1" ~ "1 time",
+      q_hc_admissions_pastyr %in% c(as.character(2:6)) ~ paste0(q_hc_admissions_pastyr, " times"),
+      q_hc_admissions_pastyr %in% c(as.character(7:12)) | 
+        q_hc_admissions_pastyr == "6 times or more" ~ "6+ times",
+      TRUE ~ NA)) %>% 
+  mutate_at("hc_admits_lastyr", ~factor(
+    ., levels = c("1 visit", paste(c(2:6), "visits"), "6+ visits"))) %>% 
+  
+  ## n Restaurant meals per week ---------------
+  mutate(
+    restaur_freq_wk = case_when(
+      q_restaur_week == 6666 ~ 0.5, # Less than weekly
+      q_restaur_week == 5555 | q_restaur_week == 26 ~ 21, # More than 21 times per week; re-coded to 21
+      TRUE ~ q_restaur_week
+    )) %>% 
+  
+  # Why at risk for diabetes & How tried losing weight ------------
+  mutate(across(starts_with(c("q_riskdiab", "q_wtloss_")), ~ifelse(
+    !is.na(.) & . != "", 1, 0))) %>% 
+  
+  ## Select cleaned questionnaire variables 
+  select(SEQN, Years, 
+         smoke_current, alch_freq_wk, alch_everdrinker, insur_any, insur_private,
+         uninsur_lastyr, phq9_total, told_diab_age, genhealth, hc_usualplace,
+         hc_drvisits_lastyr, hc_admits_lastyr, restaur_freq_wk, 
+         starts_with(c("q_riskdiab", "q_wtloss_", "diagn")), 
+         q_feel_riskdiab, q_had_dialysis, q_sob_inclilne
+  )
+
+
+## Combine all quest_processed dataframes
 nhanes_quest_processed <- full_join(
   nhanes_quest_rx_processed, nhanes_quest_behav_processed, 
   by = c("SEQN", "Years")) %>% 
   full_join(nhanes_quest_pa_processed, by = c("SEQN", "Years"))
-names(nhanes_quest_processed)
+
  
 
 ## =====================================================
@@ -604,18 +777,15 @@ nhanes_diet_processed <- nhanes_data_raw %>%
 ## Prepare additional clinical outcomes
 ## =====================================================
 
-addn_outcomes <- c("obese", "cvd", "ascvd", "copd", "ckd", "mdd")
-
+# Merge required questionnaire + lab + exam variables 
 nhanes_disease_processed <- full_join(
   nhanes_data_raw, nhanes_quest_rx_processed) %>%
-  left_join(
-    nhanes_quest_processed %>% select(SEQN, Years, phq9_total), 
-            by = c("SEQN", "Years")
-    ) %>%
-  left_join(
-    nhanes_lab_processed %>% select(SEQN, Years, egfr), 
-    by = c("SEQN", "Years")
-    ) %>% 
+  left_join(nhanes_quest_processed %>% select(SEQN, Years, phq9_total), 
+            by = c("SEQN", "Years")) %>%
+  left_join(nhanes_lab_processed %>% select(SEQN, Years, egfr), 
+            by = c("SEQN", "Years")) %>% 
+  
+  # Calculated BMI
   mutate(bmi_calc = wt/((ht*.01)^2)) %>%
   mutate(
     # Obesity ----------------------
@@ -623,40 +793,48 @@ nhanes_disease_processed <- full_join(
       q_told_overwt_gte20 == "Yes" | q_told_overwt_lt20 == "Yes" | 
         q_wtloss_dietrx == "Yes" | bmi>=30 | bmi_calc >= 30 ~ 1,
       TRUE ~ 0),
+    
     # CVD ----------------------
     cvd = case_when(
       q_told_chd == "Yes" | q_told_angina == "Yes" | 
         q_told_mi == "Yes" ~ 1,
       TRUE ~ 0 ), 
+    
     # ASCVD --------------------
     ascvd = case_when(
       q_told_chd == "Yes" | q_told_angina == "Yes" | 
         q_told_mi == "Yes" | q_told_stroke == "Yes" ~ 1, 
       TRUE ~ 0),
+    
     # COPD --------------------
     copd = case_when(
       q_told_bronch == 1 | q_told_anybronch == 1 | q_told_copd == 1 | 
         q_told_emphys == 1 ~ 1,
       TRUE ~ 0),
+    # COPD, based on pulmonary function tests 
     pft_lt07 = case_when(
       fev1_pre / fvc_pre < 0.7~1,
       fev1_pre / fvc_pre >= 0.7~0,
       TRUE ~ NA),
+    
     # CKD ---------------------
     ckd = case_when(
       q_told_kidfail == "Yes" | creatinine >= 1.4 ~ 1,
       TRUE ~ 0),
+    
     # MDD (Depression) -------------------
     mdd = case_when(
       q_depress == "Positive Diagnosis" | q_med_depress == "Yes" | 
         phq9_total >= 10 ~ 1,
       TRUE ~ 0),
+    
     # Hypertension --------------
     htn = case_when(
       q_told_htn == "Yes" | `q_told_htn_x2+` == "Yes" | sbp_avg >=130 | 
         dbp_avg >=80 ~ 1, 
       TRUE ~ 0)
     ) %>% 
+  
   # Diabetes (diagnosed) -----------------------
   mutate(
     diabetes = case_when(
@@ -675,7 +853,8 @@ nhanes_disease_processed <- full_join(
         (hba1c <= 6.4 | is.na(hba1c)) & 
         (fg <125 | is.na(fg)) ~ 0,
       TRUE ~ 0)) %>%
-  # Undiagnosed diabetes ------------------
+  
+  # Diabetes, undiagnosed ------------------
   mutate(
     diabetes_undx = case_when(
       diabetes == 1 & # Have diabetes (as defined, above)
@@ -683,7 +862,8 @@ nhanes_disease_processed <- full_join(
         q_med_insulin != "Yes" & 
         q_med_diab != "Yes" ~ 1,
       TRUE ~ 0)) %>%
-  # Undiagnosed hypertension ------------------
+  
+  # Hypertension, undiagnosed ------------------
   mutate(
     htn_undx = case_when(
       (is.na(sbp_avg) & is.na(dbp_avg)) ~ NA,
@@ -692,6 +872,7 @@ nhanes_disease_processed <- full_join(
         q_med_bp != "Yes" & 
         rx_use_bp != "Yes" ~ 1,
       TRUE ~ 0)) %>%
+  
   # Abdominal obesity ------------------
   mutate(
     obesity_abd = case_when(
@@ -705,19 +886,22 @@ nhanes_disease_processed <- full_join(
       q_med_bp == "No" | 
       sbp_avg >= 130 | dbp_avg >=80 ~ 1,
     TRUE ~ 0)) %>%
+  
   # Congestive heart failure ------------------
   mutate(chf = case_when(
     q_told_chf == "Yes" ~ 1,
     q_told_chf == "No" ~ 0,
     q_told_chf %in% c("Refused", "Don't know", "") ~ NA)) %>%
-  # COPD-related outcomes ------------------
+  
+  # Additional COPD definitions ------------------
   mutate(
     copd_pft = case_when(
       copd == 1 | pft_lt07 == 1 ~ 1,
       TRUE ~ 0)) %>%
+  
   # CKD-related outcomes -----------
   mutate(
-    ckdgfr_level = factor(case_when(
+    ckd_gfr_level = factor(case_when(
       q_had_dialysis == "Yes" ~ "ESRD",
       egfr >= 90 ~ "Stage 0",
       egfr >=60 & egfr <90 ~ "Stage 2",
@@ -727,15 +911,20 @@ nhanes_disease_processed <- full_join(
       egfr < 15 ~ "Stage 5, Kidney failure",
       TRUE ~ NA), levels = c("Stage 0", "Stage 2", "Stage 3a",
                              "Stage 3b", "Stage 4", "Stage 5", "ESRD")),
-    ckdmalb_level = factor(case_when(
+    ckd_malb_level = factor(case_when(
       u_albumin <= 30 ~ 0,
       u_albumin > 30 & u_albumin <= 100 ~ 1,
       u_albumin > 100 & u_albumin <= 300 ~ 2,
       u_albumin > 300 ~ 3))) %>%
-  mutate(ckdany = case_when(
-    ckdgfr_level != "Stage 0" | ckdmalb_level != 0 ~ 1,
-    ckdgfr_level == "Stage 0" | ckdmalb_level == 0 ~ 0,
-    TRUE ~ NA)) %>% # MASLD-related outcomes ------------------
+  
+  # Any CKD, based on GFRs & u-albumin
+  mutate(
+    ckd_any = case_when(
+      ckd_gfr_level != "Stage 0" | ckd_malb_level != 0 ~ 1,
+      ckd_gfr_level == "Stage 0" | ckd_malb_level == 0 ~ 0,
+    TRUE ~ NA)) %>% 
+  
+  # MASLD-related outcomes ------------------
   mutate(fib4 = (age*ast)/(plt*sqrt(alt))) %>%
   mutate(
     fib4_cat = factor(case_when(
@@ -743,6 +932,7 @@ nhanes_disease_processed <- full_join(
       age <65 & fib4 >=1.3 & fib4 <2.67 | age >=65 & fib4 >=2 & fib4 <2.67 ~ "Moderately elevated",
       fib4 >=2.67 ~ "High",
       TRUE ~ NA_character_), levels = c("Low", "Moderately elevated", "High"))) %>% 
+  
   # NAFLD fibrosis score ------------------
   mutate(
     nfs = -1.675 + 0.037 * age + 0.094 * bmi + 1.13 * diabetes +
@@ -754,12 +944,13 @@ nhanes_disease_processed <- full_join(
       nfs > 0.676 ~ "High",
       nfs >= -1.455 & nfs <= 0.676 ~ "Indeterminate",
       TRUE ~ NA)) %>%
+  
+  # Liver-CAP steatosis -------------------------
   mutate(
     liver_valid_elastography = case_when(
     !is.na(liver_stiff) & !is.na(liver_iqr) & 
       liver_iqr <= 30 ~ 1, 
     TRUE ~ 0)) %>%
-  # Liver-CAP steatosis -------------------------
   mutate(
     liver_cap_level = factor(case_when(
       liver_cap < 240 ~ "Normal",
@@ -780,9 +971,17 @@ nhanes_disease_processed <- full_join(
       is.na(liver_cap) ~ NA,
       liver_cap >= 268 ~ "1L",
       TRUE ~ "0L")) %>%
+  
+  # Convert 0,1 to factor variables
+  mutate(across(c(
+    "obese", "cvd", "ascvd", "copd", "pft_lt07", "ckd", "mdd", "htn", 
+    "diabetes", "diabetes_undx", "htn_undx", "obesity_abd", "htn_stg1", "chf", 
+    "copd_pft", "ckd_malb_level", "ckd_any", "liver_valid_elastography"), ~as.factor(.))) %>%
+  
+  # Select derived variables ----------------------
   select(SEQN, Years, diabetes, diabetes_undx, htn_undx, obesity_abd, 
-         obese, cvd, copd, copd_pft, htn, mdd, ascvd, ckd, ckdgfr_level, ckdmalb_level, 
-         ckdany, htn_stg1, chf, copd_pft, fib4, fib4_cat, 
+         obese, cvd, copd, copd_pft, htn, mdd, ascvd, ckd, ckd_gfr_level, ckd_malb_level, 
+         ckd_any, htn_stg1, chf, copd_pft, fib4, fib4_cat, 
          nfs, nfs_cat, liver_cap_level, liver_valid_elastography, liver_cap_steatosis, 
          liver_cap_masld, liver_cap_moderate_severe)
 
