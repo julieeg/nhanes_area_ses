@@ -159,6 +159,7 @@ Heatmap(
 
 \n
 ## Descriptive Tables & Figures
+### BEFORE applying survey weights
 
 ##### Summarise strata distributions, across NHANES cycles
 
@@ -182,8 +183,9 @@ print_summary_table(var_strata = "Years", vars_to_summarize = vars_strata,
 * Exclude particiants with any CVD, ASCVD, CKD or Diabetes (un/diagnosed)
 
 ```{r}
-vars_disease_excl <- c(ascvd="ASCVD", cvd="CVD", ckd="CKD", diabetes="Diabetes", diabetes_undx="Diabetes (undiagnosed)")
-print_summary_table(var_strata = "Years", vars_to_summarize = vars_disease_excl, 
+vars_diseases <- c(ascvd="ASCVD", cvd="CVD", ckd="CKD", diabetes="Diabetes", 
+                   diabetes_undx="Diabetes (undiagnosed)")
+print_summary_table(var_strata = "Years", vars_to_summarize = vars_diseases, 
                     p_adjust = "none", p_print = F, data = nhanes1) %>% kable()
 ```
 
@@ -191,11 +193,6 @@ print_summary_table(var_strata = "Years", vars_to_summarize = vars_disease_excl,
 ##### Examine clincial characteristics between strata, among elligible particiapnts
 
 ```{r, summarise_descript_2}
-# Exclude particiapnts based on age and disease status
-nhanes2 <- nhanes1 %>% filter(
-  age > 30 & age < 80 &
-  ascvd == 0 & cvd == 0 & ckd == 0 & diabetes == 0 & diabetes_undx == 0
-)
 
 # List clinical variables to check for quality/missingness --------
 vars_clin_cont <- c(age="Age, years", bmi="BMI, kg/m2", sbp_mean="SBP (average), mmHg", 
@@ -207,7 +204,7 @@ vars_clin_cont <- c(age="Age, years", bmi="BMI, kg/m2", sbp_mean="SBP (average),
 tab1_clin_byASR.l<-lapply(list("age_gt65.lab", "gender", "racethn_addNHA"), function(strata) {
   print_summary_table(data = nhanes1, vars_to_summarize = vars_clin_cont, 
                       var_strata = strata, p_print = F, p_adjust = "none", digits = c(1,1),
-                      var_strata_order = as.vector(unique(nhanes2 %>% pull(strata))))
+                      var_strata_order = as.vector(unique(nhanes1 %>% pull(strata))))
 }) ; names(tab1_clin_byASR.l) <- c("Age", "Sex", "Race")
 
 
@@ -226,7 +223,7 @@ tab1_clin_byASR %>% select(starts_with("Race")) %>%
 
 ## Summarise medication use
 tab1_clin_byMED.l<-lapply(list("rx_use_statin", "rx_use_bpmed", "rx_use_diabmed"), function(strata) {
-  print_summary_table(data = nhanes2, vars_to_summarize = vars_clin_cont, digits = c(1,1),
+  print_summary_table(data = nhanes1, vars_to_summarize = vars_clin_cont, digits = c(1,1),
                       var_strata = strata, p_print = F, p_adjust = "none")
   }) ; names(tab1_clin_byMED.l) <- c("Statin", "BP med", "Diabetes med")
 
@@ -237,8 +234,10 @@ do.call(cbind.data.frame, tab1_clin_byMED.l) %>%
 
 ```
 
-\n
-## Examine histograms of continuous lab values
+
+### Examine histograms of continuous lab values
+
+Include ALL participants with Age > 18 years
 
 ```{r, check_hist_all}
 # continuous variables to examine
@@ -248,13 +247,13 @@ lab_vals <- c( BMI="bmi", WHR="whr", SBP="sbp_mean",
                uCreatinine="u_creatinine", UACR="uacr", eGFR="egfr", eGFR.race = "egfr_race")
 
 # Make long-format data for panel histograms
-nhanes2_long <- nhanes2 %>% 
+nhanes1_long <- nhanes1 %>% 
   select(SEQN, lab_vals) %>% 
   pivot_longer(cols=-SEQN) %>%
   mutate_at("name", ~factor(., levels=names(lab_vals)))
 
 # Build generic histogram function
-plot_hist.fun <- function(vars, data = nhanes2_long) {
+plot_hist.fun <- function(vars, data = nhanes1_long) {
   data %>%
     filter(name %in% vars) %>%
     ggplot(aes(x=value)) + facet_wrap(~name, scale="free", ncol=4) + 
@@ -274,56 +273,85 @@ plot_hist.fun(names(lab_vals[11:14]))
 
 ```
 
+### Examine missingness & distributions of PREVENT inputs 
+```{r}
+nhanes_processed_prevent <- readRDS("../data/processed/nhanes_processed_prevent.rda")
 
-##### Apply additional exclusions, based on lab values for the PREVENT analysis:
+# summarise missingness 
+prevent_na_summary.hm <- nhanes_processed_prevent %>%
+  select(SEQN, Years, starts_with("prevent") & !contains("0yr") & !contains("complete")) %>%
+  pivot_longer(
+    cols = starts_with("prevent"), names_to = "var", values_to = "value",
+    values_transform = list(value = as.character)) %>%
+  group_by(Years, var) %>%
+  summarize(pct_na = round(mean(is.na(value))*100,1), .groups    = "drop") %>%
+  select(Years, var, pct_na) %>%
+  pivot_wider(names_from=Years, values_from=pct_na) %>%
+  column_to_rownames("var") %>% as.matrix()
+
+# View Heatmap -----------------
+Heatmap(
+  prevent_na_summary.hm, cluster_columns = F, rect_gp = gpar(col = "white", lwd = 1),
+  show_row_dend = F, row_names_side = "left", column_title_side = "bottom",
+  column_title = "NHANES Exam Cycles", row_title = "PREVENT Inputs",
+  name = "Missing\nData (%)", row_names_gp = gpar(fontsize=9),
+  col=colorRamp2(c(0, 100), c("#FFFFFF", palettes$NatExt$Blues[3])), 
+  # Function to print missing value if >10%
+  cell_fun = function(j, i, x, y, width, height, fill) {
+    pct_na <- as.numeric(prevent_na_summary.hm[i, j])
+    if (!is.na(pct_na) & pct_na>0) {
+      grid.text(sprintf("%.1f", pct_na), x, y, gp = gpar(fontsize = 8, col = "black"))
+      }
+    })
+```
+
+
+##### Summarise characteristics of participants for PREVENT analyses:
 
  * Adults 30 to 79 years of age 
  * Without known ASCVD, CVD, CKD or diabetes 
- * No extreme clinical ranges for SBP, TC, HDL-C (SBP <90 or >200 mm Hg, TC <130 or >320 mg/dL, and HDL-C <20 or >100 mg/dL). 
- * No extreme values for BMI (<18.5 or ≥40.0 kg/m2)
+ * **TENTATIVE: No extreme clinical ranges for SBP, TC, HDL-C (SBP <90 or >200 mm Hg, TC <130 or >320 mg/dL, and HDL-C <20 or >100 mg/dL).**
+ * **TENTATIVE: No extreme values for BMI (<18.5 or ≥40.0 kg/m2)**
 
 ```{r, check_hist_include}
-nhanes2 <- nhanes2 %>% 
-  mutate(exclude_age = ifelse(age <30 | age>79,1,0),
-         exclude_diease = ifelse(cvd == 1 | ascvd == 1 | ckd == 1 | diabetes == 1 | diabetes_undx == 1, 1, 0),
-         exclude_clinextreme = ifelse(
-           sbp_mean <90 | sbp_mean >200 |
-             tc <130 | tc >320 | 
-             hdl <20 | hdl >200 | 
-             bmi <18.5 | bmi >= 40, 1, 0)
-  ) %>% 
-  mutate(include = ifelse(exclude_age==1 | exclude_diease == 1 | exclude_clinextreme == 1, 0, 1))
 
-nhanes2_long <- nhanes2 %>% 
-  select(SEQN, lab_vals, include, starts_with("exclude")) %>% 
-  pivot_longer(cols=-c(SEQN, include, starts_with("exclude"))) %>%
-  mutate_at("name", ~factor(., levels=names(lab_vals)))
+# Merge clinical/lab outcomes into PREVENT dataset, for descriptive analyses
+nhanes_processed_prevent <- left_join(
+  nhanes_processed_prevent, 
+  nhanes_processed %>% select(SEQN, age_gt65.lab, gender, bmi, 
+                              tc, tc, hdl, tg, hba1c, uacr, egfr, egfr_race),
+  by="SEQN"
+)
+
+vars_prevent <- c(prevent_age="Age, years", prevent_sbp = "SBP, 90-180 mmHg", 
+                  prevent_bprx = "Use BP medications", prevent_tc = "TC, 130-320 mg/dL", 
+                  prevent_hdl = "HDLc, 20-100", prevent_statin = "Use statins", 
+                  prevent_diab = "Has diabetes", prevent_smoking = "Current smoker", 
+                  prevent_egfr = "eGFR, 15-140", prevent_egfr_race = "eGFR (race), 15-140", 
+                  prevent_bmi = "BMI, 18.5-40", prevent_hba1c = "HbA1c, 4.5-15 %", 
+                  prevent_uacr = "UACR, 0.1-25000")
+
+tab1_prevent_byASR.l <- lapply(list("age_gt65.lab", "gender", "racethn_addNHA"), function(strata) {
+  print_summary_table(data = nhanes_processed_prevent, vars_to_summarize = vars_prevent, 
+                      var_strata = strata, p_print = F, p_adjust = "none", digits = c(1,1),
+                      var_strata_order = as.vector(unique(nhanes1 %>% pull(strata))))
+}) ; names(tab1_prevent_byASR.l) <- c("Age", "Sex", "Race")
 
 
-## View histograms ----------------------
-# Anthropometric & BP vars: BMI, Waist-Hip ratio, SBP, DBP
-plot_hist.fun(names(lab_vals[1:4]), data = nhanes2_long %>% filter(include ==1))
-# Blood Glucose: HbA1c and plasma glucose
-plot_hist.fun(names(lab_vals[5:6]), data = nhanes2_long %>% filter(include ==1))
-cat("Note: gap in histogram of HbA1c is due to the binning of the variables and NOT true missingness in the data")
-# Blood lipids: HbA1c and plasma glucose
-plot_hist.fun(names(lab_vals[7:10]), data = nhanes2_long %>% filter(include ==1))
-# Kidney outcomes: urine albumin, creatinine, UACR and eGFR
-plot_hist.fun(names(lab_vals[11:14]), data = nhanes2_long %>% filter(include ==1))
+# Build table1 by age, sex & race --------
+tab1_prevent_byASR <- do.call(cbind.data.frame, tab1_prevent_byASR.l) %>% 
+  rename(Total = Age.Total) %>%
+  select(-ends_with(".Total")) 
+
+## View Table1 by Age & Sex ----------------------
+tab1_prevent_byASR %>% select(Total, starts_with("Age"), starts_with("Sex")) %>% 
+  kable(caption = "PREVENT inputs among participants by Age & Sex")
+
+# View Table1 by Race (including NHA) ----------------------
+tab1_prevent_byASR %>% select(starts_with("Race")) %>% 
+  kable(caption = "PREVENT inputs among participants by Race/Ethnicity")
 
 ```
 
 
-Additional boxplots for urinary albumin, cretinine and UACR based on apparent skew and extreme values
-
-```{r, check_outliers}
-nhanes2_long %>%
-  filter(name %in% c("uAlbumin", "uCreatinine", "UACR")) %>%
-  ggplot(aes(y=value)) + 
-  facet_wrap(~name, scales = "free") + 
-  geom_boxplot(outlier.color = "red", outlier.shape = 16) +
-  labs(x="", y="Laboratory Value") +
-  ggplot_theme
-```
-Note: outliers as defiend by +/- 1.5*IQR are highlighted in Red
 

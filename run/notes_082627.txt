@@ -1,0 +1,60 @@
+NOYES
+
+- test reclassificvation without fg or criteria --> if small, take out FG altogether OR move it to MEC; if not much different with renmving FG then delte it; 
+
+- using best practices for determinign the weights
+
+## NEED TO USE THE 4-YR WEIGHTS FOR THE 1999-2001 DATASETS 
+--> grab the 4-year weights for the interview and mec 
+
+## Bring back in N for the number of people that are used to calculate each descriptive value
+
+
+var list has to be included when we resubmit when we submit the applicaiton. this is a fe weeks 
+
+WHAT VARIABLE IS GOING IN TO THE RDC
+
+--> need list of analyzed variables
+
+
+name of variable in dataset
+second column: derivation vriables from nhanes
+vaeriables requeired foro derivation
+
+
+cancel from 9/22 - nov 10 
+
+JUST NEED THE DATA FILES
+imported to sas, merged, exported to csv
+starting fiels shoudl be csvas
+
+## ---> continuous SDI measures
+run the prevent SDI and prevent full three times per person; 
+
+How to think abotu SDI levels? do we want to run each version, 
+
+prevent_sdi1 prevent_sdi2, prevent_sdi3 --> true_sdi category
+then use this to create a new ten year cvd sdi where you take hte correct column
+
+ifelse for each SDI then select
+
+for all the two models: SDI and FULL model;
+funning each of thes 4 models, different times,
+
+
+continuous varis wil jsut comen as exposures. 
+
+
+
+LEFT OFF FIXING THE YEARS 
+--> pick u finishing fixing the weighting function to account for 4 years and 2 and 3.2 cycles. 
+
+
+GREAT-TASTE:
+- a fee more calls to make
+- ASK if already started taking it if they got the 
+- after labor day re-present or each to obesity center
+- Slack vicky about asking calling earlier
+partnering with weight center and being best friend of prescribers
+
+

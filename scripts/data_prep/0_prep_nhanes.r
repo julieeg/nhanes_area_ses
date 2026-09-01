@@ -27,7 +27,6 @@ get_github_scripts <-function(user, repo, path) {
 } ; get_github_scripts("julieeg", "pantry", "functions")
 
 
-
 ################################################################################
 ## Build index of all NHANES tables/vars across time points (1999-2023)
 ################################################################################
@@ -100,16 +99,18 @@ list_nhanes_vars.fun <- function(nhanes_table_summary) {
 nhanes_vars_all <- list_nhanes_vars.fun(nhanes_tables_all) ; dim(nhanes_vars_all) # 47685 5 
 nhanes_vars_lab_post2017 <- list_nhanes_vars.fun(
   nhanes_tables_all %>% 
-    filter(Category == "LABORATORY" & Years %in% c("2017-2018", "2017-2020", "2021-2023")))
+    filter(Category == "LABORATORY" & 
+             Years %in% c("2017-2018", "2017-2020", "2021-2023")))
   
-nhanes_vars_all <- nhanes_vars_all %>% bind_rows(nhanes_vars_lab_post2017) %>% unique()
+nhanes_vars_all <- nhanes_vars_all %>% 
+  bind_rows(nhanes_vars_lab_post2017) %>% unique()
   
 # Merge in Categeories 
 nhanes_vars_all <- nhanes_vars_all %>% 
   left_join(nhanes_tables_all %>% select(Category, Table=Data.File.Name)) %>%
   select(Category, names(nhanes_vars_all))
-nhanes_vars_all %>% fwrite("../data/raw/nhanes_vars_all.csv")
-#nhanes_vars_all <- fread("../data/raw/nhanes_vars_all.csv")
+nhanes_vars_all %>% fwrite("../data/raw/nhanes_varlist_all.csv")
+#nhanes_vars_all <- fread("../data/raw/nhanes_varlist_all.csv")
 
 
 ################################################################################
@@ -118,10 +119,10 @@ nhanes_vars_all %>% fwrite("../data/raw/nhanes_vars_all.csv")
 ################################################################################
 
 nhanes_yrs <- names(table(nhanes_tables_all$Years))
-nhanes_yrs <- nhanes_yrs[-2] # remove "1999-2004"
+nhanes_yrs <- nhanes_yrs[-c(2,7)] # remove "1999-2004" and 2007-2012
 
 # Make array of years/labels for selecting tables
-names(nhanes_yrs) <- c("", paste0("_", LETTERS[2:10]),"P_", "_L", "M_")
+names(nhanes_yrs) <- c("", paste0("_", LETTERS[2:10]),"P_", "_L")
 
 
 ## =========================================================================
@@ -140,7 +141,6 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
   }
   
   ## 1. Create List of UNIQUE tables & variables to load by data category
-  
   # Filter by NHANES data category (DEMO, LABORATORY, EXAM, QUESTIONNAIRE, DIET)
   datadict_cat <- datadict %>% filter(category == cat)
   
@@ -150,8 +150,7 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
   vars_by_cat <- bind_rows(vars_by_cat,
                            # Add rows with SEQN for each required Table
                            nhanes_vars_all %>% filter(
-                             Table %in% vars_by_cat$Table & Variable.Name == "SEQN")
-  )
+                             Table %in% vars_by_cat$Table & Variable.Name == "SEQN"))
   
   # Gather all tables by category that i) have SEQN + ≥1 other requested variable
   tables_by_cat <- vars_by_cat %>% select(Table, Years) %>% unique()
@@ -159,7 +158,8 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
   # Gather sample weights & add to vars_by_cat
   vars_by_cat <- vars_by_cat %>% bind_rows(
     nhanes_vars_all %>% filter(Table %in% tables_by_cat$Table) %>%
-      filter(grepl("sample", Variable.Description) & grepl("weight", Variable.Description, ignore.case = T))
+      filter(grepl("WTINT|WTMEC|WTSAF|WTDR", Variable.Name))
+      #filter(grepl("sample|weight", Variable.Description, ignore.case = T)) %>%
   )
   
   # 2. Use lapply to download all requested variables for each TABLE/YEAR:
@@ -172,9 +172,10 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
     tab_raw <- tryCatch({
       tab_all <- nhanes(tab)
       # Vars to select from table
-      vars_to_select <- names(tab_all)[c(which(names(tab_all) %in% c(datadict_cat %>% pull(variable))))]
+      vars_to_select <- names(tab_all)[c(which(names(tab_all) %in% unique(vars_by_cat$Variable.Name)))] #c(datadict_cat %>% pull(variable))))]
       # Add relevant sample weights 
-      vars_to_select <- unique(c(names(tab_all)[which(startsWith(names(tab_all), "WT"))], vars_to_select)) 
+      #vars_to_select <- unique(c(vars_by_cat$Variable.Name, vars_to_select))
+        #unique(c(names(tab_all)[which(startsWith(names(tab_all), "WT"))], vars_to_select)) 
       tab_all %>% select("SEQN", all_of(vars_to_select)) %>%
         mutate(Years=years, .before=1) 
     }, error = function(e) {
@@ -293,19 +294,19 @@ project_datadict <- readxl::read_xlsx("./nhanes_pullrequest_IndVsArea_07.30.2026
 
 ## Demographics data ---------------------
 demo_tables.l <- build_nhanes_table(cat = "DEMO", datadict = project_datadict)
-saveRDS(demo_tables.l, "../data/raw/demo_tables_all.rds") 
+saveRDS(demo_tables.l, "../data/raw/nhanes_demo_tables.rds") 
 
 ## Laboratory data -----------------------
 lab_tables.l <- build_nhanes_table(cat = "LABORATORY", datadict = project_datadict) 
-saveRDS(lab_tables.l, "../data/raw/lab_tables_all.rds")
+saveRDS(lab_tables.l, "../data/raw/nhanes_lab_tables.rds")
 
 ## Exam data ---------------------------
 exam_tables.l <- build_nhanes_table(cat = "EXAM", datadict = project_datadict)
-saveRDS(exam_tables.l, "../data/raw/exam_tables_all.rds")
+saveRDS(exam_tables.l, "../data/raw/nhanes_exam_tables.rds")
 
 ## Questionnaire data ------------------
 quest_tables.l <- build_nhanes_table(cat = "QUESTIONNAIRE", datadict = project_datadict)
-saveRDS(quest_tables.l, "../data/raw/quest_tables_all.rds")
+saveRDS(quest_tables.l, "../data/raw/nhanes_quest_tables.rds")
 
 ## ====================================
 ## Create complete NHANES dataframe 
@@ -314,17 +315,17 @@ saveRDS(quest_tables.l, "../data/raw/quest_tables_all.rds")
 table_cats <- c("demo", "lab", "exam", "quest")
 names(table_cats) <- names(data_categories.labs)[1:4]
 
-nhanes_tables_all.l <- lapply(table_cats, function(cat) {
-  readRDS(sprintf("../data/raw/%s_tables_all.rds", cat)) 
-}) ; names(nhanes_tables_all.l) <- table_cats
+nhanes_tables_raw.l <- lapply(table_cats, function(cat) {
+  readRDS(sprintf("../data/raw/nhanes_%s_tables.rds", cat)) 
+}) ; names(nhanes_tables_raw.l) <- table_cats
 
-demo_tables.l <- nhanes_tables_all.l$demo
-lab_tables.l <- nhanes_tables_all.l$lab
-exam_tables.l <- nhanes_tables_all.l$exam
-quest_tables.l <- nhanes_tables_all.l$quest
+demo_tables.l <- nhanes_tables_raw.l$demo
+lab_tables.l <- nhanes_tables_raw.l$lab
+exam_tables.l <- nhanes_tables_raw.l$exam
+quest_tables.l <- nhanes_tables_raw.l$quest
 
 nhanes_vars_datadict <- lapply(table_cats, function(cat) {
-  nhanes_tables_all.l[[cat]][["var_summary"]] %>% mutate(Category = cat, .before=1)
+  nhanes_tables_raw.l[[cat]][["var_summary"]] %>% mutate(Category = cat, .before=1)
 }) %>% do.call(rbind.data.frame, .)
 
 
@@ -354,7 +355,8 @@ dr2tot_files <- c(nhanes_tables_all %>% filter(grepl("DR2TOT", Data.File.Name)) 
 nhanes_dr2tot.l <- lapply(dr2tot_files, nhanes) ; names(nhanes_dr2tot.l) <- dr2tot_files
 
 nhanes_nutrient_data.l <- list(dr1iff=nhanes_dr1iff.l, dr2iff=nhanes_dr2iff.l, dr1tot=nhanes_dr1tot.l, dr2tot=nhanes_dr2tot.l)
-saveRDS(nhanes_nutrient_data.l, "../data/raw/nhanes_nutrient_data.rds")
+saveRDS(nhanes_nutrient_data.l, "../data/raw/nhanes_nutrient_tables.rds")
+#nhanes_nutrient_data.l <- readRDS("../data/raw/nhanes_nutrient_tables.rds")
 
 
 # =========================================================================
@@ -363,127 +365,267 @@ saveRDS(nhanes_nutrient_data.l, "../data/raw/nhanes_nutrient_data.rds")
 
 build_nhanes_dietaryindex <- function(index, years = "all") {
   
-  # Make array of exam cycles, labeled with year codes
+  # 1. Check dietary index argument
+  valid_indices <- c("AHEI", "HEI", "HEI2015", "HEI2020", "DII", "EDII")
+  if (!toupper(index) %in% valid_indices) {
+    stop(sprintf("Invalid index '%s'. Must be one of: %s", index, paste(valid_indices, collapse = ", ")))
+  }
+  
+  # 2. Map exam cycles & label with exam codes
   all_cycles <- c("_D", "_E", "_F", "_G", "_H", "_I", "_J", "P_")
   names(all_cycles) <- c("0506","0708", "0910", "1112", "1314", "1516", "1718", "1720")
   diet_sample_weights <- c("WTDRD1", "WTDR2D")
   
   if (years == "all") { 
-    cycles <- all_cycles ; diet_sample_weights <- c(diet_sample_weights, "WTDRD1PP", "WTDR2DPP") 
+    cycles <- all_cycles ; #diet_sample_weights <- c(diet_sample_weights, "WTDRD1PP", "WTDR2DPP") 
   } else {
     cycles <- all_cycles[years]}
   
+  # Pre-define dietary data files
+  fped_files <- list(driff = c("fped_dr1iff_", "fped_dr2iff_"), 
+                     drtot = c("fped_dr1tot_", "fped_dr2tot_"))
+  
+  # 3. Iterate over each exam cycle
   index.l <- lapply(1:length(cycles), function(i) {
     
+    cycle_name <- names(cycles)[i]
+    cycle_code <- cycles[[i]]
     cat(sprintf("CALCULATING | %s for cycle %s \n", toupper(index), names(cycles)[i]))
-    fped_files <- list(driff=c("fped_dr1iff_", "fped_dr2iff_"), drtot=c("fped_dr1tot_", "fped_dr2tot_"))
     
-    # Pull DEMO file and re-code RIAGNDR as 1=Male/2=Female
-    demo_file <- ifelse(cycles[[i]] == "P_", "P_DEMO", paste0("DEMO", cycles[[i]]))
+    # Process DEMO file and re-code RIAGNDR as 1=Male/2=Female
+    demo_file <- ifelse(cycle_code == "P_", "P_DEMO", paste0("DEMO", cycle_code))
     demo <- demo_tables.l$raw_data_tables.l[[demo_file]]$raw_table %>% 
       select("SEQN", "RIAGENDR", "RIDAGEYR", starts_with("SD")) %>% 
-      mutate_at("RIAGENDR", ~as.numeric(case_when(.=="Male"~1, .=="Female"~2)))
+      mutate_at("RIAGENDR", ~as.numeric(case_when(
+        .=="Male"~1, .=="Female"~2))
+        )
     
+    # ============================
+    # AHEI Calculation
+    # ============================
     if(toupper(index) == "AHEI") {
       load("../data/raw/FPED_files/SSB_FNDDS_1718.rda")
       
       # Load FPED datasets for each cycle
       cat("READING | fped_dr1iff & fped_dr2iff \n")
-      fped_dr1iff <- read_sas(sprintf("../data/raw/FPED_files/%s%s.sas7bdat", fped_files$driff[1], names(cycles)[i])) %>% select(-"RIAGENDR")
-      fped_dr2iff <- read_sas(sprintf("../data/raw/FPED_files/%s%s.sas7bdat", fped_files$driff[2], names(cycles)[i])) %>% select(-"RIAGENDR")
+      fped_dr1iff <- read_sas(sprintf("../data/raw/FPED_files/%s%s.sas7bdat", 
+                                      fped_files$driff[1], cycle_name)) %>% select(-"RIAGENDR")
+      fped_dr2iff <- read_sas(sprintf("../data/raw/FPED_files/%s%s.sas7bdat", 
+                                      fped_files$driff[2], cycle_name)) %>% select(-"RIAGENDR")
       
       # Grab NUTRIENT information for each cycle
-      nutrient_dr1iff_file <- as.character(ifelse(cycles[[i]] == "P_", "P_DR1IFF", paste0("DR1IFF", cycles[[i]])))
       cat("DOWNLOADING | nutrient_dr1iff & nutrient_dr2iff \n")
-      nutrient_dr1iff <- nhanes_nutrient_data.l$dr1iff[[nutrient_dr1iff_file]] %>% left_join(demo, by = "SEQN") %>% 
-        mutate_at("DR1DRSTZ", ~case_when(.=="Reliable and met the minimum criteria"~1, .=="Reported consuming breast-milk"~0))
-      nutrient_dr2iff <- nhanes_nutrient_data.l$dr2iff[[gsub("1", "2", nutrient_dr1iff_file)]] %>% left_join(demo, by = "SEQN") %>%
-        mutate_at("DR2DRSTZ", ~case_when(.=="Reliable and met the minimum criteria"~1, .=="Reported consuming breast-milk"~0))
+      nutrient_dr1iff_file <- as.character(
+        ifelse(cycle_code == "P_", "P_DR1IFF", paste0("DR1IFF", cycle_code))
+        )
+      
+      nutrient_dr1iff <- nhanes_nutrient_data.l$dr1iff[[nutrient_dr1iff_file]] %>% 
+        left_join(demo, by = "SEQN") %>% 
+        mutate_at("DR1DRSTZ", ~case_when(
+          .=="Reliable and met the minimum criteria"~1, 
+          .=="Reported consuming breast-milk"~0))
+      
+      nutrient_dr2iff <- nhanes_nutrient_data.l$dr2iff[[
+        gsub("1", "2", nutrient_dr1iff_file)]] %>% 
+        left_join(demo, by = "SEQN") %>%
+        mutate_at("DR2DRSTZ", ~case_when(
+          .=="Reliable and met the minimum criteria"~1, 
+          .=="Reported consuming breast-milk"~0))
       
       index_data <- dietaryindex::AHEI_NHANES_FPED(
         FPED_IND_PATH = fped_dr1iff, NUTRIENT_IND_PATH = nutrient_dr1iff,
         FPED_IND_PATH2 = fped_dr2iff, NUTRIENT_IND_PATH2 = nutrient_dr2iff,
         SSB_code = SSB_FNDDS_1718) %>%
         left_join(fped_dr1iff %>% select(SEQN, starts_with("WTDR")) %>% 
-                    unique(), by="SEQN")
+                    distinct(), by="SEQN")
       
       return(index_data)
     }
     
-    if(grepl("HEI", toupper(index))) {
+    # =====================================
+    # HEI (2015/2020) or DII Calculation
+    # =====================================
+    if(grepl("HEI|DII", toupper(index))) {
       
       # Load FPED datasets for each cycle
-      cat("READING | fped_dr1iff & fped_dr2iff \n")
-      fped_dr1tot <- read_sas(sprintf("../data/raw/FPED_files/%s%s.sas7bdat", fped_files$drtot[1], names(cycles)[i])) %>% select(-"RIAGENDR", "RIDAGEYR")
-      fped_dr2tot <- read_sas(sprintf("../data/raw/FPED_files/%s%s.sas7bdat", fped_files$drtot[2], names(cycles)[i])) %>% select(-"RIAGENDR", "RIDAGEYR")
+      cat("READING | fped_dr1tot & fped_dr2tot \n")
       
-      # Grab NUTRIENT information for each cycle
-      nutrient_dr1tot_file <- as.character(ifelse(cycles[[i]] == "P_", "P_DR1TOT", paste0("DR1TOT", cycles[[i]])))
+      fped_dr1tot <- read_sas(sprintf(
+        "../data/raw/FPED_files/%s%s.sas7bdat", fped_files$drtot[1], cycle_name)) %>% 
+        select(-"RIAGENDR", "RIDAGEYR")
+      
+      fped_dr2tot <- read_sas(sprintf(
+        "../data/raw/FPED_files/%s%s.sas7bdat", fped_files$drtot[2], cycle_name)) %>% 
+        select(-"RIAGENDR", "RIDAGEYR")
+      
+      # Load NUTRIENT information for each cycle
       cat("DOWNLOADING | nutrient_dr1tot & nutrient_dr2tot \n")
-      nutrient_dr1tot <- nhanes_nutrient_data.l$dr1tot[[nutrient_dr1tot_file]] %>% left_join(demo, by="SEQN") %>% 
-        mutate_at("DR1DRSTZ", ~case_when(.=="Reliable and met the minimum criteria"~1, .=="Reported consuming breast-milk"~0))
-      nutrient_dr2tot <- nhanes_nutrient_data.l$dr2tot[[gsub("1","2",nutrient_dr1tot_file)]] %>% left_join(demo, by="SEQN") %>%
-        mutate_at("DR2DRSTZ", ~case_when(.=="Reliable and met the minimum criteria"~1, .=="Reported consuming breast-milk"~0))
       
-      index_data <- dietaryindex::HEI2015_NHANES_FPED(
-        FPED_PATH = fped_dr1tot, NUTRIENT_PATH = nutrient_dr1tot,
-        FPED_PATH2 = fped_dr2tot, NUTRIENT_PATH2 = nutrient_dr2tot,
-        DEMO_PATH = demo) %>%
-        left_join(fped_dr1tot %>% select(SEQN, starts_with("WTD")) %>% 
-                    unique(), by="SEQN")
+      nutrient_dr1tot_file <- ifelse(cycle_code == "P_", "P_DR1TOT", 
+                                     paste0("DR1TOT", cycle_code))
+      
+      nutrient_dr1tot <- nhanes_nutrient_data.l$dr1tot[[nutrient_dr1tot_file]] %>% 
+        left_join(demo, by="SEQN") %>% 
+        mutate_at("DR1DRSTZ", ~case_when(
+          .=="Reliable and met the minimum criteria"~1, 
+          .=="Reported consuming breast-milk"~0))
+      
+      nutrient_dr2tot <- nhanes_nutrient_data.l$dr2tot[[gsub("1","2",nutrient_dr1tot_file)]] %>% 
+        left_join(demo, by="SEQN") %>%
+        mutate_at("DR2DRSTZ", ~case_when(
+          .=="Reliable and met the minimum criteria"~1, 
+          .=="Reported consuming breast-milk"~0))
+    
+      ## HEI Calculation -----------------------
+      if(grepl("HEI", toupper(index))) {
+       index_data <- HEI2015_NHANES_FPED(
+          FPED_PATH = fped_dr1tot, NUTRIENT_PATH = nutrient_dr1tot,
+          FPED_PATH2 = fped_dr2tot, NUTRIENT_PATH2 = nutrient_dr2tot,
+          DEMO_PATH = demo) %>%
+          left_join(fped_dr1tot %>% select(SEQN, starts_with("WTD")) %>% 
+                      distinct(), by="SEQN")
+      }
+      
+      ## DII Calculation --------------------
+      if(grepl("DII", toupper(index))) {
+        
+        data("DII_OTHER_INGREDIENTS_day1")
+        data("DII_OTHER_INGREDIENTS_day2")
+        
+        index_data <-  DII_NHANES_FPED(
+          FPED_PATH = fped_dr1tot, NUTRIENT_PATH = nutrient_dr1tot,
+          FPED_PATH2 = fped_dr2tot, NUTRIENT_PATH2 = nutrient_dr2tot,
+          OTHER_INGREDIENTS1 = DII_OTHER_INGREDIENTS_day1, 
+          OTHER_INGREDIENTS2 = DII_OTHER_INGREDIENTS_day2, 
+          DEMO_PATH = demo) %>% 
+          left_join(fped_dr1tot %>% select(SEQN, starts_with("WTD")) %>% 
+                      distinct(), by = "SEQN")
+      }
       
       return(index_data)
       
-    }})
-  
+    }
+  })
+
   index_data <- index.l %>% do.call(bind_rows, .)
   return(index_data)
   
 }
 
-## ==========================================
-## Build tables with diet quality indices 
-## ==========================================
 
+## =============================================
+## Build tables with diet quality indices 
+## =============================================
+
+diet_weights <- c("WTDRD1", "WTDR2D", "WTDRD1PP", "WTDR2DPP")
+
+# Calcualte HEI and AHEI -------------
 nhanes_dietindices.l <- lapply(c("hei", "ahei"), function(index) {
   build_nhanes_dietaryindex(index=toupper(index), years="all") %>%
     left_join(demo_tables.l$data_table %>% select(Years, SEQN), by = "SEQN") 
 }) ; names(nhanes_dietindices.l) <- c("hei", "ahei")
-saveRDS(nhanes_dietindices.l, "../data/raw/dietindices_tables_all.rds")
+
+# Add DII ---------------
+nhanes_dietindex_dii <- build_nhanes_dietaryindex(index="DII", years="all") %>%
+  left_join(demo_tables.l$data_table %>% select(Years, SEQN), by = "SEQN") %>% 
+  rename_with(~paste0("DII_", .), -c(SEQN, Years, diet_weights, DII_ALL, DII_NOETOH))
+
+# Merge & save diet indices ---------
+nhanes_dietindices.l <- c(nhanes_dietindices.l, dii=list(nhanes_dietindex_dii))
+saveRDS(nhanes_dietindices.l, "../data/raw/nhanes_dietindex_tables.rds")
+
+nhanes_dietindices <- nhanes_dietindices.l$hei %>% full_join(
+  nhanes_dietindices.l$ahei, by=c("SEQN", "Years", diet_weights)) %>% 
+  full_join(nhanes_dietindices.l$dii, by=c("SEQN", "Years", diet_weights)) 
+nhanes_dietindices %>% fwrite("../data/raw/nhanes_dietindices_raw.csv")
 
 
-#nhanes_dietindices.l <- readRDS("../data/raw/dietindices_tables_all.rds")
-nhanes_dietindices <- nhanes_dietindices.l$hei %>% left_join(
-  nhanes_dietindices.l$ahei, by=c("SEQN", "Years", "WTDRD1", "WTDR2D")) %>% 
-  select(-ends_with(".y")) %>%
-  rename_with(., ~gsub(".x", "", .),ends_with(".x"))
-nhanes_dietindices %>% fwrite("../data/raw/nhanes_dietindices_all.csv")
-#nhanes_dietindices <- fread("../data/raw/nhanes_dietindices_all.csv")
+## =========================================================
+## Additional Variable Sets Added After Initial Merge
+## =========================================================
 
+## Additional Questionnaire Variables ============
+## Alcohol intake frequency -----------------
+alch_tables.l <- build_nhanes_table(
+  cat = "QUESTIONNAIRE", datadict = project_datadict %>% 
+    filter(grepl("q_alc", Varname))
+  ) ; saveRDS(alch_tables.l, file = "../data/raw/nhanes_quest_alch_tables.rda")
+
+
+## Health Care interactions --------------
+hc_tables.l <- build_nhanes_table(
+  cat = "QUESTIONNAIRE", datadict = project_datadict %>% 
+    filter(grepl("q_hc", Varname))
+  ) ; saveRDS(hc_tables.l, file = "../data/raw/nhanes_quest_hc_tables.rds")
+
+
+# Any physical activity (MVPA or Transportation)
+anypa_tables.l <- build_nhanes_table(
+  cat="QUESTIONNAIRE", datadict = project_datadict %>%
+    filter(Varname %in% c("q_mvpa_anyvpa", "q_mvpa_anympa"))
+  ) ; saveRDS(anypa_tables.l, "../data/raw/nhanes_quest_anypa_tables.rds")
+
+
+## Employment type ------------------
+employ_tables.l <- build_nhanes_table(
+  cat = "QUESTIONNAIRE", datadict = project_datadict %>% 
+    filter(grepl("q_work|q_nowork", Varname) & Varname != "q_phq_work")
+  ) ; saveRDS(employ_tables.l, file = "../data/raw/nhanes_quest_employ_tables.rds")
+
+
+## Taste/Smell Questionnaire ------------------
+tasteq_tables.l <- build_nhanes_table(
+  cat = "QUESTIONNAIRE", datadict = project_datadict %>% 
+    filter(grepl("q_tastechange|q_csq", Varname))
+) ; saveRDS(tasteq_tables.l, file = "../data/raw/nhanes_quest_taste_tables.rds")
+
+
+add_quest_tables <- full_join(
+  alch_tables.l$data_table, hc_tables.l$data_table, by = c("SEQN", "Years")) %>% 
+  full_join(anypa_tables.l$data_table, by = c("SEQN", "Years")) %>% 
+  full_join(employ_tables.l$data_table, by = c("SEQN", "Years")) %>% 
+  full_join(tasteq_tables.l$data_table, by = c("SEQN", "Years"))
+  
+add_quest_varsummary.l <- list(
+  alch_tables.l$var_summary, hc_tables.l$var_summary, 
+  anypa_tables.l$var_summary, employ_tables.l$var_summary,
+  tasteq_tables.l$var_summary)
 
 ################################################################################
 ## Build complete NHANES dataframe with all requested variables, over time
 ################################################################################
 
-nhanes_data_all <- full_join(
+nhanes_data_raw <- full_join(
   demo_tables.l$data_table, lab_tables.l$data_table, by=c("SEQN", "Years")) %>% 
-  left_join(exam_tables.l$data_table, by=c("SEQN", "Years")) %>%
-  left_join(quest_tables.l$data_table, by=c("SEQN", "Years")) %>%
-  left_join(nhanes_dietindices, by=c("SEQN", "Years"))
+  full_join(exam_tables.l$data_table, by=c("SEQN", "Years")) %>%
+  full_join(quest_tables.l$data_table, by=c("SEQN", "Years")) %>%
+  full_join(nhanes_dietindices, by=c("SEQN", "Years")) %>%
+   
+  ## Remove overlapping & add additional QUESTIONNAIRE variables
+  select(-starts_with(c("q_alc", "q_hc", "q_work"))) %>% 
+  full_join(add_quest_tables, by = c("SEQN", "Years")) %>% 
+  
+  ## Filter to 1999 -- 2020 & delete 2017-2018 (redundant to 2017-2020) -----------
+  filter(!Years %in% c("2017-2018", "2021-2023")) 
 
-## Delete unneccessary weighting variables
-nhanes_data_all_cleaned <- nhanes_data_all %>% 
-  select(-starts_with("WT")) %>% 
-  left_join(nhanes_data_all %>% select(
-    SEQN, wt, starts_with("WTINT"), starts_with("WTMEC"), starts_with("WTSAF"), 
-    starts_with("WTDR")), by = "SEQN")
+nhanes_data_raw %>% fwrite(., "../data/raw/nhanes_data_raw.csv")
 
-nhanes_data_all_cleaned %>% fwrite(., "../data/raw/nhanes_data_all.csv")
+
+## =========================================================
+## Build NHANES variable index table & search function 
+## =========================================================
 
 nhanes_vars_datadict <- lapply(table_cats, function(cat) {
-  nhanes_tables_all.l[[cat]][["var_summary"]] %>% mutate(Category = cat, .before=1)
-}) %>% do.call(rbind.data.frame, .)
+  nhanes_tables_raw.l[[cat]][["var_summary"]] %>% 
+    mutate(Category = cat, .before=1)
+  }) %>% do.call(rbind.data.frame, .) %>% 
+  # Add additional quest variables, loaded separately 
+  rbind.data.frame(
+    add_quest_varsummary.l %>% do.call(rbind.data.frame, .)  %>% 
+      mutate(Category = "quest", .before=1)
+  )
 
+nhanes_vars_datadict %>% fwrite("../data/raw/nhanes_vars_datadict.csv")
 
 ## Write wrapper functions to search for NHANES variables ---------------
 search_nhanes_variables <- function(search_keywords, 
@@ -492,11 +634,12 @@ search_nhanes_variables <- function(search_keywords,
   
   # Check that nhanes_vars_all df is loaded into Environment
   if(!exists("nhanes_vars_all")) {
-    nhanes_vars_all <- fread("../data/raw/nhanes_vars_all.csv")
+    nhanes_varlist_all <- fread("../data/raw/nhanes_varlist_all.csv")
   } 
   
   # Choose which rows have BOTH or EITHER var_keywords
-  match_keywords <- sapply(search_keywords, function(word) grepl(word, nhanes_vars_all[[search_columns]], ignore.case = T))
+  match_keywords <- sapply(search_keywords, function(word) grepl(
+    word, nhanes_vars_all[[search_columns]], ignore.case = T))
   
   return_rows <- if (toupper(search_as) == "AND") {
     rowSums(match_keywords) == length(search_keywords)} else {
@@ -505,6 +648,7 @@ search_nhanes_variables <- function(search_keywords,
   nhanes_vars_all[return_rows, ] %>%
     arrange(Variable.Name, Table) 
 }
+
 
 
 ## EOF

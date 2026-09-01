@@ -1,0 +1,23 @@
+# CHEF File for NHANES Ind x Area SES Analyses
+
+
+# 1. Build analytical dataset with NHANES phenotypes spanning 1999-2020; linked 
+## mortality data from NDI; and calculated PREVENT equation estimates
+
+# Prepare raw NHANES dataset ------------------
+Rscript ../scripts/data_prep/0_prep_nhanes.r
+
+# Prepare NDI data (to link with NHANES)  ------------------
+Rscript ../scripts/data_prep/1_prep_ndi_nhanes.r
+
+# Process raw NHANES dataset, build additional oucomes & link NDI data ----------
+Rscript .../scripts/data_prep/2_process_nhanes.r
+
+# Calculate PREVENT estimates in NHANES, using processed phenotypes
+Rscript ../scripts/data_prep/2b_calc_prevent.r
+
+# Combine all datasets (nhanes phenotypes + ndi + prevent estimates)
+Rscript ../scripts/data_prep/3_postprocess_nhanes.r
+
+
+# 2. Build survey-weighted summary tables 
