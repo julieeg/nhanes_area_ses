@@ -27,14 +27,10 @@ get_github_scripts <-function(user, repo, path) {
 } ; get_github_scripts("julieeg", "pantry", "functions")
 
 ## Load nhanes_area_ses scripts
-#get_github_scripts("julieeg", "nhanes_area_ses", "functions")
-
+get_github_scripts("julieeg", "nhanes_area_ses", "scripts/analysis/build_nhanes_survdesign.r")
 
 ## Load nhanes data & prevent variables
 nhanes_dat <- readRDS("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.rds")
-
-## Run dependent build_nhanes_survdesign.r script 
-source("../scripts/build_nhanes_survdesign.r")
 
 
 ################################################################################
