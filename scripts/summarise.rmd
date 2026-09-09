@@ -10,7 +10,8 @@ knitr::opts_chunk$set(
   echo = TRUE,       # Show code in HTML output
   warning = FALSE,   # Hide warning messages
   message = FALSE,    # (Optional) Hide package loading / diagnostic messages
-  fig.width=10, fig.height = 4
+  fig.width=10, fig.height = 4,
+  root.dir = "~/Documents/GitHub/nhanes_area_ses/run"
 )
 
 ## load pre-built pantry functions (for data wrangling)
@@ -28,13 +29,11 @@ library(circlize)
 ## Load pre-built NHANES index tables & variable summaries
 ###############################################################
 
-setwd("~/Documents/GitHub/nhanes_area_ses/run")
-
 ## List of all NHANES variables --------------------
-nhanes_vars_all <- fread("../data/raw/nhanes_vars_all.csv") 
+nhanes_vars_all <- fread("../data/raw/nhanes_varlist_all.csv") 
 
 ## Load project data dictionary to grab years, tables & variables of interest
-project_datadict <- readxl::read_xlsx("./nhanes_pullrequest_IndVsArea_07.30.2026.xlsx")
+project_datadict <- readxl::read_xlsx("../run/nhanes_pullrequest_IndVsArea_09012026.xlsx")
 
 # Load processed nhanes data file
 nhanes_processed <- readRDS("../data/processed/nhanes_processed.rda") 

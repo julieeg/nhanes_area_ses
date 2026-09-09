@@ -41,36 +41,40 @@ data_categories.labs <- c("Demographics"="DEMO", "Laboratory"="LABORATORY",
 ## Make index of all nhanes TABLES, by category & year
 ## =====================================================
 
-## All NHANES Tables (1999-2023)
+## All NHANES Tables (1999-03/2020)
 nhanes_tables_all <- nhanesSearch("Respondent sequence number", namesonly=F) %>%
-  mutate(Category=data_categories.labs[Component], Years=sprintf("%s-%s", Begin.Year, EndYear)) %>%
-    select(Category, Component, Data.File.Name, Data.File.Description, Begin.Year, "End.Year"=EndYear, Years) %>%
-    arrange(Category, Begin.Year) ; dim(nhanes_tables_all) # 1540 7
+  mutate(Category=data_categories.labs[Component], 
+         Years=sprintf("%s-%s", Begin.Year, EndYear)) %>%
+  select(Category, Component, Data.File.Name, Data.File.Description, 
+         Begin.Year, "End.Year"=EndYear, Years) %>%
+  arrange(Category, Begin.Year) ; dim(nhanes_tables_all) # 1540 7
+
 
 ## Add Tables NOT indexed on CDC website (included in nhanesSearch)
 nhanes_tables_addn <- rbind.data.frame(
   c("BIOPRO_J", "Standard Biochemistry Profile", "2017-2018"),
   c("P_BIOPRO", "Standard Biochemistry Profile", "2017-2020"),
-  c("BIOPRO_L", "Standard Biochemistry Profile", "2021-2023"),
+  #c("BIOPRO_L", "Standard Biochemistry Profile", "2021-2023"),
   c("TCHOL_J", "Cholesterol Total", "2017-2018"),
   c("P_TCHOL", "Cholesterol Total", "2017-2020"),
-  c("TCHOL_L", "Cholesterol Total", "2021-2023"),
+  #c("TCHOL_L", "Cholesterol Total", "2021-2023"),
   c("HDL_J", "Cholesterol - High - Density Lipoprotein (HDL)", "2017-2018"),
-  c("P_HDL", "Cholesterol - High - Density Lipoprotein (HDL)", "2017-2020"),
-  c("HDL_L", "Cholesterol - High - Density Lipoprotein (HDL)", "2021-2023"),
-  c("TRIGLY_L"))
+  c("P_HDL", "Cholesterol - High - Density Lipoprotein (HDL)", "2017-2020")
+  #c("HDL_L", "Cholesterol - High - Density Lipoprotein (HDL)", "2021-2023")
+)
 
 names(nhanes_tables_addn) <- c("Data.File.Name", "Data.File.Description", "Years") 
-nhanes_tables_addn <- nhanes_tables_addn %>% mutate(
-  Category = "LABORATORY", Component = "Laboratory", .before=1
-    ) %>% mutate(
-      Begin.Year = gsub("-.*","", Years), End.Year = gsub(".*-","", Years),
-      .before="Years"
+nhanes_tables_addn <- nhanes_tables_addn %>% 
+  mutate(
+    Category = "LABORATORY", Component = "Laboratory", .before=1) %>% 
+  mutate(
+    Begin.Year = gsub("-.*","", Years), 
+    End.Year = gsub(".*-","", Years),
+    .before="Years"
   )
 
 nhanes_tables_all <- nhanes_tables_all %>% bind_rows(nhanes_tables_addn)
 #nhanes_tables_all %>% fwrite("../data/raw/nhanes_tablelist_all.csv")
-#nhanes_tables_all <- fread("../data/raw/nhanes_tablelist_all.csv")
 
 
 ## =========================================================
@@ -119,10 +123,10 @@ nhanes_vars_all %>% fwrite("../data/raw/nhanes_varlist_all.csv")
 ################################################################################
 
 nhanes_yrs <- names(table(nhanes_tables_all$Years))
-nhanes_yrs <- nhanes_yrs[-c(2,7)] # remove "1999-2004" and 2007-2012
+nhanes_yrs <- nhanes_yrs[-c(2,7,14)] # remove 1999-2004, 2007-2012, and 2021-2023
 
 # Make array of years/labels for selecting tables
-names(nhanes_yrs) <- c("", paste0("_", LETTERS[2:10]),"P_", "_L")
+names(nhanes_yrs) <- c("", paste0("_", LETTERS[2:10]),"P_")
 
 
 ## =========================================================================
@@ -130,7 +134,7 @@ names(nhanes_yrs) <- c("", paste0("_", LETTERS[2:10]),"P_", "_L")
 ## =========================================================================
 
 ## Function to build nhanes table with variables, by category
-build_nhanes_table <- function(cat, datadict = project_datadict) {
+build_nhanes_table <- function(cat, datadict = project_datadict, skip_long_tabs = F) {
   
   ## 0. Initialize error log
   error_log <- list() ; log_error <- function(context, table=NA, variable=NA, message) {
@@ -147,10 +151,11 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
   # Note: variables could appear in multiple tables, so list UNIQUE tables, only
   vars_by_cat <- nhanes_vars_all %>% 
     filter(Category == cat & Variable.Name %in% datadict_cat$variable) 
-  vars_by_cat <- bind_rows(vars_by_cat,
-                           # Add rows with SEQN for each required Table
-                           nhanes_vars_all %>% filter(
-                             Table %in% vars_by_cat$Table & Variable.Name == "SEQN"))
+  vars_by_cat <- bind_rows(
+    vars_by_cat,
+    # Add rows with SEQN for each required Table
+    nhanes_vars_all %>% filter(
+      Table %in% vars_by_cat$Table & Variable.Name == "SEQN"))
   
   # Gather all tables by category that i) have SEQN + ≥1 other requested variable
   tables_by_cat <- vars_by_cat %>% select(Table, Years) %>% unique()
@@ -158,8 +163,7 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
   # Gather sample weights & add to vars_by_cat
   vars_by_cat <- vars_by_cat %>% bind_rows(
     nhanes_vars_all %>% filter(Table %in% tables_by_cat$Table) %>%
-      filter(grepl("WTINT|WTMEC|WTSAF|WTDR", Variable.Name))
-      #filter(grepl("sample|weight", Variable.Description, ignore.case = T)) %>%
+      filter(grepl("WTINT|WTMEC|WTSAF|WTDR|WTSA2|WTSB|WTSC|WTSPO2YR|WTSPO4YR|WTSBPRP", Variable.Name))
   )
   
   # 2. Use lapply to download all requested variables for each TABLE/YEAR:
@@ -171,13 +175,22 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
     # B) Download table and requested variables
     tab_raw <- tryCatch({
       tab_all <- nhanes(tab)
-      # Vars to select from table
-      vars_to_select <- names(tab_all)[c(which(names(tab_all) %in% unique(vars_by_cat$Variable.Name)))] #c(datadict_cat %>% pull(variable))))]
-      # Add relevant sample weights 
-      #vars_to_select <- unique(c(vars_by_cat$Variable.Name, vars_to_select))
-        #unique(c(names(tab_all)[which(startsWith(names(tab_all), "WT"))], vars_to_select)) 
-      tab_all %>% select("SEQN", all_of(vars_to_select)) %>%
-        mutate(Years=years, .before=1) 
+      
+      # Compile list of selected variables, 
+      vars_to_select <- unique(vars_by_cat$Variable.Name)
+      
+        # Check for variables with mis-matched cases 
+        vars_match_orig <- names(tab_all)[names(tab_all) %in% vars_to_select]
+        vars_match_lower <- names(tab_all)[tolower(names(tab_all)) %in% tolower(vars_to_select)]
+        
+        # IF lowercasing captures additional variables, convert column names to lower
+        if (length(vars_match_lower) > length(vars_match_orig)) {
+          tab_all <- tab_all %>% select(SEQN, all_of(vars_match_lower)) 
+          } else {
+            tab_all <- tab_all %>% select(SEQN, all_of(vars_match_orig)) 
+            } ; tab_all <- tab_all %>% 
+          mutate(Years=years, .before=1) 
+      
     }, error = function(e) {
       log_error("nhanes() download", table=tab, message=conditionMessage(e))
       return(NULL)
@@ -225,15 +238,17 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
   }
   
   ## F) Collapse all tables - group by Year/SEQN to join common variables across datasets
-  
   # Coerce all factor variables into character to facilitate binding
   clean_tab_data.l <- lapply(tab_data.l, function(df) {
-    df[["table"]] %>% mutate(across(where(is.factor), as.character))
-  })
+    df[["table"]] %>%
+      mutate(across(where(is.factor), as.character))
+    })
   
   # Convert long tables (with multiple SEQN entries) to wide format (e.g., RSQ_RX & PAQ)
-  long_tabs <- names(clean_tab_data.l)[sapply(clean_tab_data.l, function(tab) nrow(tab) != length(unique(tab[["SEQN"]])) )]
-  if(length(long_tabs) >1) {
+  long_tabs <- names(clean_tab_data.l)[
+    sapply(clean_tab_data.l, function(tab) nrow(tab) != length(unique(tab[["SEQN"]])) )]
+  
+  if(length(long_tabs) > 1 & skip_long_tabs == F) {
     long_tab_data.l <- clean_tab_data.l[long_tabs]
     wide_tab_data.l <- lapply(long_tab_data.l, function(tab) {
       tab %>% 
@@ -242,15 +257,17 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
         ungroup() %>%
         pivot_wider(names_from=entry_num, values_from = starts_with("q_"), 
                     names_glue = "{.value}_{entry_num}")
-    }) ; clean_tab_data.l <- c(
-      clean_tab_data.l[!names(clean_tab_data.l) %in% long_tabs],
-      wide_tab_data.l)
-    } 
+      }) ; clean_tab_data.l <- c(
+        clean_tab_data.l[!names(clean_tab_data.l) %in% long_tabs],
+        wide_tab_data.l)
+    } else {
+      clean_tab_data.l <- clean_tab_data.l[!names(clean_tab_data.l) %in% long_tabs]
+    }
   
-  # i) Convert data frames to data.tables and bind
-  data_by_cat <- rbindlist(lapply(clean_tab_data.l, setDT), fill = TRUE)
-  data_by_cat.df <- data_by_cat[, lapply(.SD, keepval), by = .(Years, SEQN)]
-  
+    # i) Convert data frames to data.tables and bind
+    data_by_cat <- rbindlist(lapply(clean_tab_data.l, setDT), fill = TRUE)
+    data_by_cat.df <- data_by_cat[, lapply(.SD, keepval), by = .(Years, SEQN)]
+    
   # Create detailed summary of all variable definitions, tables, and availability at each time point
   var_summary <- vars_by_cat %>%
     filter(Table %in% tables_by_cat$Table) %>% 
@@ -290,7 +307,8 @@ build_nhanes_table <- function(cat, datadict = project_datadict) {
 ## ===========================================================
 
 ## Load project data dictionary to grab years, tables & variables of interest
-project_datadict <- readxl::read_xlsx("./nhanes_pullrequest_IndVsArea_07.30.2026.xlsx")
+project_datadict <- readxl::read_xlsx("./nhanes_pullrequest_IndVsArea_09012026.xlsx") 
+    # expired: nhanes_pullrequest_IndVsArea_07.30.2026.xlsx
 
 ## Demographics data ---------------------
 demo_tables.l <- build_nhanes_table(cat = "DEMO", datadict = project_datadict)
@@ -308,12 +326,17 @@ saveRDS(exam_tables.l, "../data/raw/nhanes_exam_tables.rds")
 quest_tables.l <- build_nhanes_table(cat = "QUESTIONNAIRE", datadict = project_datadict)
 saveRDS(quest_tables.l, "../data/raw/nhanes_quest_tables.rds")
 
+## Dietary intake/habits data 
+diet_tables.l <- build_nhanes_table(cat="DIET", datadict = project_datadict, skip_long_tabs = T)
+saveRDS(diet_tables.l, "../data/raw/nhanes_diet_tables.rds")
+
+
 ## ====================================
 ## Create complete NHANES dataframe 
 ## ======================================
 
-table_cats <- c("demo", "lab", "exam", "quest")
-names(table_cats) <- names(data_categories.labs)[1:4]
+table_cats <- c("demo", "lab", "exam", "quest", "diet")
+names(table_cats) <- names(data_categories.labs)[1:5]
 
 nhanes_tables_raw.l <- lapply(table_cats, function(cat) {
   readRDS(sprintf("../data/raw/nhanes_%s_tables.rds", cat)) 
@@ -323,9 +346,11 @@ demo_tables.l <- nhanes_tables_raw.l$demo
 lab_tables.l <- nhanes_tables_raw.l$lab
 exam_tables.l <- nhanes_tables_raw.l$exam
 quest_tables.l <- nhanes_tables_raw.l$quest
+diet_tables.l <- nhanes_tables_raw.l$diet
 
 nhanes_vars_datadict <- lapply(table_cats, function(cat) {
-  nhanes_tables_raw.l[[cat]][["var_summary"]] %>% mutate(Category = cat, .before=1)
+  nhanes_tables_raw.l[[cat]][["var_summary"]] %>% 
+    mutate(Category = cat, .before=1)
 }) %>% do.call(rbind.data.frame, .)
 
 
@@ -503,13 +528,11 @@ build_nhanes_dietaryindex <- function(index, years = "all") {
       }
       
       return(index_data)
-      
     }
   })
 
   index_data <- index.l %>% do.call(bind_rows, .)
   return(index_data)
-  
 }
 
 
@@ -538,72 +561,76 @@ nhanes_dietindices <- nhanes_dietindices.l$hei %>% full_join(
   nhanes_dietindices.l$ahei, by=c("SEQN", "Years", diet_weights)) %>% 
   full_join(nhanes_dietindices.l$dii, by=c("SEQN", "Years", diet_weights)) 
 nhanes_dietindices %>% fwrite("../data/raw/nhanes_dietindices_raw.csv")
+#nhanes_dietindices <- fread("../data/raw/nhanes_dietindices_raw.csv")
+
+
+## Merge all diet variables -------------
+nhanes_diet_all <- full_join(
+  diet_tables.l$data_table, nhanes_dietindices %>% 
+    select(-starts_with("WT")), 
+  by=c("SEQN", "Years")
+) ; nhanes_diet_all %>% fwrite("../data/raw/nhanes_diet_all.csv")
 
 
 ## =========================================================
 ## Additional Variable Sets Added After Initial Merge
 ## =========================================================
 
-## Additional Questionnaire Variables ============
-## Alcohol intake frequency -----------------
-alch_tables.l <- build_nhanes_table(
-  cat = "QUESTIONNAIRE", datadict = project_datadict %>% 
-    filter(grepl("q_alc", Varname))
-  ) ; saveRDS(alch_tables.l, file = "../data/raw/nhanes_quest_alch_tables.rda")
+project_datadict <- readxl::read_xlsx("./nhanes_pullrequest_IndVsArea_09012026.xlsx")
+
+## Add to questionnaire variables
+quest_addn_tables.l <- build_nhanes_table(
+  cat="QUESTIONNAIRE", 
+  datadict = project_datadict %>% filter(Varname %in% c(
+    "q_govtmeal", "q_told_anybronch", "q_told_copd"))
+  ) ; saveRDS(quest_addn_tables.l, "../data/raw/nhanes_quest_addn_tables.rds")
+
+## Add lab variables
+lab_addn_tables.l <- build_nhanes_table(
+  cat="LABORATORY", 
+  datadict = project_datadict %>% filter(
+    Varname == "plt" | category == "LABORATORY" & 
+      !Weight %in% c("WTMEC2YR", "WTSAF2YR"))
+  ) ; saveRDS(lab_addn_tables.l, "../data/raw/nhanes_lab_addn_tables.rds")
+
+## Add exam DXA variables
+#exam_dxa_tables.l <- build_nhanes_table(
+#  cat="EXAM", datadict = project_datadict %>% filter(grepl("dxa_", Varname))
+#) ; saveRDS(exam_dxa_tables.l, "../data/raw/nhanes_exam_addn_tables.rds")
 
 
-## Health Care interactions --------------
-hc_tables.l <- build_nhanes_table(
-  cat = "QUESTIONNAIRE", datadict = project_datadict %>% 
-    filter(grepl("q_hc", Varname))
-  ) ; saveRDS(hc_tables.l, file = "../data/raw/nhanes_quest_hc_tables.rds")
+# Additional questionnaire variables
+#add_quest_varsummary.l <- list(
+#  alch_tables.l$var_summary, hc_tables.l$var_summary, 
+#  anypa_tables.l$var_summary, employ_tables.l$var_summary,
+#  tasteq_tables.l$var_summary)
 
-
-# Any physical activity (MVPA or Transportation)
-anypa_tables.l <- build_nhanes_table(
-  cat="QUESTIONNAIRE", datadict = project_datadict %>%
-    filter(Varname %in% c("q_mvpa_anyvpa", "q_mvpa_anympa"))
-  ) ; saveRDS(anypa_tables.l, "../data/raw/nhanes_quest_anypa_tables.rds")
-
-
-## Employment type ------------------
-employ_tables.l <- build_nhanes_table(
-  cat = "QUESTIONNAIRE", datadict = project_datadict %>% 
-    filter(grepl("q_work|q_nowork", Varname) & Varname != "q_phq_work")
-  ) ; saveRDS(employ_tables.l, file = "../data/raw/nhanes_quest_employ_tables.rds")
-
-
-## Taste/Smell Questionnaire ------------------
-tasteq_tables.l <- build_nhanes_table(
-  cat = "QUESTIONNAIRE", datadict = project_datadict %>% 
-    filter(grepl("q_tastechange|q_csq", Varname))
-) ; saveRDS(tasteq_tables.l, file = "../data/raw/nhanes_quest_taste_tables.rds")
-
-
-add_quest_tables <- full_join(
-  alch_tables.l$data_table, hc_tables.l$data_table, by = c("SEQN", "Years")) %>% 
-  full_join(anypa_tables.l$data_table, by = c("SEQN", "Years")) %>% 
-  full_join(employ_tables.l$data_table, by = c("SEQN", "Years")) %>% 
-  full_join(tasteq_tables.l$data_table, by = c("SEQN", "Years"))
-  
-add_quest_varsummary.l <- list(
-  alch_tables.l$var_summary, hc_tables.l$var_summary, 
-  anypa_tables.l$var_summary, employ_tables.l$var_summary,
-  tasteq_tables.l$var_summary)
 
 ################################################################################
 ## Build complete NHANES dataframe with all requested variables, over time
 ################################################################################
 
+## HOLD: For re-loading tables:
+demo_tables.l <- readRDS("../data/raw/nhanes_demo_tables.rds")
+lab_tables.l <- readRDS("../data/raw/nhanes_lab_tables.rds")
+exam_tables.l <- readRDS("../data/raw/nhanes_exam_tables.rds")
+quest_tables.l <- readRDS("../data/raw/nhanes_quest_tables.rds")
+nhanes_diet_all.df <- fread("../data/raw/nhanes_diet_all.csv")
+
+
+# Create combined dataset
 nhanes_data_raw <- full_join(
   demo_tables.l$data_table, lab_tables.l$data_table, by=c("SEQN", "Years")) %>% 
   full_join(exam_tables.l$data_table, by=c("SEQN", "Years")) %>%
   full_join(quest_tables.l$data_table, by=c("SEQN", "Years")) %>%
-  full_join(nhanes_dietindices, by=c("SEQN", "Years")) %>%
+  full_join(nhanes_diet_all, by = c("SEQN", "Years")) %>%
    
   ## Remove overlapping & add additional QUESTIONNAIRE variables
-  select(-starts_with(c("q_alc", "q_hc", "q_work"))) %>% 
-  full_join(add_quest_tables, by = c("SEQN", "Years")) %>% 
+  select(-q_govtmeal, -c(
+    hcbenzene, hepepox, u_bisphena, pcb180, pcbpdiox, u_cotinine)) %>% 
+  full_join(quest_addn_tables.l$data_table, by = c("SEQN", "Years")) %>% 
+  full_join(lab_addn_tables.l$data_table, by = c("SEQN", "Years")) %>% 
+  #full_join(exam_dxa_tables.l$data_table, by = c("SEQN", "Years")) %>% 
   
   ## Filter to 1999 -- 2020 & delete 2017-2018 (redundant to 2017-2020) -----------
   filter(!Years %in% c("2017-2018", "2021-2023")) 
@@ -621,8 +648,9 @@ nhanes_vars_datadict <- lapply(table_cats, function(cat) {
   }) %>% do.call(rbind.data.frame, .) %>% 
   # Add additional quest variables, loaded separately 
   rbind.data.frame(
-    add_quest_varsummary.l %>% do.call(rbind.data.frame, .)  %>% 
-      mutate(Category = "quest", .before=1)
+    quest_addn_tables.l$var_summary %>% mutate(Category = "quest", .before=1),
+    lab_addn_tables.l$var_summary %>% mutate(Category = "lab", .before=1)
+    #exam_dxa_tables.l$var_summary %>% mutate(Category = "exam", .before=1)
   )
 
 nhanes_vars_datadict %>% fwrite("../data/raw/nhanes_vars_datadict.csv")
@@ -648,7 +676,6 @@ search_nhanes_variables <- function(search_keywords,
   nhanes_vars_all[return_rows, ] %>%
     arrange(Variable.Name, Table) 
 }
-
 
 
 ## EOF

@@ -15,7 +15,8 @@ nhanes_processed <- readRDS("../data/processed/nhanes_processed.rds")
 nhanes_ndi_raw <- fread("../data/raw/ndi_nhanes/nhanes_ndi_raw.csv") 
 
 ## prevent estimated in nhanes, from 1999 to 2020 -----------------
-nhanes_prevent_raw <- fread("../data/processed/prevent/nhanes_prevent_complete.csv")
+#nhanes_prevent_raw <- fread("../data/processed/prevent/nhanes_prevent_complete.csv")
+nhanes_prevent_raw <- fread("../data/processed/prevent/nhanes_prevent_sdi_complete.csv")
 
 
 ## =====================================================
@@ -34,7 +35,6 @@ nhanes_ndi_processed <- nhanes_ndi_raw %>%
 
 
 ## Prepare PREVENT data ------------
-
 base_vars <- names(nhanes_processed %>% select(
   "Years", "SEQN", "RIDSTATR", starts_with("SD"), starts_with("WT"), -"wt"))
 
@@ -61,12 +61,64 @@ nhanes_prevent_processed <- nhanes_prevent_raw %>%
 
 
 ## Combine all nhanes_processed datasets & Save --------------
-nhanes_postprocessed <- full_join(
+nhanes_postprocessed <- left_join(
   nhanes_processed, nhanes_ndi_processed, by = c("SEQN", "Years")) %>%
   full_join(nhanes_prevent_processed, by = c("SEQN"))
-  
-nhanes_postprocessed %>% saveRDS("../data/processed/nhanes_postprocessed_linked_ndi_prvnt.rds")
-nhanes_postprocessed %>% fwrite("../data/processed/nhanes_postprocessed_linked_ndi_prvnt.csv")
+ 
+# =========================
+## Additional cleaning
+# =========================
+
+nhanes_postprocessed <- nhanes_postprocessed %>% 
+  rename(ogtt_2hg = `2hg`)
+
+################################################################################
+## Assign raw & derived NHANES variables to WEIGHT categories
+################################################################################
+
+## a. Harmonize Interview and Exam weights across 2-yr cycles from 1999-2000 and 2021-2023 
+## with the pre/post pandemic (3.2) year cycle from 2017-March, 2020
+
+nhanes_postprocessed <- nhanes_postprocessed %>% 
+  mutate(
+    WTINT.COMBN = case_when(
+      Years %in% c("1999-2000", "2001-2002") ~ WTINT4YR,
+      Years == "2017-2020" ~ WTINTPRP, 
+      TRUE ~ WTINT2YR),
+    WTMEC.COMBN = case_when(
+      Years %in% c("1999-2000", "2001-2002") ~ WTMEC4YR,
+      Years == "2017-2020" ~ WTMECPRP, 
+      TRUE ~ WTMEC2YR),
+    WTSAF.COMBN = case_when(
+      Years %in% c("1999-2000", "2001-2002") ~ WTSAF4YR,
+      Years == "2017-2020" ~ WTSAFPRP, 
+      TRUE ~ WTSAF2YR), 
+    WTDR.COMBN = case_when(
+      Years == "2017-2020" ~ WTDR2DPP, 
+      TRUE ~ WTDR2D), 
+    # Combined weights for toxins/PCBs 
+    WTSPO.COMBN = case_when(
+      Years == "2003-2004" ~ WTSC2YR,
+      Years %in% c("1999-2000", "2001-2002") ~ WTSPO4YR,
+      TRUE ~ NA),
+    # Combined weights for enviro phenols (BPA)
+    WTSEPH.COMBN = case_when(
+      Years == "2003-2004" ~ WTSC2YR,
+      Years %in% c("2005-2006", "2007-2008", "2009-2010", "2013-2014", "2015-2016") ~ WTSB2YR,
+      Years == "2011-2012" ~ WTSA2YR,
+      TRUE ~ NA),
+    WTYRS = case_when(
+      Years %in% c("1999-2000", "2001-2002") ~ 4,
+      Years == "2017-2020" ~ 3.2, 
+      TRUE ~ 2),
+    nYRS = ifelse(Years == "2017-2020", 3.2, 2)
+  )
+
+
+## Save nhanes_postprocessed data, weight combined weight variables -----------
+nhanes_postprocessed %>% saveRDS("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.rds")
+nhanes_postprocessed %>% fwrite("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.csv")
+
 
 
 ################################################################################
@@ -76,5 +128,12 @@ nhanes_postprocessed %>% fwrite("../data/processed/nhanes_postprocessed_linked_n
 # A complete data-dictionary is required, containing the final variable names 
 # (in nhanes_postprocessed) and the raw variable inputs.
 
+
+
+
+
+
+
 ## EOF
-# Last Updated: 08-28-2026
+# Last Updated: 09-08-2026
+

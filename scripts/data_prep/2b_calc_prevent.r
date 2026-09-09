@@ -31,7 +31,7 @@ list_of_packages <- c(
 library(preventr)
 
 ## Load processed NHANES data
-nhanes_processed <- readRDS("../data/processed/nhanes_processed.rda")
+nhanes_processed <- readRDS("../data/processed/nhanes_processed.rds")
 
 
 ################################################################################
@@ -80,9 +80,11 @@ nhanes_processed <- nhanes_processed %>%
       uacr > 25000 ~ 25000, 
       TRUE ~ uacr)) %>%
   mutate(
-    prevent_sdi_1 = 1,
-    prevent_sdi_2 = 2,
-    prevent_sdi_3 = 3) %>%
+    prevent_zip = "",
+    prevent_zip_sdi1 = "90210", #Beverly Hills, CA (Affluent/Low SDI)
+    prevent_zip_sdi2 = "01085", # Westfield, MA (Intermediate/Moderate SDI)
+    prevent_zip_sdi3 = "01040" # Holyoke, MA (Underserved/High SDI)
+    ) %>%
   mutate(
     prevent_complete_base = ifelse(
       !is.na(prevent_age) & !is.na(prevent_sex) & !is.na(prevent_sbp) & 
@@ -92,15 +94,15 @@ nhanes_processed <- nhanes_processed %>%
     ) %>%
   mutate(
     prevent_complete_baseA1c = ifelse(prevent_complete_base == 1 & !is.na(prevent_hba1c), 1, 0),
-    prevent_complete_baseUACR = ifelse(prevent_complete_base == 1 & !is.na(prevent_uacr), 1, 0)
+    prevent_complete_baseUACR = ifelse(prevent_complete_base == 1 & !is.na(prevent_uacr), 1, 0),
+    prevent_complete_full = ifelse(prevent_complete_baseA1c == 1 & prevent_complete_baseUACR == 1, 1, 0)
     )
 
 
 ## Write wrapper function to calculate PREVENT risk estimates, for EACH model
-prevent_models <- c(base="Base", hba1c="Base+HbA1c", uacr="Base+UACR", 
-                    sdi="Base+SDI", full="Base+HbA1c+UACR+SDI")
+prevent_models <- c(base="Base", hba1c="Base+HbA1c", uacr="Base+UACR", full="Base+HbA1c+UACR")
 
-calculate_prevent_riskest.fun <- function(prevent_model, data = nhanes_processed) {
+calculate_prevent_riskest.fun <- function(prevent_model, data = nhanes_processed, sdi=NULL) {
   
   # Create subset of complete data, based on PREVENT model -------------
   if(prevent_model == "base" | prevent_model == "sdi") { 
@@ -108,22 +110,29 @@ calculate_prevent_riskest.fun <- function(prevent_model, data = nhanes_processed
   if (prevent_model == "hba1c") {
     data_complete <- data %>% filter(prevent_complete_baseA1c == 1) }
   if(prevent_model == "uacr") {
-    data_complete <- data %>% filter(prevent_complete_baseUACR == 1) 
+    data_complete <- data %>% filter(prevent_complete_baseUACR == 1) } 
+  if(prevent_model == "full") {
+    data_complete <- data %>% filter(prevent_complete_full == 1) 
   }
   
   # List of prevent outcomes -------------
   prevent_outcomes <- c("total_cvd", "ascvd", "heart_failure", "chd", "stroke")
   
+  # set SDI level 
+  if(!is.null(sdi)) {
+    prevent_sdi <- sym(paste0("prevent_zip_sdi", sdi)) 
+    } else { prevent_sdi = sym("prevent_zip")}
+  
   # Calculate each risk estimate, at 10 & 30 years, in each model ---------- 
   prevent.dat <- estimate_risk(
     use_dat = data_complete %>% 
-      select(SEQN, Years, starts_with("prevent"), racethn_combn),
+      select(SEQN, Years, starts_with("prevent"), racethn_combn, 
+             prevent_zip = prevent_sdi),
     age=prevent_age, sex=prevent_sex, sbp=prevent_sbp, bp_tx = prevent_bprx,
     total_c = prevent_tc, hdl_c = prevent_hdl, statin = prevent_statin, 
     dm = prevent_diab, smoking = prevent_smoking, bmi = prevent_bmi, 
     egfr = prevent_egfr, hba1c = prevent_hba1c, uacr = prevent_uacr, 
-    #zip = input_zip, 
-    time = "both", model = prevent_model
+    zip = prevent_zip, time = "both", model = prevent_model
     )
   
   # Compile & reshape results into wide-format, for nhanes_proc merging
@@ -146,10 +155,10 @@ calculate_prevent_riskest.fun <- function(prevent_model, data = nhanes_processed
 ## Run function for all outcomes, at 10 and 30 yr, in each model
 ## ================================================================
 
+## PREVENT estimates for base, hba1c, uacr and full models -----------
 prevent_results.l <- lapply(names(prevent_models), function(mod) {
   message("Calculating PREVENT risk estimates in the ",
           prevent_models[[mod]], " Model")
-  
   calculate_prevent_riskest.fun(
     data = nhanes_processed, prevent_model = mod)
   }) ; names(prevent_results.l) <- names(prevent_models)
@@ -160,9 +169,8 @@ prevent_results_merge <- reduce(
   lapply(prevent_results.l, function(est) est$results),
   full_join, by = "SEQN")
 
-
 ## Save prevent estimates --------------------
-prevent_results.l %>% saveRDS("../data/processed/prevent/nhanes_prevent_estimates_output.rda")
+prevent_results.l %>% saveRDS("../data/processed/prevent/nhanes_prevent_estimates_output.rds")
 
 ## Mege in prevent_inputs and save as .csv
 prevent_results_merge %>% 
@@ -170,8 +178,52 @@ prevent_results_merge %>%
   fwrite(., file="../data/processed/prevent/nhanes_prevent_complete.csv")
 
 
+# -----------------------------------
+## Run with different SDI levels
+# -----------------------------------
+
+prevent_sdi_models <- c(sdi="Base+SDI", full="Base+HbA1c+UACR+SDI")
+
+prevent_sdi_results.l <- lapply(c(1:3), function(i){
+  prevent_results.l <- lapply(names(prevent_sdi_models), function(mod) {
+    message("Calculating PREVENT risk estimates in the ",
+            prevent_sdi_models[[mod]], " Model | Using SDI Level ", i)
+    calculate_prevent_riskest.fun(
+      data = nhanes_processed, prevent_model = mod, sdi = i)
+  }) ; return(prevent_results.l)
+}) ; names(prevent_sdi_results.l) <- names(prevent_sdi_models)
+
+
+# add list labels -------------
+names(prevent_sdi_results.l) <- paste0("sdi", 1:3)
+names(prevent_sdi_results.l$sdi1) <- names(prevent_sdi_models)
+names(prevent_sdi_results.l$sdi2) <- names(prevent_sdi_models)
+names(prevent_sdi_results.l$sdi3) <- names(prevent_sdi_models)
+
+## Save prevent+SDI estimates --------------------
+prevent_sdi_results.l %>% saveRDS("../data/processed/prevent/nhanes_prevent_sdi_estimates_output.rds")
+
+## Reduce prevent estimates to dataframe 
+prevent_sdi_results_merge <- lapply(
+  names(prevent_sdi_results.l), function(sdi) {
+    lapply(names(prevent_sdi_models), function(mod) {
+      prevent_sdi_results.l[[sdi]][[mod]]$results %>% 
+        rename_with(., ~gsub("sdi", sdi, .)) %>% 
+        rename_with(., ~gsub("full", paste0("full.", sdi), .))
+      }) %>% reduce(., full_join, by = "SEQN")
+    }) %>% reduce(., full_join, by = "SEQN")
+
+
+# -----------------------------------------------  
+## Merge in prevent_inputs and save as .csv
+# -----------------------------------------------
+
+prevent_results_merge %>% 
+  full_join(prevent_sdi_results_merge, by = "SEQN") %>% 
+  fwrite(., file="../data/processed/prevent/nhanes_prevent_sdi_complete.csv")
+
 ## EOF
-## Last Updated: 08-17-2026
+## Last Updated: 09-04-2026
 
 
 

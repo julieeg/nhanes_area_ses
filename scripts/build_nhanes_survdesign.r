@@ -28,88 +28,29 @@ get_github_scripts <-function(user, repo, path) {
 
 
 ## Load nhanes data & prevent variables
-nhanes_dat <- readRDS("../data/processed/nhanes_postprocessed_linked_ndi_prvnt.rds")
-
-
-################################################################################
-## Assign nhanes raw & derived variables to WEIGHT categories
-################################################################################
+nhanes_dat <- readRDS("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.rds")
 
 ## Load required library
 library(survey)
-
-nhanes_vars_by_cat.l <-readRDS("../data/raw/nhanes_vars_by_cat.rds")
-
-nhanes_vars_by_weight.l <- list(
-  int = c(nhanes_vars_by_cat.l$demo_vars, nhanes_vars_by_cat.l$quest_vars,
-          "cvd", "ascvd", "copd", "chf",
-          # Add NDI data to INT weight category
-          names(nhanes_dat %>% select(starts_with("ndi_")))),
-  mec = c(nhanes_vars_by_cat.l$exam_vars,
-          nhanes_vars_by_cat.l$lab_vars[
-            !nhanes_vars_by_cat.l$lab_vars %in% c("fg","tg","ldl", "2hg")],
-          "bmi_calc", "obese", "obesity_abd", "mdd", "htn", "htn_undx", 
-          "htn_stg1", "copd_pft", "ckd", "ckd_gfr_level", "ckd_malb_level", 
-          "ckd_any", "fib4", "fib4_cat", "nfs", "nfs_cat", 
-          "liver_valid_elastography", "liver_cap_steatosis", "liver_cap_level", 
-          "liver_cap_masld", "liver_cap_moderate_severe", "diabetes", "diabetes_undx",
-          # Add PREVENT inputs/estimates to MEC weight category
-          names(nhanes_dat %>% select(starts_with("prevent_")))),
-  fast = c("fg", "tg", "ldl", "2hg"),
-  diet = nhanes_vars_by_cat.l$diet_vars)
-
-
-## a. Harmonize Interview and Exam weights across 2-yr cycles from 1999-2000 and 2021-2023 
-## with the pre/post pandemic (3.2) year cycle from 2017-March, 2020
-nhanes_dat <- nhanes_dat %>% 
-  mutate(
-    WTINT.COMBN = case_when(
-      Years %in% c("1999-2000", "2001-2002") ~ WTINT4YR,
-      Years == "2017-2020" ~ WTINTPRP, 
-      TRUE ~ WTINT2YR),
-    WTMEC.COMBN = case_when(
-      Years %in% c("1999-2000", "2001-2002") ~ WTMEC4YR,
-      Years == "2017-2020" ~ WTMECPRP, 
-      TRUE ~ WTMEC2YR),
-    WTSAF.COMBN = case_when(
-      Years %in% c("1999-2000", "2001-2002") ~ WTSAF4YR,
-      Years == "2017-2020" ~ WTSAFPRP, 
-      TRUE ~ WTSAF2YR), 
-    WTYRS = case_when(
-      Years %in% c("1999-2000", "2001-2002") ~ 4,
-      Years == "2017-2020" ~ 3.2, 
-      TRUE ~ 2),
-    nYRS = ifelse(Years == "2017-2020", 3.2, 2)
-  )
-
-
-## ========================================================================
-## Build function to get most restrictive survey weight for ≥1 variable
-## ========================================================================
-
-get_var_weight <- function(vars, data = nhanes_dat) {
-  
-  if(any(vars %in% nhanes_vars_by_weight.l$fast)) {
-    weightvar="WTSAF.COMBN" } else if (
-      any(vars %in% nhanes_vars_by_weight.l$diet)) { 
-      weightvar="WTDR2D" } else if (
-        any(vars %in% nhanes_vars_by_weight.l$mec)) {
-        weightvar="WTMEC.COMBN" } else if (
-          any(vars %in% nhanes_vars_by_weight.l$int)) {
-            weightvar="WTINT.COMBN" } else {
-              weightvar = NULL
-            }
-  
-  if(is.null(weightvar)) {
-    cat("No vars matching any assigned WEIGHTVAR") } else {
-      return(weightvar)
-    }
-}
 
 
 ################################################################################ 
 ## Build function to create NHANES summary tables
 ################################################################################ 
+
+## ===================================================
+## Write function to select correct variable weight
+## ===================================================
+
+find_nhanes_weight.fun <- function(variables, data = nhanes_dat) {
+  weight_order <- paste0(c("WTSEPH", "WTSPO", "WTSAF", "WTDR", "WTMEC", "WTINT"), ".COMBN")
+  weights_compl <- data %>% 
+    select(starts_with("WT"), -wt, -WTYRS, all_of(variables)) %>% 
+    drop_na(all_of(variables)) %>% # filter(complete.cases(VAR)) %>% 
+    select(where(~ !any(is.na(.))) & starts_with("WT")) %>% 
+    names() ; intersect(weight_order, weights_compl)[1] ; 
+}
+
 
 ## b. Calculate Total Years represented
 # * 1999-2002 = 1 set of 4yr weights = 4 years
@@ -142,7 +83,7 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata,
       n_values == 2) "binary" else "categorical"
     
     # 1. Get variable weight
-    var_weight <- get_var_weight(var) 
+    var_weight <- find_nhanes_weight.fun(var) 
     var_complete <- data %>% select(SEQN, YEARS=Years, nYRS, VAR=var, AGE=age, STRATA=strata, 
                                     SDMVPSU, SDMVSTRA, WEIGHT=var_weight, WTYRS) %>%
       mutate(TOTAL="Total") %>% filter(complete.cases(.)) 
@@ -232,18 +173,15 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata,
         add_row(Variable = var_name, .before = 1) %>%
         mutate(across(-Variable, ~ifelse(is.na(.), "", .))) %>% 
         rename_with(., ~gsub("sum_","",.))
-      
-      # If only 0/1, remove row for 0
-      #if(n_values==2 & all(unique(n_sum$Variable) %in% c(0,1,"0","1"))) {
-      #  var_summary <- var_summary %>% filter(Variable != " 0")
-      #}
 
     return(var_summary)
     }
     
   })
   
-  sumtab_df <- do.call(rbind.data.frame, sumtab.l) %>% as.data.frame()
+  sumtab_df <- do.call(rbind.data.frame, sumtab.l) %>% as.data.frame() %>%
+    mutate(across(starts_with("n_"), ~ifelse(
+      . == "", "", round(as.numeric(.), 0))) )
   return(sumtab_df)
   
 }
@@ -257,9 +195,9 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata,
 build_nhanes_survdesign.fun <- function(vars_to_include, data = nhanes_dat, strata=NULL) {
   
   # 1. Get variable weight
-  varweight <- get_var_weight(c(vars_to_include, strata))
+  varweight <- find_nhanes_weight.fun(c(vars_to_include, strata))
   vars_complete <- data %>% select(
-    SEQN, Years, nYRS, WTYRS, SDMVPSU, SDMVSTRA, STRATA=strata,
+    SEQN, Years, nYRS, WTYRS, SDMVPSU, SDMVSTRA, STRATA=strata, age,
     WEIGHT=all_of(varweight), all_of(vars_to_include)) %>%
     mutate(AGE=age) %>% 
     filter(complete.cases(.))
@@ -294,7 +232,7 @@ build_nhanes_survdesign.fun <- function(vars_to_include, data = nhanes_dat, stra
   return(list(
     survdesign = vars_survdesign_gt18, 
     survdesign_data = vars_survdesign_gt18_dat,
-    survdesign_weight = vars_weight, 
+    survdesign_weight = varweight, 
     survdesign_sample = survdesign_sample,
     survdesign_cycles = survdesign_cycles)
   )
@@ -306,8 +244,7 @@ build_nhanes_survdesign.fun <- function(vars_to_include, data = nhanes_dat, stra
 ## Build function to run and summarize survey glms
 ###########################################################
 
-run_survdesign_glm.fun <- function(exposure, outcome, covariates, strata=NULL,
-                                   data = nhanes_dat) { 
+run_survdesign_glm.fun <- function(exposure, outcome, covariates, strata=NULL, data = nhanes_dat) { 
   
   # List model variables
   vars_to_include <- unique(c(exposure, outcome, covariates, strata))
@@ -344,6 +281,9 @@ run_survdesign_glm.fun <- function(exposure, outcome, covariates, strata=NULL,
                   exposure, paste0(covariates, collapse = "+"), survcycles$cycles))
     }
     
+    # Initiate TryCatch for any modeling errors
+    result_lvl <- tryCatch({
+    
     ## Build model formula
     model_formula <- formula(paste0(outcome,"~", exposure,"+", paste0(covariates, collapse = "+")))
     
@@ -373,7 +313,7 @@ run_survdesign_glm.fun <- function(exposure, outcome, covariates, strata=NULL,
     if (is_categorical) {
       f_test <- regTermTest(survglm_fit, test.terms = exposure, method = "Wald")
     
-      # 4. Tabulate raw and unweighted sample size overall, and by exposure category
+      # Tabulate raw and unweighted sample size overall, and by exposure category
       survglm_n <- survdesign_use$variables %>% 
         group_by(across(exposure)) %>% 
         summarise(n_exp_raw = n(), n_exp_weighted = sum(WEIGHT_adj),
@@ -434,21 +374,36 @@ run_survdesign_glm.fun <- function(exposure, outcome, covariates, strata=NULL,
         . == levels(exposure_vals)[1], paste(., "(Intercept)"), .)
       )
     
-    ## Store summaries and models in lists
-    survglm_summary.l[[as.character(lvl)]] <- survglm_summary
-    survglm_model.l[[as.character(lvl)]] <- survglm_fit
+    # Return a list containing both the model and summary on success
+    list(summary = survglm_summary, model = survglm_fit)
     
-    cat(" ... ... ... DONE. \n")
+    }, error = function(e) {
+      # If anything fails in this strata level, print an error and return NULL
+      cat(" ... FAILED.\n")
+      message(sprintf("    Error details: %s", conditionMessage(e)))
+      return(NULL)
+    })
     
+    # If no errors produced, save the outputs to your lists
+    if (!is.null(result_lvl)) {
+      survglm_summary.l[[as.character(lvl)]] <- result_lvl$summary
+      survglm_model.l[[as.character(lvl)]] <- result_lvl$model
+      cat(" ... ... ... DONE. \n")
+    }
   }
-    
-  # Combine summary tables across all strata levels
-  survglm_fullsummary <- bind_rows(survglm_summary.l)
-  return(list(model = survglm_model.l, modelsum = survglm_fullsummary))
   
+  # Combine summary tables across all strata levels safely 
+  # (in case all iterations failed and the list is empty)
+  if (length(survglm_summary.l) > 0) {
+    survglm_fullsummary <- bind_rows(survglm_summary.l)
+  } else {
+    survglm_fullsummary <- NULL
+  }
+  
+  return(list(model = survglm_model.l, modelsum = survglm_fullsummary))
 }
-
-
+    
+ 
 ## EOF
 # Last Updated: 08-31-2026
   

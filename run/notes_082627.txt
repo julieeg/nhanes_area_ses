@@ -58,3 +58,104 @@ GREAT-TASTE:
 partnering with weight center and being best friend of prescribers
 
 
+Recruitment ideas:
+- RALLY POST; 
+- SOCIAL MEDIA AVENUEs
+- TARA; social media options? 
+
+
+9/1/2
+- always set reference to highest/least deprived ******
+- add list of commands to do 'day-of' including; e.g., re-coding area-level categorical exposures with (Met [ref]/ Urban vs. rural) ********
+
+
+ALL BINARY Alch: √√
+- CURRENT drinker (any drinking vs. never/non-drinker) √
+- Daily drinker (1+/day vs. any or never or non) √
+- Weekly drinker (Weekly vs. any or never or non) √
+
+
+Smoking: DONE √√
+- Current smoker vs. (either category)
+- Ever smoker (Current smoker/Former smoker  vs. non-smoker)
+
+LIVER √√
+- lilver_cap_level : high vs normal 
+- liver_cap_steatosis: 3 binaries: mild vs none / moderate vs none/ severe vs none 
+- liver_cap_masld: 1L vs 0L (ref)
+- liver_cap_moderate_severe: 1L vs oL
+- fib4_cat: Mod vs Low / High vs low √√
+- nfs_cat: int vs low / high vs low √√
+- Add ckd_gte3 (see process_nahnes.r file for details); √√
+
+restarunts: √√
+- <=2 (ref) vs more than 2
+
+physact: √√
+- pa_total_mets, 
+- pa_gte150_minwk
+
+supplement use √√
+- use any supplements
+
+Genhealth: √√
+- poor/fair vs. good/vg/excel
+
+## Health care system interactions  √√
+-insur_any,
+- hc_usualplace (Yes/+1 vs no)
+- hc_admits_lastyr: any vs. non
+- hc_drvisits_lastyr: any vs none"
+- stably insured: insured now and last year / unstably insured
+
+  
+mental health √√√
+- check MDD definition: lok for alt diagnosed depression variables from 2005 onward
+- check positive 
+
+
+LAB --------
+- VITD, all vitamins: trans vitamin, estradiol and testoerone: √
+- crp: √
+- cadmium, lead, merc, sele, : v
+- all toxins for chirag √
+-- add back dexa values: √
+- list of chirag's atlas: oral HPV result √
+
+
+## RemINDER: dat for boxplots
+- for area vs individual level plots
+
+
+
+left off on 9/3:
+- need to add in special weights and classify remaining list of variables
+- then, make sure exposure variables are coded with HIGHEST SES reference
+- re-calc PREVENT equations, after applying slight calc updates to uacr (??)
+- then, run regression tests and see how outcomes 
+
+
+-- CHECK REVISED WEIGHT SELECTIONS FOR NEW VARIABLES
+-- MAKE SURE WEIGHT_COMBN READS INTO NHANES_DAT
+-- THEN, BUILD TEH DATA DICTIONARY
+-- FROM TODAY: run tests over all exposure/outcome test values and make sure outcome set is complete
+-- also check reference categories
+-- notify sarta about removing DXA? 
+
+
+CONTACT with udpated flier;
+- download fresh copuy fro inshgt with stamped version aalong with consent form
+and sent to letter poster in MGB
+
+
+TO DO ON WEDS AM
+- email billboard people with updated billboard
+- slack miriam about whens he an joibn out meeting
+- email sara to remind her about following up with wesley/chika
+- email armin to ask about being a champ
+- bring up age change with vicky 
+
+- run full regression sets on ALL OUTCOMES
+- start building the summary tables
+
+- 

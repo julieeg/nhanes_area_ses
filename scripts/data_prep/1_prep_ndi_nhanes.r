@@ -71,37 +71,35 @@ build_ndi_nhanes_data.fun <- function(base_url = ndi_url, file_name) {
     # Add in cycle & descriptive variables 
     mutate(
       Years = nhanes_cycle,
-      ndi_eligstat.lab = case_match(
-        ndi_eligstat,
-        1 ~ "Eligible", 2 ~ "Under 18 (not available)", 
-        3 ~ "Ineligible", .default = NA_character_),
-      ndi_mortstat.lab = case_match(
-        ndi_mortstat,
-        0 ~ "Assumed alive", 1 ~ "Assumed deceased",
-        .default = NA_character_), # NA = ineligible or under age 18
+      ndi_eligstat.lab = case_when(
+        ndi_eligstat == 1 ~ "Eligible", 
+        ndi_eligstat == 2 ~ "Under 18 (not available)", 
+        ndi_eligstat == 3 ~ "Ineligible", 
+        TRUE = NA_character_),
+      ndi_mortstat.lab = case_when(
+        ndi_mortstat == 0 ~ "Assumed alive", 
+        ndi_mortstat == 1 ~ "Assumed deceased",
+        TRUE = NA_character_), # NA = ineligible or under age 18
       ndi_ucod_leading.lab = case_match(
-        ndi_ucod_leading,
-        1 ~ "Heart diseases (I00-I09, I11, I13, I20-I51)",
-        2 ~ "Malignant neoplasms (C00-C97)",
-        3 ~ "Chronic lower respiratory diseases (J40-J47)",
-        4 ~ "Accidents (unintentional injuries) (V01-X59, Y85-Y86)",
-        5 ~ "Cerebrovascular diseases (I60-I69)",
-        6 ~ "Alzheimers disease (G30)",
-        7 ~ "Diabetes mellitus (E10-E14)", 
-        8 ~ "Influenza and pneumonia (J09-J18)",
-        9 ~ "Nephritis, nephrotic syndrome and nephrosis (N00-N07, N17-N19, N25-N27)",
-        10 ~ "All other causes (residual)",
-        .default = NA_character_), # NA = Ineligible, <18yr, assumed alive, or COD data available
+        ndi_ucod_leading == 1 ~ "Heart diseases (I00-I09, I11, I13, I20-I51)",
+        ndi_ucod_leading == 2 ~ "Malignant neoplasms (C00-C97)",
+        ndi_ucod_leading == 3 ~ "Chronic lower respiratory diseases (J40-J47)",
+        ndi_ucod_leading == 4 ~ "Accidents (unintentional injuries) (V01-X59, Y85-Y86)",
+        ndi_ucod_leading == 5 ~ "Cerebrovascular diseases (I60-I69)",
+        ndi_ucod_leading == 6 ~ "Alzheimers disease (G30)",
+        ndi_ucod_leading == 7 ~ "Diabetes mellitus (E10-E14)", 
+        ndi_ucod_leading == 8 ~ "Influenza and pneumonia (J09-J18)",
+        ndi_ucod_leading == 9 ~ "Nephritis, nephrotic syndrome and nephrosis (N00-N07, N17-N19, N25-N27)",
+        ndi_ucod_leading == 10 ~ "All other causes (residual)",
+        TRUE = NA_character_), # NA = Ineligible, <18yr, assumed alive, or COD data available
       ndi_diabetes.lab = case_match(
-        ndi_diabetes,
-        0 ~ "No", # Condition not listed as a multiple cause of death
-        1 ~ "Yes", # Condition listed as a multiple cause of death
-        .default = NA_character_), #Assumed alive, <18yr, ineligible for mortality follow-up, or MCOD not available
+        ndi_diabetes == 0 ~ "No", # Condition not listed as a multiple cause of death
+        ndi_diabetes == 1 ~ "Yes", # Condition listed as a multiple cause of death
+        TRUE = NA_character_), #Assumed alive, <18yr, ineligible for mortality follow-up, or MCOD not available
       ndi_htn.lab = case_match(
-        ndi_htn,
-        0 ~ "No", # Condition not listed as a multiple cause of death
-        1 ~ "Yes", # Condition listed as a multiple cause of death
-        .default = NA_character_) #Assumed alive, <18yr, ineligible for mortality follow-up, or MCOD not available
+        ndi_htn == 0 ~ "No", # Condition not listed as a multiple cause of death
+        ndi_htn == 1 ~ "Yes", # Condition listed as a multiple cause of death
+        TRUE = NA_character_) #Assumed alive, <18yr, ineligible for mortality follow-up, or MCOD not available
     ) 
   
   return(nhanes_ndi_dat)
