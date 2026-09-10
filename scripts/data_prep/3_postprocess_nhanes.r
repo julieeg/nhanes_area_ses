@@ -31,7 +31,8 @@ nhanes_ndi_processed <- nhanes_ndi_raw %>%
     ndi_peryear_exm = ndi_permth_exm / 12
   ) %>% 
   # Filter to eligible participants, only
-  filter(ndi_eligstat == 1)
+  filter(ndi_eligstat == 1) %>% 
+  mutate(across(c("ndi_eligstat", "ndi_mortstat", "ndi_diabetes", "ndi_htn"), ~as.factor(.)))
 
 
 ## Prepare PREVENT data ------------
@@ -64,13 +65,7 @@ nhanes_prevent_processed <- nhanes_prevent_raw %>%
 nhanes_postprocessed <- left_join(
   nhanes_processed, nhanes_ndi_processed, by = c("SEQN", "Years")) %>%
   full_join(nhanes_prevent_processed, by = c("SEQN"))
- 
-# =========================
-## Additional cleaning
-# =========================
 
-nhanes_postprocessed <- nhanes_postprocessed %>% 
-  rename(ogtt_2hg = `2hg`)
 
 ################################################################################
 ## Assign raw & derived NHANES variables to WEIGHT categories
@@ -120,7 +115,6 @@ nhanes_postprocessed %>% saveRDS("../data/processed/nhanes_postprocessed_linked_
 nhanes_postprocessed %>% fwrite("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.csv")
 
 
-
 ################################################################################
 ## Build NHANES data-dictionary, including all variables
 ################################################################################
@@ -128,10 +122,38 @@ nhanes_postprocessed %>% fwrite("../data/processed/nhanes_postprocessed_linked_n
 # A complete data-dictionary is required, containing the final variable names 
 # (in nhanes_postprocessed) and the raw variable inputs.
 
+nhanes_var_datadict <- as.data.frame(
+  matrix(names(nhanes_postprocessed), dimnames = list(NULL, "Variable.Name"))) %>% 
+  left_join(., 
+    nhanes_vars_datadict %>% select(Variable.Name = New.Variable.Name, Raw.Variable.Names) %>% 
+      filter(Variable.Name %in% names(nhanes_postprocessed)) %>% 
+      distinct() %>% 
+      group_by(Variable.Name) %>% 
+      reframe(Raw.Variables = paste0(unique(Raw.Variable.Names), collapse=",")),
+    by = "Variable.Name") %>% 
+    rowwise() %>% 
+    mutate(Assigned.Weight = find_nhanes_weight.fun(Variable.Name, data = nhanes_postprocessed)) 
 
+## Add columns for variable type; category levels and value range
+var_descr.fun <- function(variable, return) {
+  var_dat <- nhanes_postprocessed %>% pull(sym(variable))
+  var_type <- ifelse(is.numeric(var_dat), "Numeric", "Categorical")
+  if(return == "var_type") { var_type } else if(return == "var_summary") {
+    if(var_type == "Categorical") { ifelse(
+      is.factor(var_dat), paste0("Levels: ", paste0(levels(var_dat), collapse = "; ")),
+      paste0("Values: ", paste0(unique(var_dat), collapse = "; "))) 
+    } else { sprintf("Mean: %s; Median: %s; Range: [%s, %s]", 
+                     round(mean(var_dat, na.rm=T),1), round(median(var_dat, na.rm=T),1), 
+                     round(min(var_dat, na.rm=T),1), round(max(var_dat, na.rm=T),1)) }
+  }
+}
 
-
-
+nhanes_var_datadict <- nhanes_var_datadict %>% 
+  mutate(var_type = var_descr.fun(Variable.Name, return="var_type")) %>% 
+  mutate(var_summary = var_descr.fun(Variable.Name, return="var_summary")) 
+  
+nhanes_var_datadict %>% fwrite(., "./nhanes_variable_datadict_09102026.csv")
+View(nhanes_var_datadict)
 
 
 ## EOF

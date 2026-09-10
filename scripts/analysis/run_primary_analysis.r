@@ -1,7 +1,6 @@
 ## Rscript to generate descriptive statitics & regression outputs in NHANES 
 ## using custom nhanes_survdesign functions 
 
-
 ################################################################################
 ## Set Up; Load Required Packages & Data Files
 ################################################################################
@@ -19,112 +18,67 @@ list_of_packages <- c(
 
 
 ## load pre-built pantry functions (for data wrangling)
-get_github_scripts <-function(user, repo, path) {
+get_github_scripts <-function(user, repo, path, file=NULL) {
   api <- sprintf("https://api.github.com/repos/%s/%s/contents/%s", user, repo, path)
-  scripts <- grep("*.R", jsonlite::fromJSON(api)$name, value = T)
-  URLs <- lapply(scripts, function(f) sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f))
-  invisible(lapply(URLs, source))
+  scripts <- grep("*.R", jsonlite::fromJSON(api)$name, value = T, ignore.case = T)
+  if(is.null(file)) {
+    URLs <- lapply(scripts, function(f) sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f))
+  } else {
+    URLs <- sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, file)
+  } ; invisible(lapply(URLs, source))
 } ; get_github_scripts("julieeg", "pantry", "functions")
 
 ## Load nhanes_area_ses scripts
-get_github_scripts("julieeg", "nhanes_area_ses", "scripts/analysis/build_nhanes_survdesign.r")
+get_github_scripts("julieeg", "nhanes_area_ses", "scripts/analysis", "build_nhanes_survdesign.r")
 
 ## Load nhanes data & prevent variables
 nhanes_dat <- readRDS("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.rds")
 
 
 ################################################################################
-## Descriptive (Table 1) summaries by Age, Sex and Race/Ethnicity 
+## Define lists of exposures, outcomes, and strata
 ################################################################################
 
-strata_vars <- c("gender", "age_4lvl", "racethn_combn")
+# ===================
+## EXPOSURES 
+# ===================
 
-# ==============================================
-## Descriptive participant characteristics 
-# ==============================================
+# Individual-level
+indiv_exposures <- c("educ_level", "inc_to_pov", "inc_to_pov_level", "employ_status") 
 
-vars_to_descr <- c(age="Age, years", bmi="BMI, kg/m2", smoke_status = "Smoking status",
-                   alch_freq_wk = "Alcohol frequency", pa_level_mets = "Physical activity, MET/wk", 
-                   educ_level = "Education level", inc_to_pov_level = "PIR Level", 
-                   employ_status = "Employment Status", diabetes = "Diabetes", 
-                   sbp_mean="SBP (average), mmHg", dbp_mean="DBP (average), mmHg", 
-                   tc="Total cholesterol, mg/dL", hdl="HDL-c, mg/dL", ldl="LDL-c, mg/dL",
-                   tg="Triglyeride, mg/dL", hba1c="HbA1c (%)", uacr="UACR", egfr="eGFR")
-
-
-descr_sumtab_bystrata.l <- lapply(c("Years", strata_vars), function(stratavar) {
-  build_nhanes_summarytable.fun(vars_to_descr, strata=stratavar) 
-  }) ; names(descr_sumtab_bystrata.l) <- c("cycle", "sex", "age", "race")
-
-descr_sumtab_bystrata.l %>% 
-  saveRDS("../data/output/nhanes_sumtab_descr_bystrata.rds")
-
-
-# ==============================================
-## PREVENT input variables
-# ==============================================
-
-## INPUT variables -------------
-prevent_input_vars <- c(prevent_age = "Age, 30-80 years", prevent_sex = "Female/Male",
-  prevent_sbp = "SBP, 90-180 mmHg", prevent_bprx = "Use BP medications",
-  prevent_tc = "Total cholesterol, 130-320 mmHg", prevent_hdl = "HDL-c, 20-100, mg/dL",
-  prevent_statin = "Use Statins", prevent_diab = "T2D diagnosis",
-  prevent_smoking = "Current smoker", prevent_egfr = "eGFR, 15-40",
-  prevent_bmi = "BMI, 18.5-39.9 kg/m2", prevent_hba1c = "hbA1c, 4.5-15 %",
-  prevent_uacr = "UACR, 0.1-25000"
-  )
-
-prvnt_sumtab_bystrata.l <- lapply(c("Years", strata_vars), function(stratavar) {
-  
-  if(strata=="age_4lvl") { dat_use <- nhanes_dat %>% filter(age_4lvl != "under30y") 
-  } else { dat_use <- nhanes_dat } ; build_nhanes_summarytable.fun(
-    prevent_input_vars, strata=stratavar, data=dat_use)
-}) ; names(prvnt_sumtab_bystrata.l) <- c("cycle", "sex", "age", "race")
-
-prvnt_sumtab_bystrata.l %>% 
-  saveRDS("../data/output/nhanes_sumtab_prevent_input_bystrata.rds")
-
-
-################################################################################
-## Run GLMs over lists of SES exposures x composite list of outcomes 
-################################################################################
-
-# Individual-levels -----------
-exposures <- c("educ_level", "inc_to_pov", "inc_to_pov_level", "employ_status") 
-
-# Area-level 
+# Area-level *******
 # urban/rural
 
-outcomes_list <- list(
-  
-  # Annthrop/BP ------------
-  anthropbp = c(
+
+# ===================
+## OUTCOMES 
+# ===================
+
+all_outcomes.l <- list(
+
+  anthropbp = c( # Annthrop/BP -------------------------
     "bmi", "waist", "whr", "wt", "sbp_mean", "dbp_mean"),
   
-  ## Clinical labs/risk factors
-  clinical = c(
+  clinical = c( ## Clinical labs/risk factors ----------------------
     "fg", "fi", "tg", "tc", "hdl", "ldl_friedewald", "glu", "tgglu",
     "ogtt_2hg", "hba1c", "uacr", "egfr", "crp", "creatinine"),
     
-  ## Blood biomarkers, heavy metals & toxins --------
-  bm_metals_toxins = c(
+  bm_metals_toxins = c( ## Blood biomarkers, metals & toxins --------
     "vitd", "b_carot","g_tocoph", "t_lycop", "manganese", "selenium",
     "mercury", "lead", "cadmium",
     "hcb", "hcb_adj", "hepox", "pcb180", "pcbdiox", "u_bpa"),
   
-  ## Hormones ------------
-  hormones = c("testosterone", "estradiol", "hpv_oral"),
+  hormones = c( ## Hormones ---------------
+    "testosterone", "estradiol", "hpv_oral"),
   
-  ## Behavioral traits ------------
-  healthbehav = c(
-    "smoke_current", "smoke_ever", "alch_drink_curr", "alch_drink_daily", "alch_drink_weekly", 
-    "pa_total_mets_wk", "pa_meets_guidelines", 
+  healthbehav = c( ## Behavioral traits --------------------------------
+    "smoke_current", "smoke_ever", "alch_drink_curr", "alch_drink_daily",
+    "alch_drink_weekly", "pa_total_mets_wk", "pa_meets_guidelines", 
     "genhealth_low_vs_other", "restaur_freq_gt2",
     "hc_drvisit", "hc_hospadmit", "insur_any", "uninsur_lastyr",
     "govtmeal_any", "foodinsecure"),
   
-  ## Disease outcomes
-  disease = c(
+  disease = c( ## Disease outcomes ---------------------------
     "diabetes", "diabetes_undx", "htn", "htn_undx", "htn_stg1", 
     "obese", "obese_abd", "cvd", "ascvd", "chf", "mdd",
     "ckd", "ckd_gfr_gte3", "ckd_any", 
@@ -133,30 +87,41 @@ outcomes_list <- list(
     "nfs", "nfs_mod_vs_low", "nfs_high_vs_low",
     "liver_cap_any", "liver_cap_mod_sev"),
   
-  # Dietary intake ------------
-  diet = c("hei2015_total", "ahei_total", "dii_total", "dietsuppl_any", "dietsuppl_num",
-           "addsalt_prep_often", "addsalt_table_often"),
+  diet = c( # Diet quality & intake habits ---------------------
+    "hei2015_total", "ahei_total", "dii_total", "dietsuppl_any",
+    "dietsuppl_num", "addsalt_prep_often", "addsalt_table_often"),
   
-  # Taste/Smell outcomes ------------
-  chemos = c(
-    "taste_mouth_quinine_glms", "taste_mouth_nacl_1M_glms", "taste_mouth_nacl_320mM_glms",
-    "smell_pst_total", "smell_dysfun_any", "smell_dysfun_severe",
+  chemos = c( # Taste/Smell outcomes ----------------------
+    "taste_mouth_quinine_glms", "taste_mouth_nacl_1M_glms", 
+    "taste_mouth_nacl_320mM_glms", "smell_pst_total", "smell_dysfun_any",
+    "smell_dysfun_severe", 
     paste0("tastechange_", c("sweet", "salt", "bitter", "sour"), "_worse"))
 )
 
-outcomes <- unlist(outcomes_list, use.names = FALSE)
+all_outcomes <- unlist(all_outcomes.l, use.names = FALSE)
 
 # First: double check varnames in nhanes_dat
-lapply(names(outcomes_list), function(yset) {
-  yvars<-outcomes_list[[yset]]
-  return(yvars[!yvars %in% names(nhanes_dat)])
-})
+#sapply(names(outcomes_list), function(yset) {
+#  yvars<-outcomes_list[[yset]]
+#  return(yvars[!yvars %in% names(nhanes_dat)])
+#})
 
-## Organize run_survdesign_glm to run all models in FULL & STRATA samples
+# ===================
+## STRATA 
+# ===================
 
 strata_vars <- c("full", "gender", "age_4lvl", "racethn_combn")
-exposures <- c("educ_level", "inc_to_pov", "inc_to_pov_level", "employ_status")
 
+
+################################################################################
+## Run GLMs over lists of SES exposures x composite list of outcomes 
+################################################################################
+
+# ============================================================
+## Define wrapper functions for running & compiling glms
+# ============================================================
+
+## Build function to wrap run_glm_survdesign over multiple exp/out
 wrap_survdesign_glm.fun <- function(exposure_vars, outcome_vars, strata_vars) { 
   
   # For each STRATA --------------------
@@ -182,30 +147,104 @@ wrap_survdesign_glm.fun <- function(exposure_vars, outcome_vars, strata_vars) {
   
 }
 
-## Run over each set of outcomes
-glms_indv_x_healthbehav <- wrap_survdesign_glm.fun(
-  exposure_vars = exposures, outcome_vars = outcomes_list$healthbehav,
-  strata_vars = strata_vars[1:2])
 
-glms_indv_x_bm_metals_toxins <- wrap_survdesign_glm.fun(
-  exposure_vars = exposures, outcome_vars = outcomes_list$bm_metals_toxins,
-  strata_vars = strata_vars[1:2])
-
-
-lapply(glms_indv_x_bm_metals_toxins, function() 
+## Build function to compile wrap_glm_survdesign output
+collapse_glm_survdesign.fun <- function(wrapped_glm_survdesign) {
+  # Get strata, exposures & outcomes
+  glm_strata <- names(wrapped_glm_survdesign)
+  glm_exposures <- names(wrapped_glm_survdesign[[1]])
+  glm_outcomes <- names(wrapped_glm_survdesign[[1]][[1]])
   
-# Compile model summaries into dataframe
-
-glms_set1_modelsum <- lapply(sampleset, function(set) {
-  lapply(exposures, function(exp) {
-    lapply(outcomes_set1[4:5], function(out) {
-      glms_set1.l[[set]][[exp]][[out]]$modelsum }) %>% 
-      do.call(rbind.data.frame, .) 
+  glm_collapsed <- lapply(glm_strata, function(strat) {
+    lapply(glm_exposures, function(exp) {
+      lapply(glm_outcomes, function(out) {
+        wrapped_glm_survdesign[[strat]][[exp]][[out]]$modelsum
+      }) %>% do.call(rbind.data.frame, .)
     }) %>% do.call(rbind.data.frame, .)
-  }) #%>% do.call(rbind.data.frame, .)
+  }) %>% do.call(rbind.data.frame, .)
+  
+  return(glm_collapsed)
+}
+        
 
-glms_set1_modelsum
+# ============================================================
+## Run all GLMs over indiv/area SES exposures & outcomes
+# ============================================================
 
+library(parallel)
+
+## Full sample -----------------
+nhanes_glms_indiv_full <- mclapply(seq_along(all_outcomes.l), function(y) {
   
+  outcome_set <- names(all_outcomes.l)[y]
   
+  # Run GLMs
+  glms_wrapped.l <- wrap_survdesign_glm.fun(
+    exposure_vars = indiv_exposures, outcome_vars = all_outcomes.l[[y]],
+    strata_vars = "full")
   
+  # Collapse modelsum output
+  return(collapse_glm_survdesign.fun(glms_wrapped.l))
+  
+}) %>% do.call(rbind.data.frame, .)
+
+nhanes_glms_indiv_full %>% fwrite(., file = "../data/output/nhanes_glms_indiv_full.csv")
+
+
+# Sex-stratified -----------------
+nhanes_glms_indiv_sex <- lapply(seq_along(all_outcomes.l), function(y) {
+  
+  outcome_set <- names(all_outcomes.l)[y]
+  
+  # Run GLMs
+  glms_wrapped.l <- wrap_survdesign_glm.fun(
+    exposure_vars = indiv_exposures, outcome_vars = all_outcomes.l[[y]],
+    strata_vars = "gender")
+  
+  # Collapse modelsum output
+  return(collapse_glm_survdesign.fun(glms_wrapped.l))
+  
+}) %>% do.call(rbind.data.frame, .)
+
+nhanes_glms_indiv_sex %>% fwrite(., file = "../data/output/nhanes_glms_indiv_sex.csv")
+
+# Age (4-lvl)-stratified ---------------
+nhanes_glms_indiv_age <- lapply(seq_along(all_outcomes.l), function(y) {
+  
+  outcome_set <- names(all_outcomes.l)[y]
+  
+  # Run GLMs
+  glms_wrapped.l <- wrap_survdesign_glm.fun(
+    exposure_vars = indiv_exposures, outcome_vars = all_outcomes.l[[y]],
+    strata_vars = "age_4lvl")
+  
+  # Collapse modelsum output
+  return(collapse_glm_survdesign.fun(glms_wrapped.l))
+  
+}) %>% do.call(rbind.data.frame, .)
+
+nhanes_glms_indiv_age %>% fwrite(., file = "../data/output/nhanes_glms_indiv_age.csv")
+
+
+# Race/Ethnicity-stratified ---------------
+
+nhanes_glms_indiv_racethn <- lapply(seq_along(all_outcomes.l), function(y) {
+  
+  outcome_set <- names(all_outcomes.l)[y]
+  
+  # Run GLMs
+  glms_wrapped.l <- wrap_survdesign_glm.fun(
+    exposure_vars = indiv_exposures, outcome_vars = all_outcomes.l[[y]],
+    strata_vars = "racethn_combn")
+  
+  # Collapse modelsum output
+  return(collapse_glm_survdesign.fun(glms_wrapped.l))
+  
+}) %>% do.call(rbind.data.frame, .)
+
+nhanes_glms_indiv_racethn %>% fwrite(., file = "../data/output/nhanes_glms_indiv_racethn.csv")
+
+
+## EOF
+
+

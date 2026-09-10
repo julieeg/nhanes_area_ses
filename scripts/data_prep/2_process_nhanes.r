@@ -139,7 +139,7 @@ nhanes_demo_processed <- nhanes_data_raw %>%
       age >=40 & age < 65 ~ "40to64y",
       age >= 65 ~ "over65y",
       TRUE ~ NA), levels=c("under30y", "30to39y", "40to64y", "over65y")),
-    female = ifelse(gender == "Female", 1, 0)) %>%
+    female = as.factor(ifelse(gender == "Female", 1, 0))) %>%
   
   # Race/ethnicity --------------------
   mutate_at("racethn_addNHA", ~ifelse(.=="", racethn1, .)) %>%
@@ -231,11 +231,13 @@ nhanes_csexam_processed <- nhanes_data_raw %>%
   # Code in tongue-to-mouth ratio measures for taste perception
   mutate(
     taste_tip2mouth_quinine = case_when(
-      !is.na(taste_tongue_quinine_glms) & !is.na(taste_mouth_quinine_glms) ~ 
+      !is.na(taste_tongue_quinine_glms) & !is.na(taste_mouth_quinine_glms) & 
+        taste_mouth_quinine_glms >0 ~ 
         taste_tongue_quinine_glms / taste_mouth_quinine_glms,
       TRUE ~ NA),
     taste_tip2mouth_nacl_1M = case_when(
-      !is.na(taste_tongue_nacl_glms) & !is.na(taste_mouth_nacl_1M_glms) ~ 
+      !is.na(taste_tongue_nacl_glms) & !is.na(taste_mouth_nacl_1M_glms) & 
+        taste_mouth_nacl_1M_glms > 0 ~ 
         taste_tongue_nacl_glms / taste_mouth_nacl_1M_glms,
       TRUE ~ NA)) %>% 
   # Binary correct=1/incorrect=0/missing variables for smell ID tests ----------
@@ -273,8 +275,7 @@ nhanes_exam_processed <- nhanes_data_raw %>%
   # Calculate average sbp/dbp, by hand
   mutate(
     sbp_mean = rowMeans(pick(sbp1, sbp2, sbp3), na.rm = T),
-    dbp_mean = rowMeans(pick(dbp1, dbp2, dbp3), na.rm = T)
-  ) %>% 
+    dbp_mean = rowMeans(pick(dbp1, dbp2, dbp3), na.rm = T)) %>% 
   mutate_at(c("sbp_mean", "dbp_mean"), ~ifelse(is.na(.), NA, .)) %>%
   
   # Abdominal obesity ---------
@@ -403,6 +404,9 @@ nhanes_lab_processed <- nhanes_data_raw %>%
   mutate(tgglu = case_when(
     !is.na(tg) & !is.na(glu) ~ tg/glu,
     TRUE ~ NA)) %>% 
+  
+  ## Rename OGTT variable
+  mutate(ogtt_2hg = `2hg`) %>%
   
   ## Vitamin levels (vitD) ---------------
   mutate_at("vitd", ~ case_when(
@@ -545,6 +549,10 @@ nhanes_quest_rx_processed <- nhanes_data_raw %>%
       TRUE ~ .))
     )
 
+rm(rx_bp)
+rm(rx_alluse)
+rm(rx_alltypes)
+
 # --------------------------------------
 ## Physical activity data (METs) 
 # --------------------------------------
@@ -670,8 +678,8 @@ nhanes_quest_pa_processed <- rbind.data.frame(
     )
   )
 
-#rm(nhanes_pa_pre07)
-#rm(nhanes_pa_post07)
+rm(nhanes_pa_pre07)
+rm(nhanes_pa_post07)
 
 # -----------------------------------------------------------------------
 ## Behavioral Variables: Smoking, Alcohol, Depression (PHQ), Insurance
@@ -722,13 +730,13 @@ recode_phq.fun <- function(x) {
 ## Function to recode tastechange variables -----------
 recode_tastechange.fun <- function(x, recode_as) {
   if(recode_as == "any") {
-    case_when(
+    factor(case_when(
       x %in% c("Better", "Worse") ~ 1,
-      x == "No Change" ~ 0, TRUE ~ NA) 
+      x == "No Change" ~ 0, TRUE ~ NA))
     } else {
-      case_when(
+      factor(case_when(
         x == recode_as ~ 1,
-        is.na(x) ~ NA, TRUE ~ 0)
+        is.na(x) ~ NA, TRUE ~ 0))
     }
 }
 
@@ -753,24 +761,24 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
       q_smoke_ever == "Yes" & q_smoke_current %in% c("Some days", "Every day") ~ "Current smoker",
       TRUE ~ NA)) %>%
   mutate(
-    smoke_current = case_when(
+    smoke_current = as.factor(case_when(
       smoke_status == "Current smoker" ~ 1, 
       smoke_status %in% c("Fomer smoker", "Never smoker") ~ 0,
-      TRUE ~ NA),
-    smoke_ever = case_when(
+      TRUE ~ NA)),
+    smoke_ever = as.factor(case_when(
       smoke_status %in% c("Current smoker", "Former smoker") ~ 1,
       smoke_status == "Never smoker" ~ 0,
-      TRUE ~ NA)) %>% 
+      TRUE ~ NA))) %>% 
   rename(smoke_everstop=q_smoke_everstop) %>%
   
   ## Alcohol frequency, times per week  ---------------
-  mutate(alch_everdrinker = case_when(
+  mutate(alch_everdrinker = factor(case_when(
     Years == "2017-2020" ~ q_alc_any_life,
     TRUE ~ case_when(
-      q_alc_any_yr == "Yes" | q_alc_any_life == "Yes" ~ "Yes",
-      q_alc_any_life == "No" ~ "No",
+      q_alc_any_yr == "Yes" | q_alc_any_life == "Yes" ~ "1",
+      q_alc_any_life == "No" ~ "0",
       is.na(q_alc_any_yr) & is.na(q_alc_any_life) ~ NA,
-      TRUE ~ "No"))) %>% 
+      TRUE ~ "0")))) %>% 
   # Code frequency per week for pre/post-2017 --
   mutate(
     # Drinking occasions, per week/month/yr (q_alc_freq_unit)
@@ -796,42 +804,42 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
   # Combine frequency/wk across exam cycles
   mutate(
     alch_freq_wk = factor(case_when(
-      alch_everdrinker == "No" ~ "Never drinker",
+      alch_everdrinker == 0 ~ "Never drinker",
       Years =="2017-2020" ~ alch_freq_wk_post2017.lab,
       TRUE ~ alch_freq_wk_pre2017.lab),
       levels = unique(unname(alch_freq.labs)))) %>% 
   mutate(
-    alch_drink_curr = case_when(
+    alch_drink_curr = as.factor(case_when(
       alch_freq_wk %in% c("Never drinker", "Non-drinker") ~ 0,
       is.na(alch_freq_wk) ~ NA,
-      TRUE ~ 1),
-    alch_drink_daily = case_when(
+      TRUE ~ 1)),
+    alch_drink_daily = as.factor(case_when(
       alch_freq_wk %in% c("1 or more per day") ~ 1,
       is.na(alch_freq_wk) ~ NA,
-      TRUE ~ 0),
-    alch_drink_weekly = case_when(
+      TRUE ~ 0)),
+    alch_drink_weekly = as.factor(case_when(
       alch_freq_wk %in% c("1 or more per day", "3-6 per week", "1-2 per week") ~ 1,
       is.na(alch_freq_wk) ~ NA,
-      TRUE ~ 0)
+      TRUE ~ 0))
     ) %>%
   
   ## Health insurance coverage -----------------
   rename(insur_any = q_insur_any, uninsur_lastyr = q_uninsur_pastyr) %>% 
-  mutate(across(c("insur_any", "uninsur_lastyr"), ~case_when(
-    . == "Yes" ~ 1, . == "No" ~ 0, TRUE ~ NA))) %>% 
+  mutate(across(c("insur_any", "uninsur_lastyr"), ~factor(case_when(
+    . == "Yes" ~ 1, . == "No" ~ 0, TRUE ~ NA)))) %>% 
   
   ## Health care utilization -------------
   mutate(
     # Have a usual place to go for health care?
-    hc_usualplace = case_when(
+    hc_usualplace = as.factor(case_when(
       q_hc_place == "There is no place" ~ 0,
       q_hc_place %in% c("Yes", "There is more than one place") ~ 1,
-      TRUE ~ NA),
+      TRUE ~ NA)),
     # Any doctor visits or hospital admissions last year?
-    hc_drvisit = case_when(
-      q_hc_drvisit == "None" ~ 0, is.na(q_hc_drvisit) ~ NA, TRUE ~ 1),
-    hc_hospadmit = case_when(
-      q_hc_admit == "No" ~ 0, q_hc_admit == "Yes" ~ 1, TRUE ~ NA)
+    hc_drvisit = as.factor(case_when(
+      q_hc_drvisit == "None" ~ 0, is.na(q_hc_drvisit) ~ NA, TRUE ~ 1)),
+    hc_hospadmit = as.factor(case_when(
+      q_hc_admit == "No" ~ 0, q_hc_admit == "Yes" ~ 1, TRUE ~ NA))
     ) %>%
   
   ## Employment Status (if age ≥ 16 yrs) ------------------
@@ -867,10 +875,10 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
       gsub(",.*", "", gsub("[?]", "", q_genhealth_rating)),
       levels=c("Poor", "Fair", "Good", "Very good", "Excellent"))) %>%
   mutate(
-    genhealth_low_vs_other = case_when(
+    genhealth_low_vs_other = as.factor(case_when(
       genhealth %in% c("Poor", "Fair") ~ 1,
       is.na(genhealth) ~ NA,
-      TRUE ~ 0)) %>% 
+      TRUE ~ 0))) %>% 
   
   ## n Restaurant meals per week ---------------
   mutate(
@@ -878,24 +886,25 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
       q_restaur_week == 6666 ~ 0.5, # Less than weekly
       q_restaur_week == 5555 | q_restaur_week == 26 ~ 21, # More than 21 times per week; re-coded to 21
       TRUE ~ q_restaur_week)) %>% 
-  mutate(restaur_freq_gt2 = case_when(
+  mutate(restaur_freq_gt2 = as.factor(case_when(
     restaur_freq_wk <= 2 ~ 0,
     restaur_freq_wk > 2 ~ 1,
-    TRUE ~ NA) ) %>%
+    TRUE ~ NA)) ) %>%
   
   ## Food security/Govt assistance
   mutate(
-    govtmeal_any = case_when(
+    govtmeal_any = factor(case_when(
       q_govtmeal == "Yes" ~ 1, 
       q_govtmeal == "No" ~ 0,
-      TRUE ~ NA),
-    foodsecure_level = factor(unname(foodsecure.labs[q_hh_foodsec]),
-                           levels=unique(unname(foodsecure.labs)))) %>% 
+      TRUE ~ NA)),
+    foodsecure_level = factor(
+      unname(foodsecure.labs[q_hh_foodsec]),
+      levels=unique(unname(foodsecure.labs)))) %>% 
   mutate(
-    foodinsecure = case_when(
+    foodinsecure = factor(case_when(
       foodsecure_level == "Food secure" ~ 0,
       is.na(foodsecure_level) ~ NA,
-      TRUE ~ 1)) %>% 
+      TRUE ~ 1))) %>% 
   
   # Recode tasetchange variables as No Change (Reference)/Worse/Better
   mutate(
@@ -906,9 +915,8 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
     tastechange_salt_any = recode_tastechange.fun(q_tastechange_salt, "any"),
     tastechange_salt_worse = recode_tastechange.fun(q_tastechange_salt, "Worse"),
     tastechange_sour_any = recode_tastechange.fun(q_tastechange_sour, "any"),
-    tastechange_sour_worse = recode_tastechange.fun(q_tastechange_sour, "Worse"),
-    tastechange_flavor_any = recode_tastechange.fun(q_tastechange_flavor, "any"),
-    tastechange_flavor_worse = recode_tastechange.fun(q_tastechange_flavor, "Worse")) %>%
+    tastechange_sour_worse = recode_tastechange.fun(q_tastechange_sour, "Worse")) %>%
+  rename(tastechange_flavor_any = q_tastechange_flavor) %>%
   mutate_at("q_tastechange_time", ~factor(case_when(
     . == "Less than 3 Months Ago" ~ "Less than 3m",
     . == "3 to 12 Months (1 Yesr) Ago" ~ "3m to 1yr",
@@ -920,9 +928,9 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
   
   ## Select cleaned questionnaire variables 
   select(SEQN, Years, 
-         starts_with(c("smoke_", "alch_", "hc_", "genh", "restaur", "tastech")), 
+         starts_with(c("smoke_", "alch_drink_", "hc_", "genh", "restaur", "tastech")), 
          employ_status, work_lastwk, insur_any, uninsur_lastyr, restaur_freq_wk,
-         govtmeal_any, foodsecure_level, foodinsecure, 
+         govtmeal_any, foodsecure_level, foodinsecure, alch_freq_wk,
          phq9_total_post05, diagn_depress_pre05, q_wtloss_dietrx, q_had_dialysis)
 
 
@@ -1072,10 +1080,10 @@ nhanes_disease_processed <- full_join(
       TRUE ~ 0),
     
     # MDD (Depression) -------------------
-    mdd = case_when(
+    mdd = factor(case_when(
       diagn_depress_pre05 == 1 | q_med_depress == "Yes" |
         phq9_total_post05 >= 10 ~ 1,
-      TRUE ~ 0),
+      TRUE ~ 0)),
     
     # Hypertension --------------
     htn = case_when(
@@ -1249,7 +1257,7 @@ nhanes_disease_processed <- full_join(
     "diabetes", "diabetes_undx", "obese", "obese_abd", "cvd", "ascvd", "chf", 
     "copd", "pft_lt07", "copd_pft", "htn", "htn_undx", "htn_stg1", "ckd",
     "ckd_gfr_gte3", "ckd_any", "mdd", "fib4_mod_vs_low", "fib4_high_vs_low",
-    "nfs_mod_vs_low", "nfs_high_vs_low"), 
+    "nfs_mod_vs_low", "nfs_high_vs_low", "liver_cap_any", "liver_cap_mod_sev"), 
     ~as.factor(.))) %>%
   
   # Select derived variables ----------------------
@@ -1282,16 +1290,15 @@ nhanes_processed %>% saveRDS("../data/processed/nhanes_processed.rds")
 
 
 ## Delete large breadcrunmbs ...
-rm(nhanes_demo_processed)
-rm(nhanes_quest_behav_processed) 
-rm(nhanes_lab_processed)
-rm(nhanes_exam_processed)
-rm(nhanes_quest_pa_processed)
-rm(nhanes_quest_rx_processed)
-rm(nhanes_quest_processed)
-rm(nhanes_diet_processed)
-rm(nhanes_disease_processed)
-rm(rx_alltypes) ; rm(rx_alluse)
+#rm(nhanes_demo_processed)
+#rm(nhanes_quest_behav_processed) 
+#rm(nhanes_lab_processed)
+#rm(nhanes_exam_processed)
+#rm(nhanes_quest_pa_processed)
+#rm(nhanes_quest_rx_processed)
+#rm(nhanes_quest_processed)
+#rm(nhanes_diet_processed)
+#rm(nhanes_disease_processed)
 
 
 ## EOF

@@ -1,5 +1,5 @@
 # Data and environment files
-#data/*
+data/raw/
 cache/*
 opt/*
 env/*

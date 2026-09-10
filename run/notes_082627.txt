@@ -129,14 +129,11 @@ LAB --------
 
 
 left off on 9/3:
-- need to add in special weights and classify remaining list of variables
+
 - then, make sure exposure variables are coded with HIGHEST SES reference
-- re-calc PREVENT equations, after applying slight calc updates to uacr (??)
-- then, run regression tests and see how outcomes 
+-
 
 
--- CHECK REVISED WEIGHT SELECTIONS FOR NEW VARIABLES
--- MAKE SURE WEIGHT_COMBN READS INTO NHANES_DAT
 -- THEN, BUILD TEH DATA DICTIONARY
 -- FROM TODAY: run tests over all exposure/outcome test values and make sure outcome set is complete
 -- also check reference categories
@@ -153,9 +150,14 @@ TO DO ON WEDS AM
 - slack miriam about whens he an joibn out meeting
 - email sara to remind her about following up with wesley/chika
 - email armin to ask about being a champ
-- bring up age change with vicky 
+- bring up age change with vicky ddd
 
+-- pre-email: say that md at wt center will be able to tel te people about the study if they are presceribed. 
 - run full regression sets on ALL OUTCOMES
 - start building the summary tables
+
+-- RALLY POST**
+
+
 
 - 

@@ -48,7 +48,7 @@ find_nhanes_weight.fun <- function(variables, data = nhanes_dat) {
     select(starts_with("WT"), -wt, -WTYRS, all_of(variables)) %>% 
     drop_na(all_of(variables)) %>% # filter(complete.cases(VAR)) %>% 
     select(where(~ !any(is.na(.))) & starts_with("WT")) %>% 
-    names() ; intersect(weight_order, weights_compl)[1] ; 
+    names() ; intersect(weight_order, weights_compl)[1] 
 }
 
 
