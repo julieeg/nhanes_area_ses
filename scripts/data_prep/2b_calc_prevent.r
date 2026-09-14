@@ -95,8 +95,8 @@ nhanes_processed <- nhanes_processed %>%
   mutate(
     prevent_complete_baseA1c = ifelse(prevent_complete_base == 1 & !is.na(prevent_hba1c), 1, 0),
     prevent_complete_baseUACR = ifelse(prevent_complete_base == 1 & !is.na(prevent_uacr), 1, 0),
-    prevent_complete_full = ifelse(prevent_complete_baseA1c == 1 & prevent_complete_baseUACR == 1, 1, 0)
-    )
+    prevent_complete_full = ifelse(prevent_complete_baseA1c == 1 & prevent_complete_baseUACR == 1, 1, 0)) %>% 
+  mutate(across(starts_with("prevent_complete_"), ~as.factor(.)))
 
 
 ## Write wrapper function to calculate PREVENT risk estimates, for EACH model

@@ -254,17 +254,17 @@ nhanes_csexam_processed <- nhanes_data_raw %>%
     smell_pst_total = rowSums(select(
       ., ends_with("_correct") & starts_with("smell_")), na.rm = FALSE)) %>% 
   mutate(
-    smell_dysfun_any = case_when(
+    smell_dysfun_any = factor(case_when(
       smell_pst_total > 0 & smell_pst_total <= 5 ~ 1,
       !is.na(smell_pst_total) & smell_pst_total >5 ~ 0,
-      TRUE ~ NA) ) %>% 
+      TRUE ~ NA)) ) %>% 
   mutate(
-    smell_dysfun_severe = case_when(
+    smell_dysfun_severe = factor(case_when(
       smell_pst_total %in% c(0,1,2,3) ~ 1, #"Anosmia/Severe hyposmia",
       smell_pst_total %in% c(4,5) ~ 0, #"Hyposmia",
       !is.na(smell_pst_total) & smell_pst_total > 5 ~ 0, #"Normal"
-      TRUE ~ NA)
-  ) %>% 
+      TRUE ~ NA))) %>% 
+  
   select(SEQN, Years, taste_mouth_quinine_glms, taste_mouth_nacl_1M_glms, 
          taste_mouth_nacl_320mM_glms, contains("tip2mouth"), 
          smell_pst_total, smell_dysfun_any, smell_dysfun_severe)
@@ -433,11 +433,11 @@ nhanes_lab_processed <- nhanes_data_raw %>%
   # pesticides (hcb and hpeox) will be NA from 05/06 on, since it shifted to POOLED 
 
   ## Oral HPV -------------
-  mutate_at("hpv_oral", ~ case_when(
+  mutate_at("hpv_oral", ~ factor(case_when(
     . == "Positive" ~ 1,
     . == "Negative" ~ 0,
     . == "Not evaluated " ~ NA,
-    TRUE ~ NA))
+    TRUE ~ NA)))
 
 lab_vars <- nhanes_lab_processed %>% select(-c("SEQN", "Years")) %>% names()
 
@@ -601,7 +601,7 @@ nhanes_pa_pre07 <- nhanes_data_raw %>%
     ) %>% 
   
   # Binary Flag: Meeting CDC Guidelines (≥500 MET-min/week)
-  mutate(pa_meets_guidelines = if_else(pa_total_mets_wk >= 500, 1, 0)) %>% 
+  mutate(pa_meets_guidelines = factor(ifelse(pa_total_mets_wk >= 500, 1, 0))) %>% 
   
   # Standard CDC sensitivity check: Cap extreme values at 16,800 MET-min/wk 
   # (Equivalent to ~5 hrs/day of vigorous exercise 7 days/wk)
@@ -746,7 +746,7 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
   mutate(across(c(
     "q_genhealth_rating", "q_had_dialysis", "q_govtmeal", "q_hh_foodsec",
     "q_uninsur_pastyr", "q_nowork_reason", starts_with(c(
-      paste0("q_", c("alc_", "hc_", "insur_", "phq_", "rest", "smoke_", 
+      paste0("q_", c("alc_", "hc_", "insur_", "phq_", "rest", "smoke_", "told_",
                      "tastechange", "tasteq", "work"))) )), 
     recode_nhanes_na.fun)) %>% 
   
@@ -931,7 +931,8 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
          starts_with(c("smoke_", "alch_drink_", "hc_", "genh", "restaur", "tastech")), 
          employ_status, work_lastwk, insur_any, uninsur_lastyr, restaur_freq_wk,
          govtmeal_any, foodsecure_level, foodinsecure, alch_freq_wk,
-         phq9_total_post05, diagn_depress_pre05, q_wtloss_dietrx, q_had_dialysis)
+         phq9_total_post05, diagn_depress_pre05, q_wtloss_dietrx, q_had_dialysis,
+         starts_with("q_told_"))
 
 
 ## Combine all quest_processed dataframes
@@ -940,7 +941,8 @@ nhanes_quest_processed <- full_join(
   by = c("SEQN", "Years")) %>% 
   full_join(nhanes_quest_pa_processed, by = c("SEQN", "Years"))
 
-quest_vars <- nhanes_quest_processed %>% select(-c("SEQN", "Years")) %>% names() 
+quest_vars <- nhanes_quest_processed %>% select(
+  -c("SEQN", "Years", starts_with("q_told"))) %>% names() 
 
 
 ## =====================================================
@@ -988,7 +990,8 @@ nhanes_nutr_processed <- lapply(nutr_vars, function(x) {
 nhanes_diet_processed <- nhanes_data_raw %>% 
   select(SEQN, Years, dr_intakedays, contains("recallstat"),
          dr_addsalt_freq, dr_saltprep, contains("suppl")) %>%
-  # Salt use habits
+  
+  # Salt use habits -------------------
   mutate_at("dr_saltprep", ~case_when(
     . %in% c("Very often", "Very Often") ~ "Very often",
     . == "Don't know" | is.na(.) ~ NA,
@@ -998,21 +1001,22 @@ nhanes_diet_processed <- nhanes_data_raw %>%
     is.na(.) & !is.na(dr_saltprep) ~ "Never",
     TRUE ~ .)) %>% 
   mutate(
-    addsalt_table_often = case_when(
+    addsalt_table_often = factor(case_when(
       dr_addsalt_freq %in% c("Occasionally", "Very often") ~ 1,
       is.na(dr_addsalt_freq) ~ NA,
-      TRUE ~ 0),
-    addsalt_prep_often = case_when(
+      TRUE ~ 0)),
+    addsalt_prep_often = factor(case_when(
       dr_saltprep %in% c("Occasionally", "Very often") ~ 1,
       is.na(dr_saltprep) ~ NA,
-      TRUE ~ 0)) %>% 
-  # Supplement use
+      TRUE ~ 0))) %>% 
+  
+  # Supplement use --------------------
   mutate(
     # If either day is "Yes", NA if both are missing, 0 otherwise
-    dietsuppl_any = case_when(
+    dietsuppl_any = factor(case_when(
       dr1_anysuppl == "Yes" | dr2_anysuppl == "Yes" ~ 1,
       is.na(dr1_anysuppl) & is.na(dr2_anysuppl) ~ NA_real_,
-      TRUE ~ 0),
+      TRUE ~ 0)),
     # Max supplement count between Day 1 and Day 2
     dietsuppl_num = pmax(dr1_suppl_n, dr2_suppl_n, na.rm = TRUE)) %>% 
   
@@ -1035,9 +1039,6 @@ nhanes_disease_processed <- full_join(
   nhanes_quest_processed, by = c("SEQN", "Years")) %>%
   full_join(nhanes_lab_processed,  by =c("SEQN", "Years")) %>% 
   full_join(nhanes_exam_processed, by =c("SEQN", "Years")) %>% 
-  full_join(nhanes_data_raw %>% select(SEQN, Years, starts_with("q_told_")) %>% 
-              mutate(across(starts_with("q_told"), ~recode_nhanes_na.fun(.))),
-            by=c("SEQN", "Years")) %>% 
   
   # Calculated BMI
   mutate(bmi_calc = wt/((ht*.01)^2)) %>%
@@ -1063,11 +1064,18 @@ nhanes_disease_processed <- full_join(
         q_told_mi == "Yes" | q_told_stroke == "Yes" ~ 1, 
       TRUE ~ 0),
     
+    # Congestive heart failure ------------------
+    chf = case_when(
+      q_told_chf == "Yes" ~ 1,
+      q_told_chf == "No" ~ 0,
+      TRUE ~ NA),
+    
     # COPD --------------------
     copd = case_when(
-      q_told_bronch == 1 | q_told_anybronch == 1 | q_told_copd == 1 | 
-        q_told_emphys == 1 ~ 1,
+      q_told_bronch == "Yes" | q_told_anybronch == "Yes" | q_told_copd == "Yes" | 
+        q_told_emphys == "Yes" ~ 1,
       TRUE ~ 0),
+    
     # COPD, based on pulmonary function tests 
     pft_lt07 = case_when(
       fev1_pre / fvc_pre < 0.7 ~ 1,
@@ -1089,8 +1097,7 @@ nhanes_disease_processed <- full_join(
     htn = case_when(
       q_told_htn == "Yes" | `q_told_htn_x2+` == "Yes" | sbp_mean >=130 | 
         dbp_mean >=80 ~ 1, 
-      TRUE ~ 0)
-    ) %>% 
+      TRUE ~ 0)) %>% 
   
   # Diabetes (diagnosed) -----------------------
   mutate(
@@ -1145,14 +1152,7 @@ nhanes_disease_processed <- full_join(
       sbp_mean >= 130 | dbp_mean >=80 ~ 1,
     TRUE ~ 0)) %>%
   
-  # Congestive heart failure ------------------
-  mutate(
-    chf = case_when(
-      q_told_chf == "Yes" ~ 1,
-      q_told_chf == "No" ~ 0,
-      q_told_chf %in% c("Refused", "Don't know", "") ~ NA)) %>%
-    
-    # Additional COPD definitions ------------------
+  # Additional COPD definitions ------------------
   mutate(
     copd_pft = case_when(
       copd == 1 | pft_lt07 == 1 ~ 1,
@@ -1284,7 +1284,16 @@ nhanes_processed <- full_join(
   full_join(nhanes_disease_processed, by = c("SEQN", "Years")) %>%
    
   ## Filter to 1999 -- 2020 & delete 2017-2018 (redundant to 2017-2020) -----------
-  filter(!Years %in% c("2017-2018", "2021-2023"))
+  filter(!Years %in% c("2017-2018", "2021-2023")) %>% 
+  
+  ## Clean up inerim variables ------------
+  select(
+    # interim disease diagnosis or diet component variables 
+    -c(starts_with(c("q_told_", "q_med", "rx_")), diagn_depress_pre05, 
+       phq9_total_post05, starts_with(c("ahei_", "hei2015_", "dii_")) & 
+         !any_of(c("ahei_total", "hei2015_total", "dii_total"))
+    )
+  )
   
 nhanes_processed %>% saveRDS("../data/processed/nhanes_processed.rds")
 

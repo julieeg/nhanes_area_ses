@@ -15,7 +15,6 @@ nhanes_processed <- readRDS("../data/processed/nhanes_processed.rds")
 nhanes_ndi_raw <- fread("../data/raw/ndi_nhanes/nhanes_ndi_raw.csv") 
 
 ## prevent estimated in nhanes, from 1999 to 2020 -----------------
-#nhanes_prevent_raw <- fread("../data/processed/prevent/nhanes_prevent_complete.csv")
 nhanes_prevent_raw <- fread("../data/processed/prevent/nhanes_prevent_sdi_complete.csv")
 
 
@@ -32,7 +31,7 @@ nhanes_ndi_processed <- nhanes_ndi_raw %>%
   ) %>% 
   # Filter to eligible participants, only
   filter(ndi_eligstat == 1) %>% 
-  mutate(across(c("ndi_eligstat", "ndi_mortstat", "ndi_diabetes", "ndi_htn"), ~as.factor(.)))
+  mutate(across(c("ndi_eligstat", "ndi_mortstat", "ndi_diabetes", "ndi_htn"), ~ as.factor(.)))
 
 
 ## Prepare PREVENT data ------------
@@ -55,11 +54,13 @@ nhanes_prevent_processed <- nhanes_prevent_raw %>%
     prevent_include_bp = case_when(
       ascvd == 0 & diabetes == 0 & diabetes_undx == 0 & ckd == 0 &
         prevent_bprx != 1 & sbp_mean < 139 & dbp_mean < 89 ~ 1,
-      TRUE ~ 0)
-  ) %>% select(-c(
-    age, ascvd, ckd, diabetes, diabetes_undx, ldl, sbp_mean, dbp_mean), 
-  )
-
+      TRUE ~ 0)) %>% 
+  mutate(across(
+    c(starts_with(c("prevent_include", "prevent_complete")), "prevent_statin", "prevent_bprx",
+      "prevent_diab", "prevent_smoking"), ~as.factor(.))) %>%
+  select(
+    -c(age, ascvd, ckd, diabetes, diabetes_undx, ldl, sbp_mean, dbp_mean)
+    )
 
 ## Combine all nhanes_processed datasets & Save --------------
 nhanes_postprocessed <- left_join(
@@ -115,6 +116,20 @@ nhanes_postprocessed %>% saveRDS("../data/processed/nhanes_postprocessed_linked_
 nhanes_postprocessed %>% fwrite("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.csv")
 
 
+## ===================================================
+## Write function to select correct variable weight
+## ===================================================
+
+find_nhanes_weight.fun <- function(variables, data = nhanes_postprocessed) {
+  weight_order <- paste0(c("WTSEPH", "WTSPO", "WTSAF", "WTDR", "WTMEC", "WTINT"), ".COMBN")
+  weights_compl <- data %>% 
+    select(starts_with("WT"), -wt, -WTYRS, all_of(variables)) %>% 
+    drop_na(all_of(variables)) %>% # filter(complete.cases(VAR)) %>% 
+    select(where(~ !any(is.na(.))) & starts_with("WT")) %>% 
+    names() ; intersect(weight_order, weights_compl)[1] 
+}
+
+
 ################################################################################
 ## Build NHANES data-dictionary, including all variables
 ################################################################################
@@ -132,7 +147,7 @@ nhanes_var_datadict <- as.data.frame(
       reframe(Raw.Variables = paste0(unique(Raw.Variable.Names), collapse=",")),
     by = "Variable.Name") %>% 
     rowwise() %>% 
-    mutate(Assigned.Weight = find_nhanes_weight.fun(Variable.Name, data = nhanes_postprocessed)) 
+    mutate(Assigned.Weight = find_nhanes_weight.fun(Variable.Name)) 
 
 ## Add columns for variable type; category levels and value range
 var_descr.fun <- function(variable, return) {
@@ -149,12 +164,22 @@ var_descr.fun <- function(variable, return) {
 }
 
 nhanes_var_datadict <- nhanes_var_datadict %>% 
-  mutate(var_type = var_descr.fun(Variable.Name, return="var_type")) %>% 
-  mutate(var_summary = var_descr.fun(Variable.Name, return="var_summary")) 
+  mutate(Variable.Type = var_descr.fun(Variable.Name, return="var_type")) %>% 
+  mutate(Variable.Summary = var_descr.fun(Variable.Name, return="var_summary")) 
   
 nhanes_var_datadict %>% fwrite(., "./nhanes_variable_datadict_09102026.csv")
 View(nhanes_var_datadict)
 
+# # Update & merge data dictionary:
+updated_datadict <- readxl::read_xlsx("./nhanes_areaxses_varlist_datadict_09142026.xlsx")
+cleaned_datadict <- full_join(updated_datadict, nhanes_var_datadict, by = "Variable.Name") %>% 
+  select(Variable.Name, Raw.Variables = Raw.Variables.x, Variable.Description, 
+         Variable.Type = Variable.Type.y, Variable.Summary = Variable.Summary.y,
+         Assigned.Weight = Assigned.Weight.x, Raw.Variables.x, Variable.Type.x) %>% 
+  filter(!is.na(Variable.Description))
+
+# Save revised file
+cleaned_datadict %>% fwrite(., "./nhanes_variable_datadict_revised_09142026.csv")
 
 ## EOF
 # Last Updated: 09-08-2026

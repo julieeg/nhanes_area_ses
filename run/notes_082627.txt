@@ -158,6 +158,12 @@ TO DO ON WEDS AM
 
 -- RALLY POST**
 
+PICK UP on Mon:
+- finish data dictionary
+- function for binary outcomes for cox ph models for ndi
+- build shell tables
+
+
 
 
 - 
