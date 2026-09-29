@@ -1,0 +1,40 @@
+Variable,Level,mean_total,mean_High income,mean_Middle income,mean_Low income,se_total,se_High income,se_Middle income,se_Low income,teststat_df,teststat_val,p_value
+"Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+"
+inc_to_pov,0,0,4,1,0,0.00506425367830475,0.00506425367830464,0.00253212683915238,0.00506425367830475,"F(2, 161)",165508.177046819,1.92575989787831e-267
+inc_to_pov,0.05,0.51,4.13,1.1,0.01,0.0177248878740666,0.0101285073566095,0.00506425367830476,0.00759638051745713,"F(2, 161)",165508.177046819,1.92575989787831e-267
+inc_to_pov,0.25,1.45,4.81,1.56,0.4,0.0303855220698285,0.020257014713219,0.0151927610349143,0.0101285073566095,"F(2, 161)",165508.177046819,1.92575989787831e-267
+inc_to_pov,0.5,2.93,5,2.22,0.66,0.0582389173005046,0,0.0177248878740666,0.00759638051745713,"F(2, 161)",165508.177046819,1.92575989787831e-267
+inc_to_pov,0.75,5,5,3.07,0.83,0,0,0.020257014713219,0.00506425367830476,"F(2, 161)",165508.177046819,1.92575989787831e-267
+inc_to_pov,0.95,5,5,3.79,0.96,0,0,0.0101285073566095,0.00253212683915238,"F(2, 161)",165508.177046819,1.92575989787831e-267
+inc_to_pov,1,5,5,3.99,0.99,0,0,0,0,"F(2, 161)",165508.177046819,1.92575989787831e-267
+"Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+","Error in eval(predvars, data, env) : object 'inc_to_pov_level' not found
+"
+employ_status,Full-time employed,53.6275837416779,66.8683592030032,50.6511987506524,31.2697040824962,0.426738689262118,0.583425771122859,0.512818923222455,0.874162460437694,"F(4.79, 223.93)",223.926101111335,5.20571414882632e-144
+employ_status,Part-time employed,10.3887324317449,9.46875671922127,10.3525772919628,12.759179908858,0.218516994410726,0.334341893608081,0.252329868819917,0.616945901919727,"F(4.79, 223.93)",223.926101111335,5.20571414882632e-144
+employ_status,Student,2.10212304610956,1.06775248268439,1.84476389966695,5.49607058040184,0.146393054166793,0.0903185234583846,0.116105573961525,0.685379191356209,"F(4.79, 223.93)",223.926101111335,5.20571414882632e-144
+employ_status,Unemployed,33.8815607804676,22.5951315950911,37.1514600577178,50.4750454282439,0.433815509375286,0.559883756248812,0.523803081065629,1.05441855904652,"F(4.79, 223.93)",223.926101111335,5.20571414882632e-144

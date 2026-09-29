@@ -1,0 +1,28 @@
+c..Error.in.bind_rows.var_survdesign_gt18.variables.....group_by.VAR..........n..Can.t.combine....1.STRATA...character..and....2.STRATA...double...n...
+"Error in bind_rows(var_survdesign_gt18$variables %>% group_by(VAR) %>%  : 
+  Can't combine `..1$STRATA` <character> and `..2$STRATA` <double>.
+"
+"Error in bind_rows(var_survdesign_gt18$variables %>% group_by(VAR) %>%  : 
+  Can't combine `..1$STRATA` <character> and `..2$STRATA` <double>.
+"
+"Error in bind_rows(var_survdesign_gt18$variables %>% group_by(VAR) %>%  : 
+  Can't combine `..1$STRATA` <character> and `..2$STRATA` <double>.
+"
+"Error in bind_rows(var_survdesign_gt18$variables %>% group_by(VAR) %>%  : 
+  Can't combine `..1$STRATA` <character> and `..2$STRATA` <double>.
+"
+"Error in bind_rows(var_survdesign_gt18$variables %>% group_by(VAR) %>%  : 
+  Can't combine `..1$STRATA` <character> and `..2$STRATA` <double>.
+"
+"Error in bind_rows(var_survdesign_gt18$variables %>% group_by(VAR) %>%  : 
+  Can't combine `..1$STRATA` <character> and `..2$STRATA` <double>.
+"
+"Error in bind_rows(var_survdesign_gt18$variables %>% group_by(VAR) %>%  : 
+  Can't combine `..1$STRATA` <character> and `..2$STRATA` <double>.
+"
+"Error in bind_rows(var_survdesign_gt18$variables %>% group_by(VAR) %>%  : 
+  Can't combine `..1$STRATA` <character> and `..2$STRATA` <double>.
+"
+"Error in bind_rows(var_survdesign_gt18$variables %>% group_by(VAR) %>%  : 
+  Can't combine `..1$STRATA` <character> and `..2$STRATA` <double>.
+"

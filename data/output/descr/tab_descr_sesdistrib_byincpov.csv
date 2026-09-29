@@ -1,0 +1,13 @@
+c..Error.in.bind_rows....vars_survdesign_gt18_dat.....summarise.STRATA.....Total........n..Can.t.combine....1.STRATA...double..and....2.STRATA...character...n...
+"Error in bind_rows(., vars_survdesign_gt18_dat %>% summarise(STRATA = ""Total"",  : 
+  Can't combine `..1$STRATA` <double> and `..2$STRATA` <character>.
+"
+"Error in bind_rows(., vars_survdesign_gt18_dat %>% summarise(STRATA = ""Total"",  : 
+  Can't combine `..1$STRATA` <double> and `..2$STRATA` <character>.
+"
+"Error in bind_rows(., vars_survdesign_gt18_dat %>% summarise(STRATA = ""Total"",  : 
+  Can't combine `..1$STRATA` <double> and `..2$STRATA` <character>.
+"
+"Error in bind_rows(., vars_survdesign_gt18_dat %>% summarise(STRATA = ""Total"",  : 
+  Can't combine `..1$STRATA` <double> and `..2$STRATA` <character>.
+"
