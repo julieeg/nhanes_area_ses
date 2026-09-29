@@ -22,9 +22,50 @@ list_of_packages <- c(
 dir.create("../data/output/descr")
 
 
+# =====================================================================
+## Write functions to grab GitHub scripts/files from public repos 
+# =====================================================================
+
+get_github_files <-function(user, repo, path="", files=NULL, file_type = c("r", "txt", "csv")) {
+  api <- sprintf("https://api.github.com/repos/%s/%s/contents/%s", user, repo, path)
+  toload <- grep(paste0("\\.",ext,"$"), jsonlite::fromJSON(api)$name, value = TRUE, ignore.case = TRUE) 
+  
+  # If no files are specified, grab all with matching extension
+  if(is.null(files)) {
+    URLs <- lapply(toload, function(f) {
+      sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f)
+    }) } else {
+      toload <- toload[grepl(files, toload)]
+      URLs <- sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, toload)
+    } 
+  
+  # If scripts (r) load with source; otherwise, read with fread
+  if(file_type == "r") { 
+    sprintf("LOADING | %s ", paste0(toload, collapse = ", "))
+    invisible(lapply(URLs, source)) 
+  } else {
+    github_files.l <- invisible(lapply(URLs, fread))
+    names(github_files.l) <- gsub(paste0("[.]", ext), "", toload)
+    return(github_files.l)
+  }
+} 
+
+
+## load pre-built pantry functions (for data wrangling)
+get_github_scripts <-function(user, repo, path, file=NULL) {
+  api <- sprintf("https://api.github.com/repos/%s/%s/contents/%s", user, repo, path)
+  scripts <- grep("*.R", jsonlite::fromJSON(api)$name, value = T, ignore.case = T)
+  if(is.null(file)) {
+    URLs <- lapply(scripts, function(f) sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f))
+  } else {
+    URLs <- sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, file)
+  } ; invisible(lapply(URLs, source))
+} ; get_github_scripts("julieeg", "pantry", "functions")
+
+
+
 ## Load nhanes_area_ses scripts -------------------
-get_github_scripts("julieeg", "nhanes_area_ses", "scripts")
-source("../scripts/functions/nhanes_survdesign_functions.r")
+get_github_files("julieeg", "nhanes_area_ses", "scripts/functions", file_type = "r")
 
 
 ## Load nhanes data & prevent variables ------------------
