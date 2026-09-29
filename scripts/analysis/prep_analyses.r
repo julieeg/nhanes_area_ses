@@ -8,7 +8,8 @@
 ## set local directory ------------------------
 setwd('~/Documents/GitHub/nhanes_area_ses/run') 
 
-## load required base pacakges
+
+## load required base pacakges ------------------------
 list_of_packages <- c(
   "tidyverse", "data.table", "nhanesA", "progress", "sociome", "jsonlite", "haven", 
   "forcats", "parallel", "survey") ; invisible(lapply(list_of_packages, function(pkg) {
@@ -17,18 +18,12 @@ list_of_packages <- c(
   }))
 
 
-## load pre-built pantry functions (for data wrangling)
-get_github_scripts <-function(user, repo, path) {
-  api <- sprintf("https://api.github.com/repos/%s/%s/contents/%s", user, repo, path)
-  scripts <- grep("*.R", jsonlite::fromJSON(api)$name, value = T)
-  URLs <- lapply(scripts, function(f) {
-    sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f)
-  }) ; invisible(lapply(URLs, source))
-} #; get_github_scripts("julieeg", "pantry", "functions")
+## Create sub-folders to organize outputs -----------------
+dir.create("../data/output/descr")
 
 
 ## Load nhanes_area_ses scripts -------------------
-get_github_scripts("julieeg", "nhanes_area_ses", "scripts/")
+get_github_scripts("julieeg", "nhanes_area_ses", "scripts")
 source("../scripts/functions/nhanes_survdesign_functions.r")
 
 

@@ -1,38 +1,22 @@
 # Rscript for applying survey weights and running regressions in NHANES
 
- 
 ################################################################################
 ## Set Up; Load Required Packages & Data Files
 ################################################################################
 
 ## set local directory
-setwd('~/Documents/GitHub/nhanes_area_ses/run')
+#setwd('~/Documents/GitHub/nhanes_area_ses/run')
 
 ## load required base pacakges
 list_of_packages <- c(
-  "tidyverse", "data.table", "nhanesA", "progress", "sociome", "jsonlite", "haven", "forcats"
-) ; invisible(lapply(list_of_packages, function(pkg) {
-  if(!requireNamespace(pkg, quietly = TRUE)) { 
-    install.packages(pkg) } ; library(pkg, character.only = TRUE)
-}))
+  "tidyverse", "data.table", "nhanesA", "progress", "sociome", "jsonlite", "haven", 
+  "forcats", "parallel", "survey") ; invisible(lapply(list_of_packages, function(pkg) {
+    if(!requireNamespace(pkg, quietly = TRUE)) { 
+      install.packages(pkg) } ; library(pkg, character.only = TRUE)
+  }))
 
 
-## load pre-built pantry functions (for data wrangling)
-get_github_scripts <-function(user, repo, path) {
-  api <- sprintf("https://api.github.com/repos/%s/%s/contents/%s", user, repo, path)
-  scripts <- grep("*.R", jsonlite::fromJSON(api)$name, value = T)
-  URLs <- lapply(scripts, function(f) {
-    sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f)
-  }) 
-  invisible(lapply(URLs, source))
-} ; get_github_scripts("julieeg", "pantry", "functions")
-
-
-## Load nhanes data & prevent variables
-#nhanes_dat <- readRDS("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.rds")
-
-## Load required library
-library(survey)
+# Set survey package option: 
 options(survey.lonely.psu = "adjust")
 
 
@@ -82,9 +66,16 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL,
       var_name <- var_input[[1]] ; var <- names(var_input)[1]
     } else {
       var_name <- var_input ; var <- var_input
-    } ; n_values <- length(na.omit(unique(data[[var]])))
-    var_type <- if(is.numeric(data[[var]]) & n_values != 2) "numeric" else if (
-      n_values == 2) "binary" else "categorical"
+    } 
+    
+    n_values <- length(na.omit(unique(data[[var]])))
+    if(is.numeric(data[[var]]) & n_values != 2) {
+      var_type <- "numeric" 
+      } else if (n_values == 2) {
+        var_type <- "binary" 
+      } else {
+          var_type <- "categorical" 
+      }
     
     if(is.null(strata)) { data <- data %>% mutate(strata="1") }
     
@@ -180,11 +171,12 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL,
         mutate(across(-Variable, ~ifelse(is.na(.), "", .))) %>% 
         rename_with(., ~gsub("sum_","",.))
       
-     return(var_summary)
-      
     }
     
-  }) 
+    # print var_summary
+    var_summary
+    
+  })
   
   # Compile & clean summary table ------------------
   sumtab_df <- do.call(rbind.data.frame, sumtab.l) %>% 
@@ -194,11 +186,9 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL,
   
   if(is.null(strata)) { sumtab_df <- sumtab_df %>% select(-"1", -ends_with("_1"))}
   
-  sumtab_df
   return(sumtab_df)
   
 }
-
 
 
 ################################################################################ 
@@ -273,9 +263,12 @@ build_nhanes_survdesign.fun <- function(vars_to_include, data = nhanes_dat, stra
  
 
 ################################################################################ 
-## Write function to summarize quantiles in NHANES
+## Write descriptive functions to summarize NHANES variables by STRATA
 ################################################################################ 
-    
+
+# ===============================================
+## Summarize QUANTILES by categorical strata 
+# ===============================================
 get_nhanes_quantiles.fun <- function(var_to_summarise, strata, print_se = T, 
                                      get_pvalue = F,
                                      probs = c(0, 0.05, 0.25, 0.50, 0.75, 0.95, 1),
@@ -330,6 +323,9 @@ get_nhanes_quantiles.fun <- function(var_to_summarise, strata, print_se = T,
 }
 
 
+# =================================================
+## Summarize DISTRIBUTIONS by categorical strata 
+# =================================================
 get_nhanes_distrib.fun <- function(var_to_summarise, strata, data = nhanes_dat) {
   
   # List model variables
@@ -379,7 +375,6 @@ get_nhanes_distrib.fun <- function(var_to_summarise, strata, data = nhanes_dat) 
 # ======================================================================
 ## Function to calculate pearson correlations of cont/int variables
 # ======================================================================
-
 get_nhanes_cormat.df <- function(vars, strata = NULL, data = nhanes_dat) {
   
   n_vars <- length(vars)
@@ -440,86 +435,11 @@ get_nhanes_cormat.df <- function(vars, strata = NULL, data = nhanes_dat) {
 }
 
 
-
-###########################################################################
-## Functions to plot box/barplots from distribution function
-############################################################################
-
-ggplot_theme <- theme_bw() + 
-  theme(axis.text = element_text(color="black"),
-        panel.grid.minor = element_blank(),
-        axis.title = element_text(face="bold"),
-        strip.background = element_blank(),
-        strip.text.x.top = element_text(face="bold"))
-
-
-plot_nhanes_boxplot.fun <- function(var_to_plot="inc_to_pov", strata = "racethn_combn",
-                                    probs_to_plot=c(0.05,0.25,0.5,0.75,0.95),
-                                    summary_data=tab_distrib) {
-  params <- list(
-    xvar = var_to_plot, 
-    zlevels = gsub("mean_","",names(summary_data %>% select(starts_with("mean_"))))
-  )
-  
-  summary_data %>% 
-    filter(Vartype == "Quant") %>%
-    filter(Variable == var_to_plot) %>% 
-    select(-starts_with("se_")) %>% 
-    pivot_longer(cols = -c("Variable", "Vartype", "Level"), names_to="Strata") %>% 
-    mutate_at("Level", ~paste0("Q",.)) %>% 
-    mutate_at("Strata", ~factor(gsub("mean_","",.), levels=params$zlevels)) %>%
-    pivot_wider(names_from=Level) %>%
-    ggplot(aes(x = Strata, fill=Variable)) +
-    geom_boxplot(
-      aes(
-        ymin = Q0.05,   # Bottom whisker (5th percentile)
-        lower = Q0.25,  # Bottom of the box (25th percentile)
-        middle = Q0.5,  # Median line (50th percentile)
-        upper = Q0.75,  # Top of the box (75th percentile)
-        ymax = Q0.95    # Top whisker (95th percentile)
-      ),
-      stat = "identity",
-      alpha = 0.7, width = 0.5
-    ) + 
-    ylab("Distribution (n)") +
-    scale_fill_manual(values=palettes$NatExt$Greens[3]) +
-    ggplot_theme 
-}
-
-
-plot_nhanes_barplot.fun <- function(var_to_plot="educ_level", strata = "age_4lvl",
-                                    summary_data=tab_distrib_test) {
-  params <- list(
-    xvar = var_to_plot, 
-    xlevels = tab_nhanes_distrib %>% filter(Variable == var_to_plot) %>% pull(Level),
-    zlevels = gsub("mean_","",names(tab_nhanes_distrib %>% select(starts_with("mean_"))))
-  )
-  
-  summary_data %>% 
-    filter(Vartype == "Prop") %>%
-    filter(Variable == var_to_plot) %>% 
-    pivot_longer(cols = -c("Variable", "Vartype", "Level"), names_to="Strata") %>% 
-    mutate(msr=ifelse(startsWith(Strata, "mean"), "mean", "se")) %>% 
-    mutate_at("Strata", ~gsub("se_", "", gsub("mean_","",.))) %>%
-    pivot_wider(names_from="msr") %>% 
-    mutate(SES_Level = factor(rep(1:length(params$xlevels), each=length(params$zlevels)))) %>%
-    mutate_at("Strata", ~factor(., levels=params$zlevels)) %>% 
-    ggplot(aes(x = Strata, y = mean, group = SES_Level, fill=SES_Level)) +
-    facet_wrap(~Variable, scale="free") + 
-    geom_bar(stat = "identity", position = position_dodge(0.9)) +
-    scale_fill_manual(values=rev(palettes$NatExt$Greens[2:(length(params$xlevels)+1)]),
-                      name="Level", labels=params$xlevels) + 
-    ylab("Proportion (%)") +
-    ggplot_theme
-    
-}
-
-
 ###########################################################
 ## Build function to run and summarize survey glms
 ###########################################################
 
-run_survdesign_glm.fun <- function(exposure, outcome, covariates, strata=NULL, data = nhanes_dat) { 
+run_nhanes_glm.fun <- function(exposure, outcome, covariates, strata=NULL, data = nhanes_dat) { 
   
   # List model variables
   vars_to_include <- unique(c(exposure, outcome, covariates, strata))
@@ -684,7 +604,7 @@ run_survdesign_glm.fun <- function(exposure, outcome, covariates, strata=NULL, d
 ## Build function to run and summarize Cox PH models for NDI Mortality data
 ################################################################################
 
-run_survdesign_coxph.fun <- function(exposure, outcome = "ndi_mortstat", 
+run_nhanes_coxph.fun <- function(exposure, outcome = "ndi_mortstat", 
                                      time_var_prefix="ndi_peryear",
                                      covariates = c("age", "gender"), 
                                      strata = NULL, data = nhanes_dat) { 
@@ -885,10 +805,10 @@ run_survdesign_coxph.fun <- function(exposure, outcome = "ndi_mortstat",
 ################################################################################
 
 # ======================================================================
-## Wrap survdesign modelsum outputs, over lists of exp, out, strata
+## Wrap nhanes survdesign modelsum outputs, over lists of exp, out, strata
 # ======================================================================
 
-wrap_survdesign_regress.fun <- function(regress_fun = run_survdesign_glm.fun,
+wrap_nhanes_regress.fun <- function(regress_fun = run_nhanes_glm.fun,
     exposure_vars, outcome_vars, strata_vars, models = "base") { 
   
   # For each STRATA --------------------
@@ -949,7 +869,7 @@ collapse_survdesign_regress.fun <- function(wrapped_glm_survdesign) {
 get_svymodel_auc.fun <- function(exposure, outcome, covariates=c("age","gender"), 
                                  strata=NULL, print_mod = T, data=nhanes_dat) {
   
-  mod <- run_survdesign_glm.fun(exp=exposure, out=outcome, covar=covariates, 
+  mod <- run_nhanes_glm.fun(exp=exposure, out=outcome, covar=covariates, 
                                 strata=strata, data=data)
   
   tab_summary <- lapply(1:length(mod$model), function(z) {
@@ -979,7 +899,7 @@ get_svymodel_auc.fun <- function(exposure, outcome, covariates=c("age","gender")
 get_svymodel_modR2.fun <- function(exposure, outcome, covariates=c("age","gender"),
                                    strata=NULL, data=nhanes_dat) {
   
-  mod <- run_survdesign_glm.fun(exp=exposure, out=outcome, covar=covariates, 
+  mod <- run_nhanes_glm.fun(exp=exposure, out=outcome, covar=covariates, 
                                   strata=strata, data=data)
   
   tab_summary <- lapply(1:length(mod$model), function(z) {
@@ -1007,7 +927,7 @@ get_svymodel_modR2.fun <- function(exposure, outcome, covariates=c("age","gender
 get_svymodel_cstat.fun <- function(exposure, outcome, covariates=c("age","gender"),
                                    strata=NULL, data=nhanes_dat) {
   
-  mod <- run_survdesign_coxph.fun(exp=exposure, out=outcome, covar=covariates, 
+  mod <- run_nhanes_coxph.fun(exp=exposure, out=outcome, covar=covariates, 
                                   strata=strata, data=data)
   
   tab_summary <- lapply(1:length(mod$model), function(z) {
@@ -1038,6 +958,84 @@ calc_nhanes_riskpred.fun <- function(exposure, outcome, covariates = c("age", "g
                      strat=strata, dat=data)$modperf)
 }
 
+
+
+
+
+
+
+###########################################################################
+## Functions to plot box/barplots from distribution function
+############################################################################
+
+ggplot_theme <- theme_bw() + 
+  theme(axis.text = element_text(color="black"),
+        panel.grid.minor = element_blank(),
+        axis.title = element_text(face="bold"),
+        strip.background = element_blank(),
+        strip.text.x.top = element_text(face="bold"))
+
+
+plot_nhanes_boxplot.fun <- function(var_to_plot="inc_to_pov", strata = "racethn_combn",
+                                    probs_to_plot=c(0.05,0.25,0.5,0.75,0.95),
+                                    summary_data=tab_distrib) {
+  params <- list(
+    xvar = var_to_plot, 
+    zlevels = gsub("mean_","",names(summary_data %>% select(starts_with("mean_"))))
+  )
+  
+  summary_data %>% 
+    filter(Vartype == "Quant") %>%
+    filter(Variable == var_to_plot) %>% 
+    select(-starts_with("se_")) %>% 
+    pivot_longer(cols = -c("Variable", "Vartype", "Level"), names_to="Strata") %>% 
+    mutate_at("Level", ~paste0("Q",.)) %>% 
+    mutate_at("Strata", ~factor(gsub("mean_","",.), levels=params$zlevels)) %>%
+    pivot_wider(names_from=Level) %>%
+    ggplot(aes(x = Strata, fill=Variable)) +
+    geom_boxplot(
+      aes(
+        ymin = Q0.05,   # Bottom whisker (5th percentile)
+        lower = Q0.25,  # Bottom of the box (25th percentile)
+        middle = Q0.5,  # Median line (50th percentile)
+        upper = Q0.75,  # Top of the box (75th percentile)
+        ymax = Q0.95    # Top whisker (95th percentile)
+      ),
+      stat = "identity",
+      alpha = 0.7, width = 0.5
+    ) + 
+    ylab("Distribution (n)") +
+    scale_fill_manual(values=palettes$NatExt$Greens[3]) +
+    ggplot_theme 
+}
+
+
+plot_nhanes_barplot.fun <- function(var_to_plot="educ_level", strata = "age_4lvl",
+                                    summary_data=tab_distrib_test) {
+  params <- list(
+    xvar = var_to_plot, 
+    xlevels = tab_nhanes_distrib %>% filter(Variable == var_to_plot) %>% pull(Level),
+    zlevels = gsub("mean_","",names(tab_nhanes_distrib %>% select(starts_with("mean_"))))
+  )
+  
+  summary_data %>% 
+    filter(Vartype == "Prop") %>%
+    filter(Variable == var_to_plot) %>% 
+    pivot_longer(cols = -c("Variable", "Vartype", "Level"), names_to="Strata") %>% 
+    mutate(msr=ifelse(startsWith(Strata, "mean"), "mean", "se")) %>% 
+    mutate_at("Strata", ~gsub("se_", "", gsub("mean_","",.))) %>%
+    pivot_wider(names_from="msr") %>% 
+    mutate(SES_Level = factor(rep(1:length(params$xlevels), each=length(params$zlevels)))) %>%
+    mutate_at("Strata", ~factor(., levels=params$zlevels)) %>% 
+    ggplot(aes(x = Strata, y = mean, group = SES_Level, fill=SES_Level)) +
+    facet_wrap(~Variable, scale="free") + 
+    geom_bar(stat = "identity", position = position_dodge(0.9)) +
+    scale_fill_manual(values=rev(palettes$NatExt$Greens[2:(length(params$xlevels)+1)]),
+                      name="Level", labels=params$xlevels) + 
+    ylab("Proportion (%)") +
+    ggplot_theme
+  
+}
 
 ## EOF
 # Last Updated: 09-14-2026
