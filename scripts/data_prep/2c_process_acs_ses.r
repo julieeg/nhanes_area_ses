@@ -34,7 +34,7 @@ acs_ses_merged <- rbind.data.frame(acs_ses_09, acs_ses_14, acs_ses_19) %>%
   mutate_at("acs_urbrur_cat", ~ factor(., levels = c(
     "metropolitan", "micropolitan", "town", "rural")))
 
-acs_ses_merged %>% fwrite("../data/processed/acs_ses_to_merge.csv")
+acs_ses_merged %>% fwrite(., "../data/processed/acs_ses_to_merge.csv")
 
 rm(acs_ses_09) ; rm(acs_ses_14) ; rm(acs_ses_19)
 rm(acs_ses_dat.l)

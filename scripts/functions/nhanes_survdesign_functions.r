@@ -379,7 +379,7 @@ get_nhanes_distrib.fun <- function(var_to_summarise, strata, data = nhanes_dat) 
 # ======================================================================
 ## Function to calculate pearson correlations of cont/int variables
 # ======================================================================
-get_nhanes_cormat.df <- function(vars, strata = NULL, data = nhanes_dat) {
+get_nhanes_cormat.fun <- function(vars, strata = NULL, data = nhanes_dat) {
   
   n_vars <- length(vars)
   
@@ -403,20 +403,28 @@ get_nhanes_cormat.df <- function(vars, strata = NULL, data = nhanes_dat) {
           survdesign <- build_nhanes_survdesign.fun(c(v1,v2), strata = strata, data=data)$survdesign
           
           if (lvl != "Total") {
-            sub_design <- subset(survdesign, survdesign$variables[[strata]] == lvl)
+            sub_design <- subset(survdesign, survdesign$variables$STRATA == lvl)
           } else {
             sub_design <- survdesign
           }
           
-          # 1. Calculate correlation (r)
-          f_cov <- as.formula(paste0("~", v1, "+", v2))
-          cov_obj <- svyvar(f_cov, survdesign, na.rm = TRUE)
-          r_val <- cov2cor(coef(cov_obj))[1, 2]
+          # Make placeholders, in case of function failure
+          r_val <- NA ; p_val <- NA
           
-          # 2. Get exact p-value
-          f_glm <- as.formula(paste0(v1, " ~ ", v2))
-          mod <- survey::svyglm(f_glm, design = survdesign)
-          p_val <- summary(mod)$coefficients[v2, "Pr(>|t|)"]
+          tryCatch({
+            # 1. Calculate correlation (r)
+            f_cov <- as.formula(paste0("~", v1, "+", v2))
+            cov_obj <- svyvar(f_cov, sub_design, na.rm = TRUE)
+            r_val <- cov2cor(coef(cov_obj))[1, 2]
+            
+            # 2. Get exact p-value
+            f_glm <- as.formula(paste0(v1, " ~ ", v2))
+            mod <- survey::svyglm(f_glm, design = sub_design)
+            p_val <- summary(mod)$coefficients[v2, "Pr(>|t|)"]
+          }, error = function(e) {
+            message(sprintf("FAILED | skippinng corr for %s-%s | ~%s==%s: %s", 
+                            v1, v2, strata, lvl, e$message))
+          })
           
           # Fill both sides of the symmetric matrices
           r_mat[i, j] <- r_mat[j, i] <- r_val

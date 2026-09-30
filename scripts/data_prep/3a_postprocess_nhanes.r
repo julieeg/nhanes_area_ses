@@ -67,6 +67,29 @@ nhanes_postprocessed <- left_join(
   nhanes_processed, nhanes_ndi_processed, by = c("SEQN", "Years")) %>%
   full_join(nhanes_prevent_processed, by = c("SEQN"))
 
+## Add in INTERSECTION variables, for strata X educ and inc
+nhanes_postprocessed <- nhanes_postprocessed %>%
+  mutate(
+    intx_raceXeduc = case_when(
+      !is.na(racethn_combn) & !is.na(educ_level) ~ paste0(racethn_combn, "_x_", educ_level),
+      TRUE ~ NA),
+    intx_raceXincpov = case_when(
+      !is.na(racethn_combn) & !is.na(inc_to_pov_level) ~ paste0(racethn_combn, "_x_", inc_to_pov_level),
+      TRUE ~ NA),
+    intx_sexXeduc = case_when(
+      !is.na(gender) & !is.na(educ_level) ~ paste0(gender, "_x_", educ_level),
+      TRUE ~ NA),
+    intx_sexXincpov = case_when(
+      !is.na(gender) & !is.na(inc_to_pov_level) ~ paste0(gender, "_x_", inc_to_pov_level),
+      TRUE ~ NA),
+    intx_agecatXeduc = case_when(
+      !is.na(age_4lvl) & !is.na(educ_level) ~ paste0(age_4lvl, "_x_", educ_level),
+      TRUE ~ NA),
+    intx_agecatXincpov = case_when(
+      !is.na(age_4lvl) & !is.na(inc_to_pov_level) ~ paste0(age_4lvl, "_x_", inc_to_pov_level),
+      TRUE ~ NA)
+  )
+
 
 ################################################################################
 ## Assign raw & derived NHANES variables to WEIGHT categories
@@ -170,9 +193,8 @@ nhanes_var_datadict <- nhanes_var_datadict %>%
   mutate(Variable.Summary = var_descr.fun(Variable.Name, return="var_summary")) 
   
 nhanes_var_datadict %>% fwrite(., "./nhanes_variable_datadict_09152026.csv")
-View(nhanes_var_datadict)
 
 
 ## EOF
-# Last Updated: 09-08-2026
+# Last Updated: 09-30-2026
 
