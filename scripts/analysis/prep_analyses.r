@@ -2,11 +2,24 @@
 
 
 ################################################################################
-## Set Up; Load Required Packages & Data Files
+## Set Up
 ################################################################################
+
+# ================================================
+## Set up output dir & load required packages
+# ================================================
 
 ## set local directory ------------------------
 setwd('~/Documents/GitHub/nhanes_area_ses/run') 
+
+## Set path to data output ------------
+path_to_output <- "../data/output/"
+
+# Create sub-folders to organize output
+dir.create(paste0(path_to_output, "/descr"))
+dir.create(paste0(path_to_output, "/glms"))
+dir.create(paste0(path_to_output, "/coxph"))
+dir.create(paste0(path_to_output, "/pred"))
 
 
 ## load required base pacakges ------------------------
@@ -18,60 +31,38 @@ list_of_packages <- c(
   }))
 
 
-## Create sub-folders to organize outputs -----------------
-dir.create("../data/output/descr")
-
-
 # =====================================================================
-## Write functions to grab GitHub scripts/files from public repos 
+## Load scripts & functions from GitHub repos
 # =====================================================================
 
-get_github_files <-function(user, repo, path="", files=NULL, file_type = c("r", "txt", "csv")) {
+# Custom function to load GH files ===========
+get_github_files <-function(user, repo, path, load_fn = source, file_ext="r", file_pf=NULL) {
   api <- sprintf("https://api.github.com/repos/%s/%s/contents/%s", user, repo, path)
-  toload <- grep(paste0("\\.",ext,"$"), jsonlite::fromJSON(api)$name, value = TRUE, ignore.case = TRUE) 
+  files <- grep(paste0("\\.",file_ext,"$"), fromJSON(api)$name, value = T, ignore.case = T)
+  if(!is.null(file_pf)) { 
+    files <- grep(file_pf, files, value=T) 
+  } ; print(sprintf("LOADING | %s/%s/%s ... FILES | %s", user, repo, path, paste0(files, collapse=", ")))
   
-  # If no files are specified, grab all with matching extension
-  if(is.null(files)) {
-    URLs <- lapply(toload, function(f) {
-      sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f)
-    }) } else {
-      toload <- toload[grepl(files, toload)]
-      URLs <- sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, toload)
-    } 
-  
-  # If scripts (r) load with source; otherwise, read with fread
-  if(file_type == "r") { 
-    sprintf("LOADING | %s ", paste0(toload, collapse = ", "))
-    invisible(lapply(URLs, source)) 
-  } else {
-    github_files.l <- invisible(lapply(URLs, fread))
-    names(github_files.l) <- gsub(paste0("[.]", ext), "", toload)
-    return(github_files.l)
-  }
-} 
-
-
-## load pre-built pantry functions (for data wrangling)
-get_github_scripts <-function(user, repo, path, file=NULL) {
-  api <- sprintf("https://api.github.com/repos/%s/%s/contents/%s", user, repo, path)
-  scripts <- grep("*.R", jsonlite::fromJSON(api)$name, value = T, ignore.case = T)
-  if(is.null(file)) {
-    URLs <- lapply(scripts, function(f) sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f))
-  } else {
-    URLs <- sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, file)
-  } ; invisible(lapply(URLs, source))
-} ; get_github_scripts("julieeg", "pantry", "functions")
-
+  URLs <- lapply(files, function(f) sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f))
+  if(file_ext != "r") {
+    gh_files.l <- invisible(lapply(URLs, load_fn)) ; 
+    names(gh_files.l) <- gsub(paste0("[.]", file_ext), "", files) 
+    return(gh_files.l) 
+  } else { invisible(lapply(URLs, load_fn)) }
+}
 
 
 ## Load nhanes_area_ses scripts -------------------
-get_github_files("julieeg", "nhanes_area_ses", "scripts/functions", file_type = "r")
+get_github_files("julieeg", "nhanes_area_ses", path="scripts/functions", 
+                 load_fn = source, file_ext="r")
 
 
-## Load nhanes data & prevent variables ------------------
+# ====================================
+## Load pre-built NHANES datasets 
+# ====================================
+
 nhanes_dat <- readRDS("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.rds")
-
-path_to_output <- "../data/output/"
+nhanes_acs_ses <- fread("../data/processed/acs_ses_to_merge.csv")
 
 
 ################################################################################
@@ -79,27 +70,49 @@ path_to_output <- "../data/output/"
 ################################################################################
 
 # ===================
-## SES Exposures
+## SES exposures
 # ===================
 
-ses_indiv_exposures <- c(educ="educ_level", incpov="inc_to_pov", incpovlvl="inc_to_pov_level", 
-                         employ="employ_status") ## ADD FOOD INSECURITRY!
+# Individual-level ----------
+ses_exposures.indiv <- c(educ="educ_level", incpov="inc_to_pov", incpovlvl="inc_to_pov_level", 
+                         employ="employ_status", foodinsec = "foodinsecure")
 
-ses_area_exposures <- c(urbrur = "acs_urbrur.bin", urbrurcat = "acs_urbrur.cat",
+# Area-leve -------------
+ses_exposures.area <- c(urbrur = "acs_urbrur", urbrurcat = "acs_urbrur_cat",
                         pctlths="acs_educ_lths_pct", pctltcoll="acs_educ_ltcoll_pct",
                         pctunemp = "acs_unemp_pct", mhi="acs_incpov_mhi", 
-                        pctfpl200="acs_incpov_fpl200_pct", "sdi", "svi", "adi")
+                        pctfpl200="acs_incpov_fpl200_pct", sdi="sdi", svi="svi", adi="adi")
 
-ses_exposures <- c(ses_indiv_exposures) #, ses_area_exposures)
-
-# List of continuous exposures, only
+# Combined list ---------
+ses_exposures <- c(ses_exposures.indiv, ses_exposures.area)
 
 
 # ==========================
 ## Stratifying variables
 # ==========================
 
-strata_vars <- c(sex="gender", agecat="age_4lvl", racethn="racethn_combn")
+# Individual-level ------
+strata_vars.indiv <- c(sex="gender", agecat="age_4lvl", racethn="racethn_combn",
+                       educ="educ_level", incpovlvl="inc_to_pov_level", 
+                       employ="employ_status", foodinsec = "foodinsecure")
+descr_strata_vars.indiv <- c(cycle="Years", strata_vars.indiv)
+
+# Area-level ------
+strata_vars.area <- c(urbrur = "acs_urbrur", urbrur_type = "acs_urbdud_type")
+descr_strata_vars.indiv <- c(cycle="Years", strata_vars.area)
+
+# Combined list -----
+strata_vars <- c(strata_vars.indiv, strata_vars.area)
+descr_strata_vars <- c(cycle="Years", strata_vars)
+
+
+# ==========================
+## Descriptive variables 
+# ==========================
+
+addn_table1_vars <- c("smoke_status", "alch_freq_wk", "pa_level_mets", "genhealth",
+                      "income_hh", "income_fam", "foodsecure_level",
+                      "uacr_level", "ckd_gfr_level", "fib4_cat", "nfs_cat")
 
 
 # ===================
@@ -143,7 +156,12 @@ all_outcomes.l <- list(
                 "taste_mouth_quinine_glms", "taste_mouth_nacl_1M_glms", 
                 "taste_mouth_nacl_320mM_glms", "smell_pst_total", "smell_dysfun_any",
                 "smell_dysfun_severe", 
-                paste0("tastechange_", c("sweet", "salt", "bitter", "sour"), "_worse"))
+                paste0("tastechange_", c("sweet", "salt", "bitter", "sour"), "_worse")),
+  
+  riskpred_sdi = c( ## Disease risk predictions: PREVENT+SDI  ----------
+                    paste0(rep("prevent_",24), 
+                           rep(c("cvd", "ascvd", "hf", "chd", "stroke"), each=4), 
+                           rep(c("_10yr", "_30yr"), each=2), c("_sdi", "_full.sdi")))
 )
 
 # Make separate list of NDI outcomes
@@ -153,4 +171,6 @@ ndi_outcomes <- list(
     "ndi_mortstat_diab", "ndi_mortstat_diab_any" 
   )
 )
+
+
 

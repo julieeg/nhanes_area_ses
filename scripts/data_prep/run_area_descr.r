@@ -1,147 +1,37 @@
 # Run descriptive analyses
 
-################################################################################
-## Set Up; Load Required Packages & Data Files
-################################################################################
-
-## set local directory ------------------------
-setwd('~/Documents/GitHub/nhanes_area_ses/run') 
-
-## load required base pacakges
-list_of_packages <- c(
-  "tidyverse", "data.table", "nhanesA", "progress", "sociome", "jsonlite", "haven", 
-  "forcats", "parallel") ; invisible(lapply(list_of_packages, function(pkg) {
-    if(!requireNamespace(pkg, quietly = TRUE)) { 
-      install.packages(pkg) } ; library(pkg, character.only = TRUE)
-  }))
-
-
-## load pre-built pantry functions (for data wrangling)
-get_github_scripts <-function(user, repo, path, file=NULL) {
-  api <- sprintf("https://api.github.com/repos/%s/%s/contents/%s", user, repo, path)
-  scripts <- grep("*.R", jsonlite::fromJSON(api)$name, value = T, ignore.case = T)
-  if(is.null(file)) {
-    URLs <- lapply(scripts, function(f) sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f))
-  } else {
-    URLs <- sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, file)
-  } ; invisible(lapply(URLs, source))
-} ; get_github_scripts("julieeg", "pantry", "functions")
-
-
-## Load nhanes_area_ses scripts -------------------
-get_github_scripts("julieeg", "nhanes_area_ses", "scripts/analysis/build_nhanes_survdesign.r")
-source("../scripts/functions/nhanes_survdesign_functions.r")
-
-
-## Load nhanes data & prevent variables ------------------
-nhanes_dat <- readRDS("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.rds")
-
-path_to_output <- "../data/output/"
-
-
-################################################################################
-## Define lists of exposures, outcomes, and strata
-################################################################################
-
-# ===================
-## SES Exposures
-# ===================
-
-ses_indiv_exposures <- c(educ="educ_level", incpov="inc_to_pov", incpovlvl="inc_to_pov_level", 
-                         employ="employ_status", foodinsecure = "foodinsecure")
-
-ses_area_exposures <- c(urbrur = "acs_urbrur.bin", urbrurcat = "acs_urbrur.cat",
-                        pctlths="acs_educ_lths_pct", pctltcoll="acs_educ_ltcoll_pct",
-                        pctunemp = "acs_unemp_pct", mhi="acs_incpov_mhi", 
-                        pctfpl200="acs_incpov_fpl200_pct", sdi="sdi", svi="svi", adi="adi")
-
-ses_exposures <- c(ses_indiv_exposures, ses_area_exposures)
-
-
-# ==========================
-## Stratifying variables
-# ==========================
-
-strata_vars <- c(sex="gender", agecat="age_4lvl", racethn="racethn_combn")
-
-
-# ===================
-## All outcomes 
-# ===================
-
-all_outcomes.l <- list(
-  
-  behav = c( ## Behavioral traits --------------------------------
-             "smoke_current", "smoke_ever", "alch_drink_curr", "alch_drink_daily",
-             "alch_drink_weekly", "pa_total_mets_wk", "pa_meets_guidelines", 
-             "hei2015_total", "ahei_total", "dii_total", "dietsuppl_any",
-             "dietsuppl_num", "addsalt_prep_often", "addsalt_table_often",
-             "restaur_freq_gt2", "govtmeal_any", "foodinsecure", 
-             "genhealth_low_vs_other", "hc_drvisit", "hc_hospadmit", 
-             "insur_any", "uninsur_lastyr"),
-  
-  biomark = c( ## Annthrop/BP, clinical labs, metals/toxins, ----------------------
-               "bmi", "waist", "whr", "wt", "sbp_mean", "dbp_mean",
-               "fg", "fi", "tg", "tc", "hdl", "ldl_friedewald", "glu", "tgglu",
-               "ogtt_2hg", "hba1c", "uacr", "egfr", "crp", "creatinine",
-               "vitd", "b_carot","g_tocoph", "t_lycop", "manganese", "selenium",
-               "mercury", "lead", "cadmium", "hcb", "hcb_adj", "hepox", "pcb180", 
-               "pcbdiox", "u_bpa", "testosterone", "estradiol", "hpv_oral"),
-  
-  disease = c( ## Disease outcomes ---------------------------
-               "diabetes", "diabetes_undx", "htn", "htn_undx", "htn_stg1", 
-               "obese", "obese_abd", "cvd", "ascvd", "chf", "mdd",
-               "ckd", "ckd_gfr_gte3", "ckd_any", "copd", "copd_pft", "pft_lt07", 
-               "nfs", "nfs_mod_vs_low", "nfs_high_vs_low",
-               "liver_cap_any", "liver_cap_mod_sev"),
-  
-  riskpred = c( ## Disease risk predictions: FIB4 & PREVENT est  ----------
-                "fib4", "fib4_mod_vs_low", "fib4_high_vs_low", 
-                paste0(rep("prevent_",40), 
-                       rep(c("cvd", "ascvd", "hf", "chd", "stroke"), each=8), 
-                       rep(c("_10yr", "_30yr"), each=4), 
-                       c("_base", "_hba1c", "_uacr", "_full"))),
-  
-  chemosen = c( # Taste/Smell outcomes ----------------------
-                "taste_mouth_quinine_glms", "taste_mouth_nacl_1M_glms", 
-                "taste_mouth_nacl_320mM_glms", "smell_pst_total", "smell_dysfun_any",
-                "smell_dysfun_severe", 
-                paste0("tastechange_", c("sweet", "salt", "bitter", "sour"), "_worse"))
-)
-
-# Make separate list of NDI outcomes
-ndi_outcomes <- list(
-  ndi = c(
-    "ndi_mortstat", "ndi_mortstat_hd", "ndi_mortstat_cbvd", "ndi_mortstat_cvd", 
-    "ndi_mortstat_diab", "ndi_mortstat_diab_any" 
-  )
-)
-
 
 ################################################################################
 ## Descriptive summaries by Age, Sex and Race/Ethnicity 
 ################################################################################
 
-#dir.create(paste0(path_to_output, "descr"))
-
 # =====================================================================
-## Descriptive Table 1s, by EXPOSURES & STRATA for ALL variables
+## Descriptive Table 1s, by AREA-LEVEL exposures & strata for ALL variables
 # =====================================================================
 
-## Apply over all EXPOSURES & STRATA, on all OUTCOMES
-addn_tab1_vars <- c("smoke_status", "alch_freq_wk", "pa_level_mets", "genhealth",
-                    "income_hh", "income_fam", "uacr_level", "ckd_gfr_level", 
-                    "fib4_cat", "nfs_cat")
+descr_tab1_vars.l <- c(years="Years", 
+                       list(strata = unname(strata_vars.indiv)), 
+                       list(ses = unname(ses_exposures.indiv)),
+                       # Add in area-level STRATA & SES variables
+                       list(strata_area = unname(strata_vars.area)), 
+                       list(ses_area = unname(ses_exposures.area)), 
+                       list(descr = addn_table1_vars),
+                       c(all_outcomes.l, ndi_outcomes)
+)
 
-strata_descr <- c(cycle="Years", strata_vars, ses_exposures)
-vars_tab1.l <- c(years="Years", list(strata = unname(strata_vars)), 
-                 list(ses = unname(ses_exposures)), c(all_outcomes.l, ndi_outcomes))
-
-lapply(seq_along(strata_tab1), function(x) {
-  mclapply(vars_tab1.l, function(vars) {
-    build_nhanes_summarytable.fun(vars, strata=strata_tab1[[x]], digits = 3) 
-  }) %>% do.call(rbind.data.frame, .) %>% 
-    fwrite(paste0(path_to_output, "/descr/tab_descr_allvars_by", names(strata_tab1[x]), ".csv"))
+lapply(seq_along(descr_strata_vars.area), function(z) {
+  lapply(seq_along(descr_tab1_vars.l), function(y) {
+    cat(sprintf("Describing vars, %s | By strata = %s \n", 
+                toupper(names(descr_tab1_vars.l)[y]), toupper(names(descr_strata_vars.indiv)[z])))
+    build_nhanes_summarytable.fun(descr_tab1_vars.l[[y]], 
+                                  strata = descr_strata_vars.indiv[[z]], 
+                                  data = nhanes_dat, d=3) 
+  }) %>% do.call(bind_rows, .) %>% 
+    fwrite(paste0(path_to_output, "descr/tab_descr_allvars_by", 
+                  names(descr_strata_vars.indiv[z]), ".csv"))  
+  cat(sprintf("Finished. | Saving table to %s \n", paste0(
+    path_to_output, "descr/tab_descr_allvars_by", names(descr_strata_vars.indiv[z]), ".csv"))
+  )
 }) 
 
 

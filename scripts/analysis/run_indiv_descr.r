@@ -4,26 +4,40 @@
 ## Descriptive summaries by Age, Sex and Race/Ethnicity 
 ################################################################################
 
-#dir.create("../data/output/descr")
+## NOTE: Removed PREVENT+SDI variables from all_outcomes
+all_outcomes.l$riskpred_sdi <- NULL
+
 
 # =====================================================================
 ## Descriptive Table 1s, by EXPOSURES & STRATA for ALL variables
 # =====================================================================
 
-## Apply over all EXPOSURES & STRATA, on all OUTCOMES
-addn_table1_vars <- c("smoke_status", "alch_freq_wk", "pa_level_mets", "genhealth",
-                      "income_hh", "income_fam", "uacr_level", "ckd_gfr_level", 
-                      "fib4_cat", "nfs_cat")
+descr_tab1_vars.l <- c(
+  years="Years", 
+  list(strata = unname(strata_vars.indiv)), 
+  list(ses = unname(ses_exposures.indiv)), 
+  list(descr = addn_table1_vars),
+  c(all_outcomes.l, ndi_outcomes)
+  )
 
-strata_descr <- c(cycle="Years", strata_vars, ses_exposures)
-vars_tab1.l <- c(years="Years", list(strata = unname(strata_vars)), 
-                 list(ses = unname(ses_exposures)), c(all_outcomes.l, ndi_outcomes))
-
-lapply(seq_along(strata_tab1), function(x) {
-  mclapply(vars_tab1.l, function(vars) {
-      build_nhanes_summarytable.fun(vars, strata=strata_tab1[[x]], digits = 3) 
-    }) %>% do.call(rbind.data.frame, .) %>% 
-    fwrite(paste0("../data/output/descr/tab_descr_allvars_by", names(strata_tab1[x]), ".csv"))  ## **COMMEBT OUT PATH TO SAVE THE DATA**
+lapply(seq_along(strata_vars.indiv), function(z) {
+  lapply(seq_along(descr_tab1_vars.l), function(y) {
+    
+    cat(sprintf("Describing vars, %s | By strata = %s \n", 
+                toupper(names(descr_tab1_vars.l)[y]), toupper(names(descr_strata_vars.indiv)[z])))
+      
+    build_nhanes_summarytable.fun(descr_tab1_vars.l[[y]], 
+                                  strata = descr_strata_vars.indiv[[z]], 
+                                  data = nhanes_dat, d=3) }) %>% 
+    do.call(bind_rows, .) %>% 
+    fwrite(paste0("../data/output/descr/tab_descr_allvars_by", 
+                  names(descr_strata_vars.indiv[z]), ".csv"))  
+  
+  ## Finished: printing output
+  cat(sprintf("Finished. | Saving table to %s \n", paste0(
+    path_to_output, "descr/tab_descr_allvars_by", names(descr_strata_vars.indiv[z]), ".csv"))
+  )
+  
 }) 
 
 
@@ -31,7 +45,6 @@ lapply(seq_along(strata_tab1), function(x) {
 ## Distributions of indiv and area-level SES measures by each STRATA
 ################################################################################
 
-strata_descr <- c(strata_vars, ses_exposures)
 
 ## Quantiles of continuous SES exposures x strata
 

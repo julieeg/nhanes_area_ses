@@ -12,21 +12,11 @@ setwd('~/Documents/GitHub/nhanes_area_ses/run')
 ## load required base pacakges
 list_of_packages <- c(
   "tidyverse", "data.table", "nhanesA", "progress", "sociome", "jsonlite", 
-  "haven", "forcats", "stringdist"
+  "haven", "forcats" , "stringdist"
 ) ; invisible(lapply(list_of_packages, function(pkg) {
   if(!requireNamespace(pkg, quietly = TRUE)) { 
     install.packages(pkg) } ; library(pkg, character.only = TRUE)
 }))
-
-
-## load pre-built pantry functions (for data wrangling)
-get_github_scripts <-function(user, repo, path) {
-  api <- sprintf("https://api.github.com/repos/%s/%s/contents/%s", user, repo, path)
-  scripts <- grep("*.R", jsonlite::fromJSON(api)$name, value = T)
-  URLs <- lapply(scripts, function(f) sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f))
-  invisible(lapply(URLs, source))
-} ; get_github_scripts("julieeg", "pantry", "functions")
-
 
 ## List data categories with labels
 data_categories <- c("DEMO", "LABORATORY", "EXAM", "QUESTIONNAIRE", "DIET")
@@ -101,15 +91,27 @@ recode_nhanes_na.fun <- function(x) {
 }
 
 
+## Add descriptive labels (option to set factor order)
+add_descr_labels <- function(data, base_var, labs_vals, ordered = T) {
+  base <- data %>% select(all_of(base_var)) 
+  x <- rep(NA, length(base))
+  for(i in 1:length(labs_vals)) {
+    x[base == labs_vals[i] ] <- names(labs_vals)[i]
+  } ; if(ordered == T) {
+    x <- factor(x, levels=names(labs_vals)) 
+  } ; return(x)
+}
+
+
 ## ==================================
 ## Prepare DEMOGRAPHICS variables 
 ## ==================================
 
-racethn.labs <- c(
-  "NHW" = "Non-Hispanic White", "NHB" = "Non-Hispanic Black", 
-  "NHAsian" = "Non-Hispanic Asian", "Mexican-American" = "Mexican American", 
-  "Other Hispanic" = "Other Hispanic", 
-  "Other/Multi-Racial" = "Other Race - Including Multi-Racial")
+#racethn.labs <- c(
+#  "NHW" = "Non-Hispanic White", "NHB" = "Non-Hispanic Black", 
+#  "NHAsian" = "Non-Hispanic Asian", "Mexican-American" = "Mexican American", 
+#  "Other Hispanic" = "Other Hispanic", 
+#  "Other/Multi-Racial" = "Other Race - Including Multi-Racial")
 
 racethn_abbrev.labs <- c(
   "NHW" = "Non-Hispanic White", "NHB" = "Non-Hispanic Black", 
@@ -117,14 +119,22 @@ racethn_abbrev.labs <- c(
   "OthHis" = "Other Hispanic", 
   "Oth/Mult" = "Other Race - Including Multi-Racial")
 
-educ_level.labs <- c(
-  "Less than 9th grade"="Less than 9th grade", 
-  "9-11th grade (includes 12th grade with no diploma)"="9-11th grade", 
-  "High school graduate/ged or equivalent"="HS graduate or GED", 
-  "High school grad/ged or equivalent"="HS graduate or GED",
-  "Some college or aa degree"="Some college or AA degree",
-  "College graduate or above"="College graduate or above")
 
+#educ_level.labs <- c(
+#  "Less than 9th grade"="Less than 9th grade", 
+#  "9-11th grade (includes 12th grade with no diploma)"="9-11th grade", 
+#  "High school graduate/ged or equivalent"="HS graduate or GED", 
+#  "High school grad/ged or equivalent"="HS graduate or GED",
+#  "Some college or aa degree"="Some college or AA degree",
+#  "College graduate or above"="College graduate or above")
+
+educ_level_abbrev.labs <- c(
+  "Less than 9th grade"="LessThan9th", 
+  "9-11th grade (includes 12th grade with no diploma)"="SomeHS_9to11", 
+  "High school graduate/ged or equivalent"="HSgrad_GED", 
+  "High school grad/ged or equivalent"="HSgrad_GED",
+  "Some college or aa degree"="SomeColl_AA",
+  "College graduate or above"="Collgrad_Above")
 
 # income levels
 inc.vals <- c(
@@ -174,12 +184,12 @@ nhanes_demo_processed <- nhanes_data_raw %>%
       TRUE ~ NA)) %>% 
   mutate_at("educ_level", ~case_when(
     . %in% c(paste(c("9th", "10th", "11th"), "grade"), "12th grade, no diploma",
-             "9-11th grade (includes 12th grade with no diploma)") ~ "9-11th grade",
-    . %in% c("Ged or equivalent", "High school graduate") ~ "HS graduate or GED",
-    . == "More than high school" ~ "Some college or AA degree",
-    TRUE ~ unname(educ_level.labs[.]))) %>% 
+             "9-11th grade (includes 12th grade with no diploma)") ~ "SomeHS_9to11",
+    . %in% c("Ged or equivalent", "High school graduate") ~ "HSgrad_GED",
+    . == "More than high school" ~ "SomeColl_AA",
+    TRUE ~ unname(educ_level_abbrev.labs[.]))) %>% 
   mutate_at("educ_level", ~ factor(
-    ., levels=unique(rev(unname(educ_level.labs))))) %>% 
+    ., levels=unique(rev(unname(educ_level_abbrev.labs))))) %>% 
     
   # Income level --------------------
   mutate_at(c("income_hh", "income_fam"), ~factor(gsub("er", "er ", gsub(" ", "", gsub(" to ", "-", .))))) %>% 
@@ -193,12 +203,12 @@ nhanes_demo_processed <- nhanes_data_raw %>%
   # Family Income-Poverty Ratio (f-PIR) ---------------
   mutate(
     inc_to_pov_level = case_when(
-      inc_to_pov < 1 ~"Low income",
-      inc_to_pov >= 1 & inc_to_pov < 4 ~ "Middle income",
-      inc_to_pov >= 4 ~ "High income",
+      inc_to_pov < 1 ~"LowInc",
+      inc_to_pov >= 1 & inc_to_pov < 4 ~ "MiddleInc",
+      inc_to_pov >= 4 ~ "HighInc",
       TRUE ~ NA)) %>%
   mutate_at("inc_to_pov_level", ~ factor(., levels=c(
-    "High income", "Middle income", "Low income"))) %>%
+    "HighInc", "MiddleInc", "LowInc"))) %>%
   
   select(base_vars, age, age_4lvl, gender, female, 
          racethn, racethn_addNHA, racethn_combn, educ_level, 
@@ -1316,22 +1326,20 @@ nhanes_processed %>% saveRDS("../data/processed/nhanes_processed.rds")
 
 
 ## Delete large breadcrunmbs ...
-#rm(nhanes_demo_processed)
-#rm(nhanes_quest_behav_processed) 
-#rm(nhanes_lab_processed)
-#rm(nhanes_exam_processed)
-#rm(nhanes_quest_pa_processed)
-#rm(nhanes_quest_rx_processed)
-#rm(nhanes_csexam_processed)
-#rm(nhanes_quest_processed)
-#rm(nhanes_diet_processed)
-#rm(nhanes_dietindex_processed)
-#rm(nhanes_prevent_processed)
+rm(nhanes_demo_processed)
+rm(nhanes_quest_behav_processed) 
+rm(nhanes_lab_processed)
+rm(nhanes_exam_processed)
+rm(nhanes_quest_pa_processed)
+rm(nhanes_quest_rx_processed)
+rm(nhanes_csexam_processed)
+rm(nhanes_quest_processed)
+rm(nhanes_diet_processed)
+rm(nhanes_dietindex_processed)
 rm(nhanes_nutr_processed)
-rm(nhanes_prevent_raw)
-#rm(nhanes_disease_processed)
+rm(nhanes_disease_processed)
 
 
 ## EOF
-# Last Updated: 08-28-2026
+# Last Updated: 09-28-2026
 

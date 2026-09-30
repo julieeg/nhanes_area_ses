@@ -1,4 +1,6 @@
-# Rscript for applying survey weights and running regressions in NHANES
+# Repo: nhanes_are_ses
+# Path: scripts/functions/nhanes_survdesign_functions
+# Description: Custom functions for survey-weighted data prep & regressions in NHANES
 
 ################################################################################
 ## Set Up; Load Required Packages & Data Files
@@ -174,12 +176,14 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL,
     }
     
     # print var_summary
+    var_summary <- var_summary %>% 
+      mutate(across(starts_with("n_"), as.numeric))
     var_summary
     
   })
   
   # Compile & clean summary table ------------------
-  sumtab_df <- do.call(rbind.data.frame, sumtab.l) %>% 
+  sumtab_df <- do.call(bind_rows, sumtab.l) %>% 
     as.data.frame() %>%
     mutate(across(starts_with("n_"), ~ifelse(
       . == "", "", round(as.numeric(.), 0))) )
@@ -959,13 +963,8 @@ calc_nhanes_riskpred.fun <- function(exposure, outcome, covariates = c("age", "g
 }
 
 
-
-
-
-
-
 ###########################################################################
-## Functions to plot box/barplots from distribution function
+## HOLD: Functions to plot box/barplots from distribution function
 ############################################################################
 
 ggplot_theme <- theme_bw() + 
