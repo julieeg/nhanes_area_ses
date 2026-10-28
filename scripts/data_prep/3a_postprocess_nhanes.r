@@ -172,6 +172,20 @@ nhanes_postprocessed <- nhanes_postprocessed %>%
 nhanes_postprocessed %>% saveRDS("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.rds")
 nhanes_postprocessed %>% fwrite("../data/processed/nhanes_postprocessed_linked_ndi_prvnt_sdi.csv")
 
+# ------------------------------------------------------------------------
+## Separate & save nhanes_postprocessed by CYCLE to enable GitHub upload
+# ------------------------------------------------------------------------
+
+years <- unique(nhanes_postprocessed$Years)
+
+lapply(years, function(y) {
+  yrtag <- paste0(unname(sapply(unlist(strsplit(y,"-")), function(yr) substr(yr, 3,4))), 
+         collapse = "")
+  nhanes_postprocessed %>% filter(Years == y) %>% 
+    fwrite(paste0("../data/processed/byyear/nhanes_postprocessed_linked_ndi_prvnt_sdi_", yrtag, ".csv")
+    )
+})
+
 
 ## ===================================================
 ## Write function to select correct variable weight
