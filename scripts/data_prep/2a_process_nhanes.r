@@ -107,26 +107,11 @@ add_descr_labels <- function(data, base_var, labs_vals, ordered = T) {
 ## Prepare DEMOGRAPHICS variables 
 ## ==================================
 
-#racethn.labs <- c(
-#  "NHW" = "Non-Hispanic White", "NHB" = "Non-Hispanic Black", 
-#  "NHAsian" = "Non-Hispanic Asian", "Mexican-American" = "Mexican American", 
-#  "Other Hispanic" = "Other Hispanic", 
-#  "Other/Multi-Racial" = "Other Race - Including Multi-Racial")
-
 racethn_abbrev.labs <- c(
   "NHW" = "Non-Hispanic White", "NHB" = "Non-Hispanic Black", 
   "NHA" = "Non-Hispanic Asian", "MexAm" = "Mexican American", 
   "OthHis" = "Other Hispanic", 
   "Oth/Mult" = "Other Race - Including Multi-Racial")
-
-
-#educ_level.labs <- c(
-#  "Less than 9th grade"="Less than 9th grade", 
-#  "9-11th grade (includes 12th grade with no diploma)"="9-11th grade", 
-#  "High school graduate/ged or equivalent"="HS graduate or GED", 
-#  "High school grad/ged or equivalent"="HS graduate or GED",
-#  "Some college or aa degree"="Some college or AA degree",
-#  "College graduate or above"="College graduate or above")
 
 educ_level_abbrev.labs <- c(
   "Less than 9th grade"="LessThan9th", 
@@ -136,7 +121,6 @@ educ_level_abbrev.labs <- c(
   "Some college or aa degree"="SomeColl_AA",
   "College graduate or above"="Collgrad_Above")
 
-# income levels
 inc.vals <- c(
   "$0-$4,999", "$5,000-$9,999", "$10,000-$14,999", "$15,000-$19,999",
   "Under $20,000", "Over $20,000", "$20,000-$24,999", "$25,000-$34,999", 
@@ -189,7 +173,8 @@ nhanes_demo_processed <- nhanes_data_raw %>%
     . == "More than high school" ~ "SomeColl_AA",
     TRUE ~ unname(educ_level_abbrev.labs[.]))) %>% 
   mutate_at("educ_level", ~ factor(
-    ., levels=unique(rev(unname(educ_level_abbrev.labs))))) %>% 
+    ifelse(.=="", NA, .),
+    levels=unique(rev(unname(educ_level_abbrev.labs))))) %>% 
     
   # Income level --------------------
   mutate_at(c("income_hh", "income_fam"), ~factor(gsub("er", "er ", gsub(" ", "", gsub(" to ", "-", .))))) %>% 
@@ -929,9 +914,9 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
       levels=unique(unname(foodsecure.labs)))) %>% 
   mutate(
     foodinsecure = factor(case_when(
-      foodsecure_level == "Food secure" ~ 0,
+      foodsecure_level == "Food secure" ~ "FoodSecure",
       is.na(foodsecure_level) ~ NA,
-      TRUE ~ 1))) %>% 
+      TRUE ~ "FoodInsecure"))) %>% 
   
   # Recode tasetchange variables as No Change (Reference)/Worse/Better
   mutate(
@@ -1341,5 +1326,5 @@ rm(nhanes_disease_processed)
 
 
 ## EOF
-# Last Updated: 09-28-2026
+# Last Updated: 10-20-2026
 

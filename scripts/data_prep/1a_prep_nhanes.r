@@ -27,6 +27,23 @@ get_github_scripts <-function(user, repo, path) {
 } ; get_github_scripts("julieeg", "pantry", "functions")
 
 
+## Custom function to load GH files ===========
+get_github_files <-function(user, repo, path, load_fn = source, file_ext="r", file_pf=NULL) {
+  api <- sprintf("https://api.github.com/repos/%s/%s/contents/%s", user, repo, path)
+  files <- grep(paste0("\\.",file_ext,"$"), fromJSON(api)$name, value = T, ignore.case = T)
+  if(!is.null(file_pf)) { 
+    files <- grep(file_pf, files, value=T) 
+  } ; print(sprintf("LOADING | %s/%s/%s ... FILES | %s", user, repo, path, paste0(files, collapse=", ")))
+  
+  URLs <- lapply(files, function(f) sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f))
+  if(file_ext != "r") {
+    gh_files.l <- invisible(lapply(URLs, load_fn)) ; 
+    names(gh_files.l) <- gsub(paste0("[.]", file_ext), "", files) 
+    return(gh_files.l) 
+  } else { invisible(lapply(URLs, load_fn)) }
+}
+
+
 ################################################################################
 ## Build index of all NHANES tables/vars across time points (1999-2023)
 ################################################################################

@@ -15,7 +15,7 @@ nhanes_processed <- readRDS("../data/processed/nhanes_processed.rds")
 nhanes_ndi_raw <- fread("../data/raw/ndi_nhanes/nhanes_ndi_raw.csv") 
 
 ## prevent estimated in nhanes, from 1999 to 2020 -----------------
-nhanes_prevent_raw <- fread("../data/processed/prevent/nhanes_prevent_sdi_complete.csv")
+nhanes_prevent_raw <- fread("../data/processed/prevent/nhanes_prevent_sdi_complete_v2.csv")
 
 
 ## =====================================================
@@ -55,9 +55,34 @@ nhanes_prevent_processed <- nhanes_prevent_raw %>%
       ascvd == 0 & diabetes == 0 & diabetes_undx == 0 & ckd == 0 &
         prevent_bprx != 1 & sbp_mean < 139 & dbp_mean < 89 ~ 1,
       TRUE ~ 0)) %>% 
+  
+  ## Participant sub-sets based on APPLICABILITY of prevent equations (from SC):
+  # From HTN guidelines – (“and” criteria across a/b/c)
+  # 30-79 with no ASCVD or diabetes or eGFR<60
+  # No current use of BP meds
+  # SBP 130-139 or DBP 80-89
+  # i.      No SBP >139
+  # ii.      No DBP >89
+  mutate(
+    prevent_use_htn = case_when(
+      (age >= 30 & age <= 79 & ascvd == 0 & diabetes == 0 & prevent_egfr >=60) &
+        prevent_bprx == 0 &
+        ((sbp_mean >= 130 & sbp_mean <= 139) | (dbp_mean >= 80 & dbp_mean <= 89)) ~ 1,
+      TRUE ~ 0),
+    # From dyslipidemia guidelines – (“and” criteria across a/b/c)
+    # 30-39 with no ASCVD OR 40-79 with no ASCVD or diabetes
+    # No current use of statin
+    # LDL 70-189
+    prevent_use_dyslip = case_when(
+      (age >= 30 & age <= 79 & ascvd == 0 | 
+         age >= 40 & age <= 79 & ascvd == 0 & diabetes == 0)  &
+        prevent_statin == 0 &
+        ldl >= 70 & ldl <= 189 ~ 1,
+      TRUE ~ 0)) %>% 
   mutate(across(
-    c(starts_with(c("prevent_include", "prevent_complete")), "prevent_statin", "prevent_bprx",
-      "prevent_diab", "prevent_smoking"), ~as.factor(.))) %>%
+    c(starts_with(c("prevent_include", "prevent_use", "prevent_complete")), 
+      "prevent_statin", "prevent_bprx", "prevent_diab", "prevent_smoking"), 
+    ~as.factor(.))) %>%
   select(
     -c(age, ascvd, ckd, diabetes, diabetes_undx, ldl, sbp_mean, dbp_mean)
     )
@@ -66,6 +91,7 @@ nhanes_prevent_processed <- nhanes_prevent_raw %>%
 nhanes_postprocessed <- left_join(
   nhanes_processed, nhanes_ndi_processed, by = c("SEQN", "Years")) %>%
   full_join(nhanes_prevent_processed, by = c("SEQN"))
+
 
 ## Add in INTERSECTION variables, for strata X educ and inc
 nhanes_postprocessed <- nhanes_postprocessed %>%
@@ -87,7 +113,15 @@ nhanes_postprocessed <- nhanes_postprocessed %>%
       TRUE ~ NA),
     intx_agecatXincpov = case_when(
       !is.na(age_4lvl) & !is.na(inc_to_pov_level) ~ paste0(age_4lvl, "_x_", inc_to_pov_level),
-      TRUE ~ NA)
+      TRUE ~ NA), 
+  intx_sexXagecatXrace = case_when(
+    !is.na(gender) & !is.na(age_4lvl) & !is.na(racethn_combn) ~ paste0(
+      gender, "_x_", age_4lvl, "_x_", racethn_combn),
+    TRUE ~ NA),
+  intx_sexXagecatXraceXeduc = case_when(
+    !is.na(gender) & !is.na(age_4lvl) & ! is.na(racethn_combn) & !is.na(educ_level) ~ 
+      paste0(gender, "_x_", age_4lvl, "_x_", racethn_combn, "_x_", educ_level),
+    TRUE ~ NA)
   )
 
 
@@ -157,6 +191,8 @@ find_nhanes_weight.fun <- function(variables, data = nhanes_postprocessed) {
 ## Build NHANES data-dictionary, including all variables
 ################################################################################
 
+nhanes_vars_datadict <- fread("../data/raw/nhanes_vars_datadict.csv")
+
 # A complete data-dictionary is required, containing the final variable names 
 # (in nhanes_postprocessed) and the raw variable inputs.
 
@@ -170,7 +206,7 @@ nhanes_var_datadict <- as.data.frame(
       reframe(Raw.Variables = paste0(unique(Raw.Variable.Names), collapse=",")),
     by = "Variable.Name") %>% 
     rowwise() %>% 
-    mutate(Assigned.Weight = find_nhanes_weight.fun(Variable.Name)) 
+    mutate(Assigned.Weight = find_nhanes_weight.fun(Variable.Name, data = nhanes_postprocessed)) 
 
 
 ## Add columns for variable type; category levels and value range
@@ -192,9 +228,9 @@ nhanes_var_datadict <- nhanes_var_datadict %>%
   mutate(Variable.Type = var_descr.fun(Variable.Name, return="var_type")) %>% 
   mutate(Variable.Summary = var_descr.fun(Variable.Name, return="var_summary")) 
   
-nhanes_var_datadict %>% fwrite(., "./nhanes_variable_datadict_09152026.csv")
+nhanes_var_datadict %>% fwrite(., "./nhanes_variable_datadict_10222026.csv")
 
 
 ## EOF
-# Last Updated: 09-30-2026
+# Last Updated: 10-21-2026
 

@@ -40,8 +40,11 @@
 ## Load data dictionary for OGTT variables
 ogtt_datadict <- readxl::read_xlsx("./nhanes_pullrequest_ogtt_09172026.xlsx") 
 
+source("../scripts/functions/nhanes_survdesign_functions.r")
+source("../scripts/functions/build_nhanes_tables.r")
+
 ## Download all variables for OGTT/FG analyses -----------------------
-nhanes_raw.l <- build_nhanes_table(
+nhanes_raw.l <- build_nhanes_table.fun(
   data_dictionary = ogtt_datadict, start_year = 2007, 
   end_year = 2016, special_weights = "WTSAF|WTSOG")
 
@@ -53,7 +56,6 @@ nhanes_raw.l <- build_nhanes_table(
 ## Subset to participants with EXAM data & >= 18y
 nhanes_raw <- nhanes_raw.l$full_data_table %>% 
   filter(grepl("Both", RIDSTATR)) #%>% #N=48710
-  #filter(age >= 18)  # N=19629 
   
 
 ################################################################################
@@ -63,16 +65,33 @@ nhanes_raw <- nhanes_raw.l$full_data_table %>%
 base_vars <- names(nhanes_raw %>% select(
   "Years", "SEQN", "RIDSTATR", starts_with("SD"), starts_with("WT"), -"wt")
   )
- 
+
+
 ## ===============================================
 ## Clean basic demographics & lab vars
 ## ===============================================
+
+racethn_abbrev.labs <- c(
+  "NHW" = "Non-Hispanic White", "NHB" = "Non-Hispanic Black", 
+  "NHA" = "Non-Hispanic Asian", "MexAm" = "Mexican American", 
+  "OthHis" = "Other Hispanic", 
+  "Oth/Mult" = "Other Race - Including Multi-Racial")
 
 ## Process phenotypes
 nhanes_raw <- nhanes_raw %>%
   
   # Convert gender (Female/Male) to female (1/0) -----------------
   mutate(female = as.factor(ifelse(gender == "Female", 1, 0))) %>% 
+  
+  # Prepare race/ethnicity ---------------
+  mutate(
+    racethn = add_descr_labels(., "racethn1", racethn_abbrev.labs, ordered = T),       
+    racethn_addNHA = add_descr_labels(., "racethn_addNHA", racethn_abbrev.labs, ordered = T)) %>%
+    mutate(
+      racethn_combn = case_when(
+        racethn_addNHA == "Oth/Mult" & 
+          Years %in% c("2007-2008", "2009-2010") ~ "Oth/Mult/NHA", # Definitions changed Pre-/Post-2011
+        TRUE ~ racethn_addNHA)) %>%
   
   # Calculate mean SBP/DBP, by hand ------------------------------
   mutate(
@@ -84,7 +103,7 @@ nhanes_raw <- nhanes_raw %>%
   mutate(ldl_friedewald = ifelse(ftg < 400, tc - hdl - (ftg/5), NA)) %>% 
   
   ## Process fasting blood measures (NA if fasting < 8hr) ----------
-  mutate_at(c("fg", "fi", "hdl"), ~case_when(
+  mutate_at(c("fg", "fi", "hdl", "ftg"), ~case_when(
     fasting_hr <9 ~ NA,
     TRUE ~ .)
   ) %>% 
@@ -106,8 +125,8 @@ nhanes_raw <- nhanes_raw %>%
 ## Medication use    
 # -------------------------
 
-#rxq_url <- "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/1988/DataFiles/RXQ_DRUG.xpt"
-#rxq_drug <- nhanesA::nhanesFromURL(rxq_url)
+rxq_url <- "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/1988/DataFiles/RXQ_DRUG.xpt"
+rxq_drug <- nhanesA::nhanesFromURL(rxq_url)
 
 ## 1) Create list of drug codes for each medication type ----------------
 rx_statin <- rxq_drug %>% 
@@ -150,7 +169,9 @@ rx_alltypes <- rbind.data.frame(rx_statin, rx_bp, rx_diab) %>%
     rx_drug = paste0(unique(RXDDRUG), collapse="; "), .groups = "drop") %>%
   pivot_wider(id_cols = "SEQN", names_from="RXUSE", names_glue="{.value}_{RXUSE}",
               values_from = c(rx_use, rx_id, rx_drug)
-              ) ; nhanes_raw <- nhanes_raw %>% 
+              ) 
+
+nhanes_raw <- nhanes_raw %>% 
   rename(rx_use_any = q_rx_use_1) %>%
   select(-starts_with("q_rx")) %>%
   left_join(rx_alluse, by = "SEQN") %>%
@@ -158,6 +179,7 @@ rx_alltypes <- rbind.data.frame(rx_statin, rx_bp, rx_diab) %>%
   mutate(across(starts_with("rx_use_"), ~case_when(
     . == "Yes" ~ "1", rx_use_any == "No" ~ "0", 
     is.na(.) ~ "0", TRUE ~ .)))
+
 
 # ---------------
 # Outcomes 
@@ -253,7 +275,8 @@ nhanes_raw <- nhanes_raw %>% mutate(
 nhanes_raw <- nhanes_raw %>% 
   mutate(
     WTMEC.COMBN = WTMEC2YR,
-    WTSAF.COMBN = WTSAF2YR, 
+    WTSAF.COMBN = WTSAF2YR,
+    WTSOG.COMBN = WTSOG2YR,
     WTYRS = case_when(
       Years %in% c("1999-2000", "2001-2002") ~ 4,
       Years == "2017-2020" ~ 3.2, 
@@ -263,40 +286,118 @@ nhanes_raw <- nhanes_raw %>%
 
 
 ################################################################################
+## Load in NDI mortality data (pre-prepared)
+################################################################################
+
+## ndi nhanes data, from 1999 to 2018 ---------------
+nhanes_ndi_raw <- fread("../data/raw/ndi_nhanes/nhanes_ndi_raw.csv") 
+
+## Prepare NDI data -------
+nhanes_ndi_proc <- nhanes_ndi_raw %>% 
+  # Convert follow-up months to person years; NOTE: var used depends on WEIGHT
+  mutate(
+    ndi_peryear_int = ndi_permth_int / 12,
+    ndi_peryear_exm = ndi_permth_exm / 12
+  ) %>% 
+  # Filter to eligible participants, only
+  filter(ndi_eligstat == 1) %>% 
+  mutate_at("ndi_eligstat", ~as.factor(.))
+
+nhanes_ndi <- left_join(nhanes_raw, nhanes_ndi_proc, by = c("SEQN", "Years"))
+nhanes_ndi %>% saveRDS("../data/processed/nhanes_processed_linked_ndi_ogtt.rds")
+
+
+################################################################################
 ## Preliminary descriptive tables 
 ################################################################################
 
 source("../scripts/functions/nhanes_survdesign_functions.r")
 
+# ==========================================
+## Compile lists of exposures & outcomes 
+# ==========================================
+
+exposures <- c("fg", "fi", "ftg", "ldl_friedewald", "hdl", "ogtt_2hg_cleaned")
+outcomes <- list(
+  cvrelated = c("cvd", "ascvd", "chf", "htn", "diabetes"),
+  mortality = c("ndi_mortstat", "ndi_mortstat_cvd", "ndi_mortstat_hd", 
+                "ndi_mortstat_cbvd", "ndi_mortstat_diab")
+)
+
+# Vars to summarise for Table 1
 vars_to_summarise <- c(
+  Years="NHANES cycle",
   age="Age, years", 
   female="Sex, female",
+  racethn_combn = "Race/ethnicity",
   bmi="BMI, kg/m2",
   waist="Waist circumference, cm",
   sbp_mean = "SBP, mmHg",
   dbp_mean = "DBP, mmHg",
   fg="Fasting Glucose (mg/dL)",
   fi="Fasting Insulin (uU/mL",
+  tc="Total cholesterol",
   ftg="Fasting Triglyceride (mg/dL)",
   hdl="Fasting HDL (mg/dL)",
+  ldl_friedewald="Fasting LDL (md/dL)",
   ogtt_2hg_cleaned = "Two Hour OGTT Glucose (md/dL)",
-  diabetes = "Type 2 diabetes (diagnosed)",
-  diabetes_undx = "Type 2 diabetes (undiagnosed)",
-  htn="Hypertension (diagnosed)",
-  htn_undx = "Hypertension (undiagnosed)",
-  cvd="CVD", ascvd="ASCVD", chf="CHF"
+  diabetes = "Type 2 diabetes",
+  htn="Hypertension",
+  cvd="CVD", ascvd="ASCVD", chf="CHF",
+  ndi_mortstat="Any death",
+  ndi_mortstat_cvd="CVD death",
+  ndi_mortstat_hd="Heart disease-related death",
+  ndi_mortstat_cbvd="Cerebrovascular disease-related death",
+  ndi_mortstat_diab="Diabetes-related death"
 )
 
-build_nhanes_summarytable.fun(
+tab_descr_summary <- build_nhanes_summarytable.fun(
   vars_to_summarise = vars_to_summarise, strata = "include", 
-  data = nhanes_raw
-  )
+  data = nhanes_ndi
+  ) ; tab_descr_summary %>% fwrite("../data/output/insind/tab_descr_byinclude.csv")
 
 
+# =============================================
+## Spearman correlations among fasting labs 
+# =============================================
+
+cormat_labs_sp <- get_nhanes_cormat.fun(
+  vars = c("fg", "fi", "ogtt_2hg_cleaned", "ftg", "tc", "ldl_friedewald", "hdl"),
+  strata = "include",
+  data = nhanes_ndi, method = "spearman")
 
 
+cormat_labs_sp %>% saveRDS("../data/output/insind/tab_descr_corr_fastinglabs_include.rds")
 
 
+################################################################################
+## Preliminary descriptive tables 
+################################################################################
+
+## List of exposures
+models.l <- list(
+  base=c("age", "gender", "racethn_combn"),
+  bmi=c("age", "gender", "racethn_combn", "bmi"))
+
+
+## Summarize associations of fasting labs and 2-hr glucose with;
+# CVD-related outcomes
+glms_cvrelated_basebmi <- run_nhanes_regress_wrapper.fun(
+  regress_fun = run_nhanes_glm.fun, exposure_vars = exposures, 
+  outcome_vars = outcomes$cvrelated, models = models.l,
+  strata = "include",
+  data = nhanes_ndi, collapse = T)
+
+glms_cvrelated_basebmi %>% fwrite("../data/output/insind/tab_glms_fastlabs_cvoutcomes_basebmi_include.csv")
+
+# Mortality outcomes
+coxph_mort_basebmi <- run_nhanes_regress_wrapper.fun(
+  regress_fun = run_nhanes_coxph.fun, exposure_vars = exposures, 
+  outcome_vars = outcomes$mortality, models = models.l,
+  strata = "include",
+  data = nhanes_ndi, collapse = T)
+
+coxph_mort_basebmi %>% fwrite("../data/output/insind/tab_coxph_fastlabs_mortality_basebmi_include.csv")
 
 
 

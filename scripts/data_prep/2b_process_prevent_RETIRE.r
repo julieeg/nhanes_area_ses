@@ -28,7 +28,7 @@ list_of_packages <- c(
 
 
 ## load PREVENTR
-library(preventr)
+library(AHAprevent)
 
 ## Load processed NHANES data
 nhanes_processed <- readRDS("../data/processed/nhanes_processed.rds")

@@ -26,12 +26,36 @@ options(survey.lonely.psu = "adjust")
 ## Build function to summarize descriptive statistics in NHANES
 ################################################################################ 
 
+## Function to recode values in NHANES as missing
+recode_nhanes_na.fun <- function(x) {
+  if(is.numeric(x)) {
+    x[x %in% c(777, 7777, 77777, 999, 9999, 99999)] <- NA_real_
+    return(x)
+  } else if(is.character(x)) {
+    x[x %in% c("Don't know", "Refused", "", 
+               "777", "7777", "77777", "999", "9999", "99999")] <- NA_character_
+    return(x)
+  } else {return(x)}
+}
+
+## Add descriptive labels (option to set factor order)
+add_descr_labels <- function(data, base_var, labs_vals, ordered = T) {
+  base <- data %>% select(all_of(base_var)) 
+  x <- rep(NA, length(base))
+  for(i in 1:length(labs_vals)) {
+    x[base == labs_vals[i] ] <- names(labs_vals)[i]
+  } ; if(ordered == T) {
+    x <- factor(x, levels=names(labs_vals)) 
+  } ; return(x)
+}
+
+
 ## ===================================================
 ## Write function to select correct variable weight
 ## ===================================================
 
-find_nhanes_weight.fun <- function(variables, data = nhanes_dat) {
-  weight_order <- paste0(c("WTSEPH", "WTSPO", "WTSAF", "WTDR", "WTMEC", "WTINT"), ".COMBN")
+find_nhanes_weight.fun <- function(variables, data) {
+  weight_order <- paste0(c("WTSPO", "WTSEPH", "WTSOG", "WTSAF", "WTDR", "WTMEC", "WTINT"), ".COMBN")
   weights_compl <- data %>% 
     select(starts_with("WT"), -wt, -WTYRS, all_of(variables)) %>% 
     drop_na(all_of(variables)) %>% # filter(complete.cases(VAR)) %>% 
@@ -56,66 +80,64 @@ find_nhanes_weight.fun <- function(variables, data = nhanes_dat) {
 # Note: WTMEC2YR is the 2-year MEC weight. If combining multiple cycles, 
 # adjust weights by dividing WTMEC2YR by the number of cycles (e.g., / 3 for 3 cycles).
 
-build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL, 
+build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL,
                                           data = nhanes_dat, digits=1) {
   
   # Generate survey deisgn & summary stats separately, by variable
   sumtab.l <- lapply(1:length(vars_to_summarise), function(x) {
     
-    # Select variable to summarize; Check if numeric or otherwise
+    # Select variable to summarize; 
     var_input <- vars_to_summarise[x]
-    if(!is.null(names(var_input))) {
-      var_name <- var_input[[1]] ; var <- names(var_input)[1]
+    vars_to_include <- unique(c(var_input, strata))
+    
+    # Standardize variable display name vs actual column name
+    if (!is.null(names(var_input)) && names(var_input)[1] != "") { 
+      var_name <- names(var_input)[1]
+      var <- var_input[[1]] 
     } else {
-      var_name <- var_input ; var <- var_input
-    } 
-    
-    n_values <- length(na.omit(unique(data[[var]])))
-    if(is.numeric(data[[var]]) & n_values != 2) {
-      var_type <- "numeric" 
-      } else if (n_values == 2) {
-        var_type <- "binary" 
-      } else {
-          var_type <- "categorical" 
-      }
-    
-    if(is.null(strata)) { data <- data %>% mutate(strata="1") }
-    
-    # 1. Get variable weight
-    var_weight <- find_nhanes_weight.fun(var, data = data) 
-    var_complete <- data %>% select(SEQN, YEARS=Years, nYRS, VAR=var, AGE=age, STRATA=strata, 
-                                    SDMVPSU, SDMVSTRA, WEIGHT=var_weight, WTYRS) %>%
-      mutate(TOTAL="Total") %>% filter(complete.cases(.)) 
-      
-    if(var_type == "binary" & is.numeric(var_complete$VAR)) {
-      var_complete <- var_complete %>% mutate(
-        VAR = factor(VAR))
+      var_name <- unname(var_input)
+      var <- unname(var_input)
     }
-  
-    # 2. Count number of represented years
-    cycle_yrs <- var_complete %>% select(YEARS, nYRS) %>% unique() 
-    cycles <- cycle_yrs$YEARS ; n_cycles <- length(unique(cycles))
-    n_yrs <- sum(cycle_yrs$nYRS)
-    yr_range <- as.numeric(c(gsub("-.*","", min(cycles)), gsub(".*-","", max(cycles))))
-  
-    # 3. Adjust weight, based on n_years
-    var_complete <- var_complete %>% 
-      mutate(WEIGHT_adj = WEIGHT*(WTYRS/n_yrs))
     
-    # 4. Build survey object
-    var_survdesign <- svydesign(id = ~SDMVPSU, strata = ~SDMVSTRA, 
-      weights = ~WEIGHT_adj, nest = TRUE, data = var_complete)
-     
-      # Subset survey object to age >18
-      var_survdesign_gt18 <- subset(var_survdesign, AGE >= 18)
-      
-    # 5. Summarize mean (se) and % (se) by strata
-    strata_levels <- unique(var_complete$STRATA)
-    var_sum <- rbind.data.frame(
-      svyby(~VAR, by = ~TOTAL, design  = var_survdesign_gt18, FUN = svymean, na.rm = TRUE) %>%
-        rename(STRATA=TOTAL),
-      svyby(~VAR, by = ~STRATA, design  = var_survdesign_gt18, FUN = svymean, na.rm = TRUE)
+    # 1. Prepare data BEFORE passing to survey design
+    # Create explicit temporary dummy columns if needed
+    data_use <- data %>%
+      mutate(
+        VAR = .data[[var]],
+        TOTAL = "Total"
       )
+    
+    # If binary/numeric recoding is needed before design setup
+    n_values <- length(na.omit(unique(data_use$VAR)))
+    var_type <- if (is.numeric(data_use$VAR) && n_values != 2) {
+      "numeric" } else if (n_values == 2) { 
+        "binary" } else { "categorical" }
+    
+    if (var_type == "binary" && is.numeric(data_use$VAR)) {
+      data_use$VAR <- as.factor(data_use$VAR)
+    }
+    
+    ## Construct NHANES survey design, using an embedded function to select custom WEIGHT
+    nhanes_survdesign <- build_nhanes_survdesign.fun(
+      vars_to_include = c("VAR", "TOTAL", vars_to_include), 
+      data = data_use, strata = strata)
+    
+    survdesign <- nhanes_survdesign$survdesign
+    survdesign_data <- survdesign$variables
+    survweight <- nhanes_survdesign$survdesign_weight 
+    survcycles <- nhanes_survdesign$survdesign_cycles
+    survsample <- nhanes_survdesign$survdesign_sample
+    
+    # 3. Compute Weighted Means/Proportions
+    strata_levels <- unique(survdesign$variables$STRATA)
+    var_sum <- rbind.data.frame(
+      svyby(~VAR, by = ~TOTAL, design  = survdesign, FUN = svymean, na.rm = TRUE) %>%
+        rename(STRATA=TOTAL),
+      svyby(~VAR, by = ~STRATA, design = survdesign, FUN = svymean, na.rm = TRUE))
+    # If var_type is not numeric, remove VAR from name
+    if(var_type != "numeric") {
+      var_sum <- var_sum %>% rename_with(. ,~gsub("VAR", "", .))
+    }
     
     # ----------------------------------------------
     ## For numeric/continuous variables 
@@ -123,7 +145,7 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL,
     
     if(var_type == "numeric") {
       # Tabulate Raw and Weighted Ns, per STRATA
-      n_sum <- var_survdesign_gt18$variables %>% 
+      n_sum <- survdesign$variables %>% 
         group_by(STRATA) %>% 
         summarise(n_raw = n(), n_weight = sum(WEIGHT_adj[WEIGHT_adj > 0])) %>% 
         add_row(STRATA="Total", n_raw = sum(.$n_raw),
@@ -133,10 +155,10 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL,
         mutate(sum = sprintf("%s \u00B1 %s", round(mean, digits), round(se,digits))) %>% 
         select(STRATA, Variable, sum, starts_with("n_")) %>% 
         # merge in n_sum -----------------------------
-        left_join(n_sum, by = c("STRATA")) %>% 
+      left_join(n_sum, by = c("STRATA")) %>% 
         pivot_wider(names_from="STRATA", values_from=-c(STRATA, Variable)) %>% 
         rename_with(., ~gsub("sum_","",.))
-    
+      
     } else {
       
       # ----------------------------------------------
@@ -145,12 +167,12 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL,
       
       # Tabulate Raw and Weighted Ns, per STRATA and VAR category
       n_sum <- bind_rows(
-        var_survdesign_gt18$variables %>% 
+        survdesign$variables %>% 
           group_by(VAR) %>% 
           summarise(n_raw = n(), n_weight = sum(WEIGHT_adj[WEIGHT_adj > 0]),
                     .groups="drop") %>% 
           mutate(STRATA="Total", .before=1), 
-        var_survdesign_gt18$variables %>% 
+        survdesign$variables %>% 
           group_by(STRATA, VAR) %>% 
           summarise(n_raw = n(), n_weight = sum(WEIGHT_adj[WEIGHT_adj > 0]),
                     .groups="drop")) %>%
@@ -160,19 +182,19 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL,
       var_summary <- var_sum %>% 
         rename_with(., ~gsub("VAR","", .)) %>% 
         rename_at(vars(-STRATA, -starts_with("se")), ~ paste0("mean.", .x)) %>%
-        pivot_longer(cols = -STRATA, names_sep="[.]", names_to=c("msr","Variable")) %>%
+        pivot_longer(cols = -STRATA, names_to=c("msr","Variable"), 
+                     names_pattern = "^(mean|se)\\.(.*)$") %>%
         pivot_wider(names_from=msr) %>% 
         mutate(across(c(mean, se), ~.*100)) %>%
         mutate(sum = sprintf("%s (%s)", round(mean,digits), round(se,digits))) %>% 
         select(STRATA, Variable, sum) %>% 
         # merge in n_sum -----------------------------
-        left_join(n_sum, by = c("STRATA", "Variable")) %>% 
+      left_join(n_sum, by = c("STRATA", "Variable")) %>% 
         pivot_wider(names_from="STRATA", values_from=-c(STRATA, Variable)) %>%
         mutate_at("Variable", ~paste0(" ", .)) %>%
         add_row(Variable = var_name, .before = 1) %>%
         mutate(across(-Variable, ~ifelse(is.na(.), "", .))) %>% 
         rename_with(., ~gsub("sum_","",.))
-      
     }
     
     # print var_summary
@@ -195,84 +217,248 @@ build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL,
 }
 
 
+
 ################################################################################ 
 ## Write function to build NHANES survey objects
 ################################################################################ 
 
-build_nhanes_survdesign.fun <- function(vars_to_include, data = nhanes_dat, strata=NULL) {
+build_nhanes_survdesign.fun <- function(vars_to_include, data = nhanes_dat, strata = NULL) {
   
-  # 1. Get variable weight
-  varweight <- find_nhanes_weight.fun(c(vars_to_include, strata))
-  vars_complete <- data %>% select(
-    SEQN, Years, nYRS, WTYRS, SDMVPSU, SDMVSTRA, STRATA=strata, age,
-    WEIGHT=all_of(varweight), all_of(vars_to_include)) %>%
-    mutate(AGE=age) %>% 
+  # 1. Identify weight variable and subset/complete cases for columns needed
+  varweight <- find_nhanes_weight.fun(c(vars_to_include, strata), data = data)
+  
+  vars_complete <- data %>% 
+    select(SEQN, Years, nYRS, WTYRS, SDMVPSU, SDMVSTRA, STRATA = all_of(strata), 
+           AGE = age, WEIGHT = all_of(varweight), all_of(vars_to_include)) %>% 
     filter(complete.cases(.))
   
-  # If no strata is supplied
-  if(is.null(strata)) {vars_complete <- vars_complete %>% mutate(STRATA = "Total")}
+  # Default to "Total" if no strata is supplied
+  if (is.null(strata)) {
+    vars_complete <- vars_complete %>% mutate(STRATA = "Total")
+  }
   
   # 2. Count number of represented years
-  cycle_yrs <- vars_complete %>% select(Years, nYRS) %>% unique()
-  cycles <- cycle_yrs$Years ; n_yrs <- sum(cycle_yrs$nYRS); n_cycles <- length(cycles)
-  yr_range <- as.numeric(c(gsub("-.*","", min(cycles)), gsub(".*-","", max(cycles))))
-  survdesign_cycles <- cbind.data.frame(cycles=paste0(yr_range, collapse="-"), n_yrs, n_cycles)
+  cycle_yrs <- vars_complete %>% select(Years, nYRS) %>% distinct()
+  cycles <- cycle_yrs$Years 
+  n_yrs <- sum(cycle_yrs$nYRS)
+  n_cycles <- length(cycles)
+  yr_range <- as.numeric(c(gsub("-.*", "", min(cycles)), gsub(".*-", "", max(cycles))))
+  survdesign_cycles <- data.frame(cycles = paste0(yr_range, collapse = "-"), n_yrs, n_cycles)
   
-  # 3. Adjust weight, based on n_years
+  # 3. Adjust weights based on n_years
   vars_complete <- vars_complete %>% 
     mutate(WEIGHT_adj = WEIGHT * (WTYRS / n_yrs))
   
-  # 4. Build survey object
-  ## If no strata, strata = NULL
+  # 4. Build survey object with all complete cases first
   vars_survdesign <- svydesign(
-    id = ~SDMVPSU, strata = ~SDMVSTRA, 
-    weights = ~WEIGHT_adj, nest = TRUE, data = vars_complete)
+    id = ~SDMVPSU, 
+    strata = ~SDMVSTRA, 
+    weights = ~WEIGHT_adj, 
+    nest = TRUE, 
+    data = vars_complete
+  )
   
-  # Subset survey object to age >18
-  vars_survdesign_gt18 <- subset(vars_survdesign, AGE >= 18)
-  vars_survdesign_gt18_dat <- vars_survdesign_gt18$variables %>% 
-    filter(weights(vars_survdesign_gt18) > 0) # Same as $variables$WEIGHT_adj
+  # 5. Correctly subset the ENTIRE survey object for adults (AGE >= 18) and positive weights
+  vars_survdesign_gt18 <- subset(vars_survdesign, AGE >= 18 & WEIGHT_adj > 0)
   
-  # Extract raw and weighted sample sizes & model degrees of freedom
-  n_raw <- nrow(vars_survdesign_gt18$cluster)
-  n_weighted <- sum(vars_survdesign_gt18$variables$WEIGHT_adj)
+  # Extract clean design data frame after subsetting
+  svydesign_data <- vars_survdesign_gt18$variables
+  
+  # 6. Extract raw and weighted sample sizes & model degrees of freedom
   survdf <- degf(vars_survdesign_gt18)
-  survdesign_sample <- vars_survdesign_gt18_dat %>% 
+  
+  survdesign_sample <- svydesign_data %>% 
     group_by(STRATA) %>% 
     summarise(
-      n_raw = n(),
-      n_weighted = sum(WEIGHT_adj),
-      .groups = "drop") %>% 
+      n_raw = n(), n_weighted = sum(WEIGHT_adj, na.rm = TRUE), .groups = "drop"
+      ) %>% 
     mutate(df = survdf) 
   
   # Add "Total" row if a strata was supplied
-  if(!is.null(strata)) {
-    survdesign_sample <- survdesign_sample %>% bind_rows(
-      vars_survdesign_gt18_dat %>% 
+  if (!is.null(strata)) {
+    total_row <- svydesign_data %>% 
       summarise(
         STRATA = "Total",
-        n_raw = n(), n_weighted = sum(WEIGHT_adj)) %>% 
-      mutate(df = survdf))
+        n_raw = n(), 
+        n_weighted = sum(WEIGHT_adj, na.rm = TRUE)
+      ) %>% 
+      mutate(df = survdf)
+    
+    survdesign_sample <- bind_rows(survdesign_sample, total_row)
   }
   
   return(list(
-    survdesign = vars_survdesign_gt18, 
-    survdesign_data = vars_survdesign_gt18_dat,
+    survdesign  = vars_survdesign_gt18, 
+    survdesign_data = svydesign_data,
     survdesign_weight = varweight, 
     survdesign_sample = survdesign_sample,
-    survdesign_cycles = survdesign_cycles)
-  )
+    survdesign_cycles = survdesign_cycles
+  ))
   
 }
- 
+
 
 ################################################################################ 
 ## Write descriptive functions to summarize NHANES variables by STRATA
 ################################################################################ 
 
+
+## =======================================================
+## Write function to build summary tables by STRATA
+## =======================================================
+
+## To calculate Total Years represented
+# * 1999-2002 = 1 set of 4yr weights = 4 years
+# * 2003-2016 = 7 standard 2-year cycles = 14 years
+# * 2017-March 2020 = 1 pre-pandemic cycle = 3.2 years
+# * [2021-2023 = 1 post-pandemic 2 year cycle = 2 years]
+# TOTAL YEARS = 23.2 years; i.e. To calculate var weights:
+# weight function: WTX.COMBN * (3.2 / total_years)
+# --> else(), WTX_COMBN * (2 / total_years)
+
+# Note: WTMEC2YR is the 2-year MEC weight. If combining multiple cycles, 
+# adjust weights by dividing WTMEC2YR by the number of cycles (e.g., / 3 for 3 cycles).
+
+build_nhanes_summarytable.fun <- function(vars_to_summarise, strata = NULL,
+                                          data = nhanes_dat, digits=1) {
+  
+  # Generate survey deisgn & summary stats separately, by variable
+  sumtab.l <- lapply(1:length(vars_to_summarise), function(x) {
+    
+    # Select variable to summarize; 
+    var_input <- vars_to_summarise[x]
+    vars_to_include <- unique(c(var_input, strata))
+    
+    # Standardize variable display name vs actual column name
+    if (!is.null(names(var_input)) && names(var_input)[1] != "") { 
+      var_name <- names(var_input)[1]
+      var <- var_input[[1]] 
+    } else {
+      var_name <- unname(var_input)
+      var <- unname(var_input)
+    }
+    
+    # 1. Prepare data BEFORE passing to survey design
+    # Create explicit temporary dummy columns if needed
+    data_use <- data %>%
+      mutate(
+        VAR = .data[[var]],
+        TOTAL = "Total"
+      )
+    
+    # If binary/numeric recoding is needed before design setup
+    n_values <- length(na.omit(unique(data_use$VAR)))
+    var_type <- if (is.numeric(data_use$VAR) && n_values != 2) {
+      "numeric" } else if (n_values == 2) { 
+        "binary" } else { "categorical" }
+    
+    if (var_type == "binary" && is.numeric(data_use$VAR)) {
+      data_use$VAR <- as.factor(data_use$VAR)
+    }
+    
+    ## Construct NHANES survey design, using an embedded function to select custom WEIGHT
+    nhanes_survdesign <- build_nhanes_survdesign.fun(
+      vars_to_include = c("VAR", "TOTAL", vars_to_include), 
+      data = data_use, strata = strata)
+    
+    survdesign <- nhanes_survdesign$survdesign
+    survdesign_data <- survdesign$variables
+    survweight <- nhanes_survdesign$survdesign_weight 
+    survcycles <- nhanes_survdesign$survdesign_cycles
+    survsample <- nhanes_survdesign$survdesign_sample
+    
+    # 3. Compute Weighted Means/Proportions
+    strata_levels <- unique(survdesign$variables$STRATA)
+    var_sum <- rbind.data.frame(
+      svyby(~VAR, by = ~TOTAL, design  = survdesign, FUN = svymean, na.rm = TRUE) %>%
+        rename(STRATA=TOTAL),
+      svyby(~VAR, by = ~STRATA, design = survdesign, FUN = svymean, na.rm = TRUE))
+    # If var_type is not numeric, remove VAR from name
+    if(var_type != "numeric") {
+      var_sum <- var_sum %>% rename_with(. ,~gsub("VAR", "", .))
+    }
+      
+    # ----------------------------------------------
+    ## For numeric/continuous variables 
+    # ----------------------------------------------
+    
+    if(var_type == "numeric") {
+      # Tabulate Raw and Weighted Ns, per STRATA
+      n_sum <- survdesign$variables %>% 
+        group_by(STRATA) %>% 
+        summarise(n_raw = n(), n_weight = sum(WEIGHT_adj[WEIGHT_adj > 0])) %>% 
+        add_row(STRATA="Total", n_raw = sum(.$n_raw),
+                n_weight=sum(.$n_weight), .before=1)
+      var_summary <- var_sum %>% rename(mean=VAR) %>% 
+        mutate(Variable = var_name, .after=STRATA) %>%
+        mutate(sum = sprintf("%s \u00B1 %s", round(mean, digits), round(se,digits))) %>% 
+        select(STRATA, Variable, sum, starts_with("n_")) %>% 
+        # merge in n_sum -----------------------------
+      left_join(n_sum, by = c("STRATA")) %>% 
+        pivot_wider(names_from="STRATA", values_from=-c(STRATA, Variable)) %>% 
+        rename_with(., ~gsub("sum_","",.))
+      
+    } else {
+      
+      # ----------------------------------------------
+      ## For factor/categorical variables 
+      # ----------------------------------------------
+      
+      # Tabulate Raw and Weighted Ns, per STRATA and VAR category
+      n_sum <- bind_rows(
+        survdesign$variables %>% 
+          group_by(VAR) %>% 
+          summarise(n_raw = n(), n_weight = sum(WEIGHT_adj[WEIGHT_adj > 0]),
+                    .groups="drop") %>% 
+          mutate(STRATA="Total", .before=1), 
+        survdesign$variables %>% 
+          group_by(STRATA, VAR) %>% 
+          summarise(n_raw = n(), n_weight = sum(WEIGHT_adj[WEIGHT_adj > 0]),
+                    .groups="drop")) %>%
+        rename(Variable=VAR)
+      
+      # Combine & format output table, including n_sum
+      var_summary <- var_sum %>% 
+        rename_with(., ~gsub("VAR","", .)) %>% 
+        rename_at(vars(-STRATA, -starts_with("se")), ~ paste0("mean.", .x)) %>%
+        pivot_longer(cols = -STRATA, names_sep="[.]", names_to=c("msr","Variable")) %>%
+        pivot_wider(names_from=msr) %>% 
+        mutate(across(c(mean, se), ~.*100)) %>%
+        mutate(sum = sprintf("%s (%s)", round(mean,digits), round(se,digits))) %>% 
+        select(STRATA, Variable, sum) %>% 
+        # merge in n_sum -----------------------------
+      left_join(n_sum, by = c("STRATA", "Variable")) %>% 
+        pivot_wider(names_from="STRATA", values_from=-c(STRATA, Variable)) %>%
+        mutate_at("Variable", ~paste0(" ", .)) %>%
+        add_row(Variable = var_name, .before = 1) %>%
+        mutate(across(-Variable, ~ifelse(is.na(.), "", .))) %>% 
+        rename_with(., ~gsub("sum_","",.))
+    }
+    
+    # print var_summary
+    var_summary <- var_summary %>% 
+      mutate(across(starts_with("n_"), as.numeric))
+    var_summary
+    
+  })
+  
+  # Compile & clean summary table ------------------
+  sumtab_df <- do.call(bind_rows, sumtab.l) %>% 
+    as.data.frame() %>%
+    mutate(across(starts_with("n_"), ~ifelse(
+      . == "", "", round(as.numeric(.), 0))) )
+  
+  if(is.null(strata)) { sumtab_df <- sumtab_df %>% select(-"1", -ends_with("_1"))}
+  
+  return(sumtab_df)
+  
+}
+
+
 # ===============================================
 ## Summarize QUANTILES by categorical strata 
 # ===============================================
+
 get_nhanes_quantiles.fun <- function(var_to_summarise, strata, print_se = T, 
                                      get_pvalue = F,
                                      probs = c(0, 0.05, 0.25, 0.50, 0.75, 0.95, 1),
@@ -379,8 +565,10 @@ get_nhanes_distrib.fun <- function(var_to_summarise, strata, data = nhanes_dat) 
 # ======================================================================
 ## Function to calculate pearson correlations of cont/int variables
 # ======================================================================
-get_nhanes_cormat.fun <- function(vars, strata = NULL, data = nhanes_dat) {
+get_nhanes_cormat.fun <- function(vars, strata = NULL, data = nhanes_dat,
+                                  method = c("pearson", "spearman")) {
   
+  method <- match.arg(method) # Ensures 'method' is exactly "pearson" or "spearman"
   n_vars <- length(vars)
   
   if(is.null(strata)) { strata_lvls <- "Total" } else {
@@ -400,10 +588,15 @@ get_nhanes_cormat.fun <- function(vars, strata = NULL, data = nhanes_dat) {
           r_mat[i, j] <- 1 ; p_mat[i, j] <- 0
         } else if (i < j) { 
           v1 <- vars[i] ; v2 <- vars[j]
-          survdesign <- build_nhanes_survdesign.fun(c(v1,v2), strata = strata, data=data)$survdesign
           
+          # Build design
+          survdesign <- build_nhanes_survdesign.fun(
+            vars = c(v1,v2), strata = strata, data=data)$survdesign
+          
+          # Subset design
           if (lvl != "Total") {
-            sub_design <- subset(survdesign, survdesign$variables$STRATA == lvl)
+            sub_design <- subset(survdesign, survdesign$variables$STRATA == lvl,
+                                 data = data)
           } else {
             sub_design <- survdesign
           }
@@ -412,7 +605,14 @@ get_nhanes_cormat.fun <- function(vars, strata = NULL, data = nhanes_dat) {
           r_val <- NA ; p_val <- NA
           
           tryCatch({
-            # 1. Calculate correlation (r)
+            
+            # If Spearman, overwrite variables with rank inside survey object
+            if (method == "spearman") {
+              sub_design$variables[[v1]] <- rank(sub_design$variables[[v1]], na.last = "keep")
+              sub_design$variables[[v2]] <- rank(sub_design$variables[[v2]], na.last = "keep")
+            }
+            
+            # 1. Calculate correlation (r / rho)
             f_cov <- as.formula(paste0("~", v1, "+", v2))
             cov_obj <- svyvar(f_cov, sub_design, na.rm = TRUE)
             r_val <- cov2cor(coef(cov_obj))[1, 2]
@@ -421,8 +621,9 @@ get_nhanes_cormat.fun <- function(vars, strata = NULL, data = nhanes_dat) {
             f_glm <- as.formula(paste0(v1, " ~ ", v2))
             mod <- survey::svyglm(f_glm, design = sub_design)
             p_val <- summary(mod)$coefficients[v2, "Pr(>|t|)"]
+            
           }, error = function(e) {
-            message(sprintf("FAILED | skippinng corr for %s-%s | ~%s==%s: %s", 
+            message(sprintf("FAILED | skipping corr for %s-%s | ~%s==%s: %s", 
                             v1, v2, strata, lvl, e$message))
           })
           
@@ -442,23 +643,26 @@ get_nhanes_cormat.fun <- function(vars, strata = NULL, data = nhanes_dat) {
       rownames_to_column("variable") %>%
       mutate(strata = strata, level = lvl, .before = 1)
     
-  } ; return(list(corr = bind_rows(corr_list), pvals = bind_rows(pval_list)))
+  } 
   
+  return(list(corr = bind_rows(corr_list), pvals = bind_rows(pval_list)))
 }
+
 
 
 ###########################################################
 ## Build function to run and summarize survey glms
 ###########################################################
 
-run_nhanes_glm.fun <- function(exposure, outcome, covariates, strata=NULL, data = nhanes_dat) { 
+run_nhanes_glm.fun <- function(exposure, outcome, covariates, strata=NULL, data) { 
   
   # List model variables
+  if(grepl("[+]", covariates[1])) {covariates <- unlist(str_split(covariates, "[+]"))}
   vars_to_include <- unique(c(exposure, outcome, covariates, strata))
   run_by_strata <- ifelse(!is.null(strata), T, F) 
   
   ## Construct NHANES survey design, using an embedded function to select custom WEIGHT
-  nhanes_survdesign <- build_nhanes_survdesign.fun(vars_to_include, data, strata = strata)
+  nhanes_survdesign <- build_nhanes_survdesign.fun(vars_to_include, data = data, strata = strata)
   survdesign <- nhanes_survdesign$survdesign
   survweight <- nhanes_survdesign$survdesign_weight 
   survcycles <- nhanes_survdesign$survdesign_cycles
@@ -616,13 +820,16 @@ run_nhanes_glm.fun <- function(exposure, outcome, covariates, strata=NULL, data 
 ## Build function to run and summarize Cox PH models for NDI Mortality data
 ################################################################################
 
-run_nhanes_coxph.fun <- function(exposure, outcome = "ndi_mortstat", 
-                                     time_var_prefix="ndi_peryear",
-                                     covariates = c("age", "gender"), 
-                                     strata = NULL, data = nhanes_dat) { 
+run_nhanes_coxph.fun <- function(exposure, outcome, time_var_prefix="ndi_peryear",
+                                 covariates = NULL, strata = NULL, 
+                                 data = nhanes_dat) { 
   
   # Rename outcome as event_var for survival data
   event_var <- outcome
+  
+  # Reformat model/covariates, if provided as model syntax
+  if(grepl("[+]", covariates[1])) {
+    covariates <- unlist(str_split(covariates, "[+]")) }
   
   # Apply suffix to timevar, based on nhanes sub-sample WEIGHT
   model_weight <- find_nhanes_weight.fun(c(exposure, covariates), data = data)
@@ -668,124 +875,135 @@ run_nhanes_coxph.fun <- function(exposure, outcome = "ndi_mortstat",
       model_formula <- formula(paste0("Surv(", time_var, ", ", event_var, ") ~ ", 
                                       exposure, " + ", paste0(covariates, collapse = "+")))
       
-      ## Fit survey Cox model
-      survcox_fit <- suppressWarnings(
-        svycoxph(model_formula, design = survdesign_use)
-        )
+      ## Fit survey Cox model with tryCatch
+      survcox_fit <- tryCatch({
+        suppressWarnings(svycoxph(model_formula, design = survdesign_use))
+      }, error = function(e) {
+        message(sprintf("Model failed for level %s: ", lvl), e$message) 
+        return(NULL) 
+      })
       
-      # Extract exposure data to check if categorical
-      exposure_vals <- survdesign_use$variables[[exposure]]
-      is_categorical <- is.factor(exposure_vals) || is.character(exposure_vals)
-      
-      f_test <- list(Ftest = NA, p = NA)
-      
-      # Extract coefficients matrix
-      coefs_sum <- summary(survcox_fit)$coefficients[,c(1:2,4,6)]
-      coefs_sum <- rbind(coefs_sum[grep(paste0("^",exposure), rownames(coefs_sum)),])
-      
-      if(is_categorical) {
+      # 2. ONLY extract and mutate if the model actually created an object
+      if (!is.null(survcox_fit)) {
         
-        # Gather exposure levels
-        exposure_lvls <- levels(exposure_vals)
-        coefs_sum <- rbind.data.frame(c(0,1,NA,NA), coefs_sum)
-        rownames(coefs_sum) <- exposure_lvls
+        # Extract exposure data to check if categorical
+        exposure_vals <- survdesign_use$variables[[exposure]]
+        is_categorical <- is.factor(exposure_vals) || is.character(exposure_vals)
         
-        # Perform Wald test for overall significance of the categorical variable
-        f_test <- regTermTest(survcox_fit, test.terms = exposure, method = "Wald")
+        f_test <- list(Ftest = NA, p = NA)
         
-        # Tabulate sample sizes, events, and person-time per category
-        survcox_n <- survdesign_use$variables %>% 
-          group_by(across(all_of(exposure))) %>% 
-          summarise(
-            # 1. Sample Size
-            n_exp_raw = n(), n_exp_weighted = sum(WEIGHT_adj),
-            
-            # 2. Event Counts
-            n_event_raw = sum(.data[[event_var]] == 1, na.rm = TRUE),
-            n_event_weighted = sum(WEIGHT_adj[.data[[event_var]] == 1], na.rm = TRUE),
-            
-            # 3. Person-Time
-            n_person_time_raw = sum(.data[[time_var]], na.rm = TRUE),
-            n_person_time_weighted = sum(.data[[time_var]] * WEIGHT_adj, na.rm = TRUE),
-            .groups = "drop") %>% 
+        # Extract coefficients matrix
+        coefs_sum <- summary(survcox_fit)$coefficients[,c(1:2,4,6)]
+        coefs_sum <- rbind(coefs_sum[grep(paste0("^",exposure), rownames(coefs_sum)),])
+        
+        if(is_categorical) {
           
-          rename("exp_level" = exposure)
-        
-        # Extract exposure rows (Cox models have no intercept, so levels start immediately)
-        survcox_summary <- rbind(coefs_sum) %>% 
-          as.data.frame() %>% 
-          mutate(fstat = f_test$Ftest[1], f_pval = f_test$p[1]) %>% 
-          rownames_to_column(var="exp_level") %>% 
-          mutate_at("exp_level", ~gsub(exposure, "", .))
-        
-        n_events_per_var <- 10*c(length(covariates)+length(exposure_lvls)-1)
-        
-      } else { 
-        
-        # Continuous exposure logic (Calculates totals for the whole model sample)
-        survcox_n <- survdesign_use$variables %>% 
-          summarise(
-            # 1. Sample Size
-            n_exp_raw = n(), n_exp_weighted = sum(WEIGHT_adj),
+          # Gather exposure levels
+          exposure_lvls <- levels(exposure_vals)
+          coefs_sum <- rbind.data.frame(c(0,1,NA,NA), coefs_sum)
+          rownames(coefs_sum) <- exposure_lvls
+          
+          # Perform Wald test for overall significance of the categorical variable
+          f_test <- regTermTest(survcox_fit, test.terms = exposure, method = "Wald")
+          
+          # Tabulate sample sizes, events, and person-time per category
+          survcox_n <- survdesign_use$variables %>% 
+            group_by(across(all_of(exposure))) %>% 
+            summarise(
+              # 1. Sample Size
+              n_exp_raw = n(), n_exp_weighted = sum(WEIGHT_adj),
+              
+              # 2. Event Counts
+              n_event_raw = sum(.data[[event_var]] == 1, na.rm = TRUE),
+              n_event_weighted = sum(WEIGHT_adj[.data[[event_var]] == 1], na.rm = TRUE),
+              
+              # 3. Person-Time
+              n_person_time_raw = sum(.data[[time_var]], na.rm = TRUE),
+              n_person_time_weighted = sum(.data[[time_var]] * WEIGHT_adj, na.rm = TRUE),
+              .groups = "drop") %>% 
             
-            # 2. Event Counts
-            n_event_raw = sum(.data[[event_var]] == 1, na.rm = TRUE),
-            n_event_weighted = sum(WEIGHT_adj[.data[[event_var]] == 1], na.rm = TRUE),
-            
-            # 3. Person-Time
-            n_person_time_raw = sum(.data[[time_var]], na.rm = TRUE),
-            n_person_time_weighted = sum(.data[[time_var]] * WEIGHT_adj, na.rm = TRUE)
-          ) %>% 
-          mutate("exp_level" = exposure, .before=1)
+            rename("exp_level" = exposure)
+          
+          # Extract exposure rows (Cox models have no intercept, so levels start immediately)
+          survcox_summary <- rbind(coefs_sum) %>% 
+            as.data.frame() %>% 
+            mutate(fstat = f_test$Ftest[1], f_pval = f_test$p[1]) %>% 
+            rownames_to_column(var="exp_level") %>% 
+            mutate_at("exp_level", ~gsub(exposure, "", .))
+          
+          n_events_per_var <- 10*c(length(covariates)+length(exposure_lvls)-1)
+          
+        } else { 
+          
+          # Continuous exposure logic (Calculates totals for the whole model sample)
+          survcox_n <- survdesign_use$variables %>% 
+            summarise(
+              # 1. Sample Size
+              n_exp_raw = n(), n_exp_weighted = sum(WEIGHT_adj),
+              
+              # 2. Event Counts
+              n_event_raw = sum(.data[[event_var]] == 1, na.rm = TRUE),
+              n_event_weighted = sum(WEIGHT_adj[.data[[event_var]] == 1], na.rm = TRUE),
+              
+              # 3. Person-Time
+              n_person_time_raw = sum(.data[[time_var]], na.rm = TRUE),
+              n_person_time_weighted = sum(.data[[time_var]] * WEIGHT_adj, na.rm = TRUE)
+            ) %>% 
+            mutate("exp_level" = exposure, .before=1)
+          
+          survcox_summary <- rbind(coefs_sum) %>%
+            as.data.frame() %>% 
+            mutate(fstat = f_test$Ftest, f_pval = f_test$p) %>% 
+            mutate(exp_level = exposure, .before=1)
+          
+          n_events_per_var <- 10*c(length(covariates)+1)
+        }
         
-        survcox_summary <- rbind(coefs_sum) %>%
-          as.data.frame() %>% 
-          mutate(fstat = f_test$Ftest, f_pval = f_test$p) %>% 
-          mutate(exp_level = exposure, .before=1)
-        
-        n_events_per_var <- 10*c(length(covariates)+1)
-      }
-      
-      ## Assemble regression summary table & calculate Hazard Ratios
-      survcox_summary <- survcox_summary %>% 
-        mutate(
-          strata_var       = ifelse(run_by_strata==F, "None", strata),
-          strata_level     = as.character(lvl),
-          cycle_yrs        = survcycles$cycles, 
-          n_yrs            = survcycles$n_yrs, 
-          survweight       = survweight, 
-          model_covars     = paste0(covariates, collapse="+"), 
-          exposure         = exposure, 
-          time_var         = time_var,
-          event_var        = event_var,
-          n_total_raw      = nrow(survdesign_use$variables), 
-          n_total_weighted = sum(survdesign_use$variables$WEIGHT_adj), 
-          model_df         = degf(survdesign_use),
-          model_type       = "Cox Proportional Hazards",
-          .before = 1) %>% 
-        left_join(survcox_n, by = "exp_level") %>%
-        rename(beta="coef", se_robust="robust se", HR="exp(coef)", pval="Pr(>|z|)") %>% 
-        
-        # Calculate Hazard Ratios and 95% CI ------------------------
+        ## Assemble regression summary table & calculate Hazard Ratios
+        survcox_summary <- survcox_summary %>% 
+          mutate(
+            strata_var       = ifelse(run_by_strata==F, "None", strata),
+            strata_level     = as.character(lvl),
+            cycle_yrs        = survcycles$cycles, 
+            n_yrs            = survcycles$n_yrs, 
+            survweight       = survweight, 
+            model_covars     = paste0(covariates, collapse="+"), 
+            exposure         = exposure, 
+            time_var         = time_var,
+            event_var        = event_var,
+            n_total_raw      = nrow(survdesign_use$variables), 
+            n_total_weighted = sum(survdesign_use$variables$WEIGHT_adj), 
+            model_df         = degf(survdesign_use),
+            model_type       = "Cox Proportional Hazards",
+            .before = 1) %>% 
+          left_join(survcox_n, by = "exp_level") %>%
+          rename(beta="coef", se_robust="robust se", HR="exp(coef)", pval="Pr(>|z|)") %>% 
+          
+          # Calculate Hazard Ratios and 95% CI ------------------------
         mutate(
           low95CI_HR = exp(beta - 1.96 * se_robust), 
           up95CI_HR = exp(beta + 1.96 * se_robust),
           .after = "pval") %>% 
+          
+          ## DATA QUALITY FLAGS
+          # Total Model Power (Rule of thumb: 10 events per exposure variable/level)
+          mutate(n_events_req = n_events_per_var) %>% 
+          rowwise() %>% 
+          mutate(
+            flag_n_total = ifelse(n_events_req < n_event_raw, "Pass", "FLAG: Low Total Events"), 
+            flag_n_level = ifelse(n_event_raw > 5, "Pass", "FLAG: Low Category Events (<5)"))
         
-        ## DATA QUALITY FLAGS
-        # Total Model Power (Rule of thumb: 10 events per exposure variable/level)
-        mutate(n_events_req = n_events_per_var) %>% 
-        rowwise() %>% 
-        mutate(
-          flag_n_total = ifelse(n_events_req < n_event_raw, "Pass", "FLAG: Low Total Events"), 
-          flag_n_level = ifelse(n_event_raw > 5, "Pass", "FLAG: Low Category Events (<5)"))
-      
-      # Relabel reference category as level (reference) for categorical exposures
-      if(is_categorical) survcox_summary <- survcox_summary %>% 
-        mutate_at("exp_level", ~ifelse(
-          . == levels(exposure_vals)[1], paste(., "(Reference)"), .))
-      
-      list(summary = survcox_summary, model = survcox_fit)
+        # Relabel reference category as level (reference) for categorical exposures
+        if(is_categorical) survcox_summary <- survcox_summary %>% 
+          mutate_at("exp_level", ~ifelse(
+            . == levels(exposure_vals)[1], paste(., "(Reference)"), .))
+        
+        list(summary = survcox_summary, model = survcox_fit)
+        
+      } else {
+        # Added explicit NULL return so the tryCatch knows what to pass if the model failed
+        NULL 
+      }
       
     }, error = function(e) {
       cat("FAILED.\n")
@@ -798,7 +1016,7 @@ run_nhanes_coxph.fun <- function(exposure, outcome = "ndi_mortstat",
       survcox_model.l[[as.character(lvl)]] <- result_lvl$model
       cat("DONE. \n")
     }
-  }
+  } # End of for loop
   
   # Return NULL if no models could be run ---------------
   if (length(survcox_summary.l) > 0) {
@@ -808,9 +1026,7 @@ run_nhanes_coxph.fun <- function(exposure, outcome = "ndi_mortstat",
   }
   
   return(list(model = survcox_model.l, modelsum = survcox_fullsummary))
-  
 }
-
 
 ################################################################################
 ## Define wrapper functions for running & compiling regression summaries
@@ -820,56 +1036,67 @@ run_nhanes_coxph.fun <- function(exposure, outcome = "ndi_mortstat",
 ## Wrap nhanes survdesign modelsum outputs, over lists of exp, out, strata
 # ======================================================================
 
-wrap_nhanes_regress.fun <- function(regress_fun = run_nhanes_glm.fun,
-    exposure_vars, outcome_vars, strata_vars, models = "base") { 
+run_nhanes_regress_wrapper.fun <- function(regress_fun,
+    exposure_vars, outcome_vars, strata_vars = "none", 
+    models, data = nhanes_dat, collapse = T) { 
   
   # For each STRATA --------------------
   regress_strata <- lapply(strata_vars, function(strata_var) {
     
-    if(strata_var =="full") { strata = NULL } else { strata = strata_var }
+    if(strata_var =="none") { strata = NULL } else { strata = strata_var }
     
-    # Define model covariates (base = age+gender; unless otherwise specified)
-    if(models == "base") {covars = c("age", "gender")}
-    if(strata_var %in% c("gender", "female", "sex")) { 
-      covars = "age" } else if (strata_var == "age_4lvl") { covars = "gender" }
-    
-    # For each EXPOSURE ---------------------
-    regress_exposures <- lapply(exposure_vars, function(x) {
+    # For each MODEL -----------------------
+    regress_models <- lapply(seq_along(models), function(m) {
       
-      # Run for each OUTCOME --------------
-      regress_outcomes <- lapply(outcome_vars, function(y) {
+      # Define covariates & remove overlap with strata
+      covariates <- unlist(str_split(models[[m]], "[+]"))
+      
+      if(strata_var %in% c("gender", "sex")) {
+        covariates <- covariates[-c(which(covariates %in% c("gender", "sex")))] 
+        } else if (strata_var == "age_4lvl") { 
+          covariates <- covariates[-c(which(covariates %in% c("age")))] 
+        }
+      
+      # For each EXPOSURE ---------------------
+      regress_exposures <- lapply(exposure_vars, function(x) {
         
-        regress_fun(exposure = x, outcome = y, data = nhanes_dat,
-                    covariates = covars, strata = strata) 
-      }) ; names(regress_outcomes) <- outcome_vars ; return(regress_outcomes)
-    }) ; names(regress_exposures) <- exposure_vars ; return(regress_exposures)
-  }) ; names(regress_strata) <- strata_vars ; return(regress_strata)
+        # Run for each OUTCOME --------------
+        regress_outcomes <- lapply(outcome_vars, function(y) {
+          
+          res <- regress_fun(exposure = x, outcome = y, data = data,
+                             covariates = covariates, strata = strata)
+          
+          # If regression ran, add model 
+          if(!is.null(res$modelsum)) {
+            res$modelsum <- res$modelsum %>% mutate(
+              model = names(models)[m], .before = "model_covars") 
+            } ; return(res)
+          
+        }) ; names(regress_outcomes) <- outcome_vars ; return(regress_outcomes)
+      }) ; names(regress_exposures) <- exposure_vars ; return(regress_exposures)
+    }) ; names(regress_models) <- names(models) ; return(regress_models) 
+  }) ; names(regress_strata) <- strata_vars 
   
+  # If collapse == T
+  if(collapse == F) {
+    regress_strata <- regress_strata[[1]] ; return(regress_strata) 
+  } else {
+    collapsed <- lapply(names(regress_strata), function(strat) {
+      lapply(names(regress_strata[[strat]]) , function(mod) {
+        lapply(names(regress_strata[[strat]][[mod]]), function(exp) {
+          lapply(names(regress_strata[[strat]][[mod]][[exp]]), function(out) {
+            
+            regress_strata[[strat]][[mod]][[exp]][[out]]$modelsum
+            
+            }) %>% do.call(bind_rows, .)
+          }) %>% do.call(bind_rows, .)
+        }) %>% do.call(bind_rows, .)
+    }) %>% do.call(bind_rows, .)
+    
+    return(collapsed)
+  }
 }
-
-# ========================================================================
-## Summary function to compile wrapped regression modseum outputs 
-# ========================================================================
-
-collapse_survdesign_regress.fun <- function(wrapped_glm_survdesign) {
-  
-  # Get strata, exposures & outcomes
-  regress_strata <- names(wrapped_glm_survdesign)
-  regress_exposures <- names(wrapped_glm_survdesign[[1]])
-  regress_outcomes <- names(wrapped_glm_survdesign[[1]][[1]])
-  
-  regress_collapsed <- lapply(regress_strata, function(strat) {
-    lapply(regress_exposures, function(exp) {
-      lapply(regress_outcomes, function(out) {
-        wrapped_glm_survdesign[[strat]][[exp]][[out]]$modelsum
-      }) %>% do.call(rbind.data.frame, .)
-    }) %>% do.call(rbind.data.frame, .)
-  }) %>% do.call(rbind.data.frame, .)
-  
-  return(regress_collapsed)
-}
-
-
+    
 
 ################################################################################
 ## Prediction performance function (e.g., AUC, R2 and C-stat)
@@ -878,8 +1105,8 @@ collapse_survdesign_regress.fun <- function(wrapped_glm_survdesign) {
 # ===================================================
 ## Calculate model AUC for GLM on binary outcomes 
 # ===================================================
-get_svymodel_auc.fun <- function(exposure, outcome, covariates=c("age","gender"), 
-                                 strata=NULL, print_mod = T, data=nhanes_dat) {
+get_svymodel_auc.fun <- function(exposure, outcome, covariates, strata=NULL, 
+                                 print_mod = T, data=nhanes_dat) {
   
   mod <- run_nhanes_glm.fun(exp=exposure, out=outcome, covar=covariates, 
                                 strata=strata, data=data)
