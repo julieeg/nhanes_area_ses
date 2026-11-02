@@ -96,12 +96,6 @@ nhanes_postprocessed <- left_join(
 ## Add in INTERSECTION variables, for strata X educ and inc
 nhanes_postprocessed <- nhanes_postprocessed %>%
   mutate(
-    intx_raceXeduc = case_when(
-      !is.na(racethn_combn) & !is.na(educ_level) ~ paste0(racethn_combn, "_x_", educ_level),
-      TRUE ~ NA),
-    intx_raceXincpov = case_when(
-      !is.na(racethn_combn) & !is.na(inc_to_pov_level) ~ paste0(racethn_combn, "_x_", inc_to_pov_level),
-      TRUE ~ NA),
     intx_sexXeduc = case_when(
       !is.na(gender) & !is.na(educ_level) ~ paste0(gender, "_x_", educ_level),
       TRUE ~ NA),
@@ -114,6 +108,12 @@ nhanes_postprocessed <- nhanes_postprocessed %>%
     intx_agecatXincpov = case_when(
       !is.na(age_4lvl) & !is.na(inc_to_pov_level) ~ paste0(age_4lvl, "_x_", inc_to_pov_level),
       TRUE ~ NA), 
+    intx_raceXeduc = case_when(
+      !is.na(racethn_combn) & !is.na(educ_level) ~ paste0(racethn_combn, "_x_", educ_level),
+      TRUE ~ NA),
+    intx_raceXincpov = case_when(
+      !is.na(racethn_combn) & !is.na(inc_to_pov_level) ~ paste0(racethn_combn, "_x_", inc_to_pov_level),
+      TRUE ~ NA),
   intx_sexXagecatXrace = case_when(
     !is.na(gender) & !is.na(age_4lvl) & !is.na(racethn_combn) ~ paste0(
       gender, "_x_", age_4lvl, "_x_", racethn_combn),
@@ -121,6 +121,10 @@ nhanes_postprocessed <- nhanes_postprocessed %>%
   intx_sexXagecatXraceXeduc = case_when(
     !is.na(gender) & !is.na(age_4lvl) & ! is.na(racethn_combn) & !is.na(educ_level) ~ 
       paste0(gender, "_x_", age_4lvl, "_x_", racethn_combn, "_x_", educ_level),
+    TRUE ~ NA),
+  intx_sexXagecatXraceXincpov = case_when(
+    !is.na(gender) & !is.na(age_4lvl) & ! is.na(racethn_combn) & !is.na(inc_to_pov_level) ~ 
+      paste0(gender, "_x_", age_4lvl, "_x_", racethn_combn, "_x_", inc_to_pov_level),
     TRUE ~ NA)
   )
 
