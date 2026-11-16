@@ -475,7 +475,7 @@ rx_bp <- rxq_drug %>%
            # OR any word in RXDDRUG is within 1 character of KEYWORD (in case of typos)
            sapply(RXDDRUG, function(x) {
              words <- unlist(strsplit(x, "[; /,-]+"))
-             min_dist <- min(stringdistmatrix(tolower(words), tolower(rx_bpx), method = "lv"))
+             min_dist <- min(stringdist::stringdistmatrix(tolower(words), tolower(rx_bpx), method = "lv"))
              min_dist > 0 & min_dist <= 1
            })) %>%
   # Remove non-BP medications (& explicitly TIMOLOL, more common as a topical agent)
@@ -497,7 +497,7 @@ rx_diab <- rxq_drug %>%
       # OR any word in RXDDRUG is within 1-2 character edits of your keywords
       sapply(RXDDRUG, function(x) {
         words <- unlist(strsplit(x, "[; /,-]+"))
-        min_dist <- min(stringdistmatrix(tolower(words), tolower(rx_diabx), method = "lv"))
+        min_dist <- min(stringdist::stringdistmatrix(tolower(words), tolower(rx_diabx), method = "lv"))
         min_dist > 0 & min_dist <= 2
       })) %>% 
   select(RXDDRGID, RXDDRUG) %>% 
@@ -546,7 +546,6 @@ rx_alluse <- nhanes_data_raw %>%
 
 
 ## 3) Merge back to main dataset & resolve No/NA values ----------------
-
 nhanes_quest_rx_processed <- nhanes_data_raw %>% 
   select(SEQN, Years, rx_use_any = q_rx_use_1, starts_with("q_med_")) %>%
   left_join(rx_alluse, by = "SEQN") %>%
@@ -929,6 +928,7 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
     tastechange_sour_any = recode_tastechange.fun(q_tastechange_sour, "any"),
     tastechange_sour_worse = recode_tastechange.fun(q_tastechange_sour, "Worse")) %>%
   rename(tastechange_flavor_any = q_tastechange_flavor) %>%
+  rename(tastechange_pastyr = q_tastechange_pastyr) %>%
   mutate_at("q_tastechange_time", ~factor(case_when(
     . == "Less than 3 Months Ago" ~ "Less than 3m",
     . == "3 to 12 Months (1 Yesr) Ago" ~ "3m to 1yr",
@@ -936,7 +936,7 @@ nhanes_quest_behav_processed <- nhanes_data_raw %>%
     . == "5 to 9 years ago" ~ "5 to 9yr",
     . == "Ten or more years ago" ~ "More than 10yr",
     TRUE ~ NA), levels=c("Less than 3m", "3m to 1yr", "1 to 4yr", "5 to 9yr", "More than 10yr")
-    )) %>%
+    )) %>% rename(tastechange_time = q_tastechange_time) %>% 
   
   ## Select cleaned questionnaire variables 
   select(SEQN, Years, 

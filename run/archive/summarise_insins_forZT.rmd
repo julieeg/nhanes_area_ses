@@ -1,0 +1,232 @@
+---
+title: "summary_insind_forZT"
+output: html_document
+date: "2026-10-02"
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,       # Show code in HTML output
+  warning = FALSE,   # Hide warning messages
+  message = FALSE,    # (Optional) Hide package loading / diagnostic messages
+  #fig.width=10, fig.height = 4,
+  root.dir = "~/Documents/GitHub/nhanes_area_ses/run"
+)
+
+# ==========================================
+# Custom function to load github scripts 
+get_github_files <-function(user, repo, path, load_fn = source, file_ext="r", file_pf=NULL) {
+  api <- sprintf("https://api.github.com/repos/%s/%s/contents/%s", user, repo, path)
+  files <- grep(paste0("\\.",file_ext,"$"), jsonlite::fromJSON(api)$name, value = T, ignore.case = T)
+  if(!is.null(file_pf)) { 
+    files <- grep(file_pf, files, value=T) 
+  } ; print(sprintf("LOADING | %s/%s/%s ... FILES | %s", user, repo, path, paste0(files, collapse=", ")))
+  
+  URLs <- lapply(files, function(f) sprintf("https://raw.githubusercontent.com/%s/%s/main/%s/%s", user, repo, path, f))
+  if(file_ext != "r") {
+    gh_files.l <- invisible(lapply(URLs, load_fn)) ; 
+    names(gh_files.l) <- gsub(paste0("[.]", file_ext), "", files) 
+    return(gh_files.l) 
+  } else { invisible(lapply(URLs, load_fn)) }
+}
+
+
+## Load pantry files for printing & plotting -------------------
+#get_github_files("julieeg", "pantry", path="functions", load_fn = source, file_ext="r")
+
+library(tidyverse) ; library(data.table) ; library(kableExtra)
+
+
+# ===============================
+## Build basic ggplot theme
+# ===============================
+
+ggplot_theme_basic <- theme_bw() + 
+  theme(axis.text = element_text(color="black"),
+        panel.grid.minor = element_blank(),
+        axis.title = element_text(face="bold"),
+        #strip.background = element_blank(),
+        strip.text.x.top = element_text(face="bold"))
+
+palettes <-list(NatExt=list(
+                   Olives=c("#304115", "#647314", "#96A008", "#C5C53F", "#DCDC76", "#F1EEB9"),
+                   Greens=c("#1A361A", "#356932","#429130", "#73B152", "#A9C981", "#C9D2B8"),
+                   Teals=c("#133546", "#275E72", "#0096A0", "#6ABABB", "#96CED4", "#B9CCD4"),
+                   Blues=c("#0A2256", "#1D4884", "#006EAE", "#5496CE", "#A5C9E6", "#C6DAE3"),
+                   Purples=c("#3D104B", "#672668", "#A64791", "#B778B4", "#CCABCC", "#E0D0E3"),
+                   Reds=c("#691814", "#852C22", "#C6373C", "#DC6464", "#E9A0A5", "#DFC1BD"),
+                   Oranges=c("#793011", "#A6501E", "#E96900", "#F29741", "#FBBD7D", "#EBD3B8"),
+                   Yellows=c("#66551C", "#886C25", "#CB9B23", "#E3C663", "#F7DC87", "#F7EBC2"),
+                   Browns = c("#3F2B1A", "#744F3D", "#8B6B55", "#BC9778", "#DDBCA1", "#F1E4D3"))
+)
+             
+
+# ==========================================
+## Compile lists of exposures & outcomes 
+# ==========================================
+
+fastinglabs <- c("fg", "fi", "ftg", "tc", "ldl_friedewald", "hdl", "ogtt_2hg_cleaned")
+outcomes <- list(
+  cvrelated = c("cvd", "ascvd", "chf", "htn", "diabetes"),
+  mortality = c("ndi_mortstat", "ndi_mortstat_cvd", "ndi_mortstat_hd", 
+                "ndi_mortstat_cbvd", "ndi_mortstat_diab")
+)
+
+
+###############################################################
+## Load pre-built NHANES index tables & variable summaries
+###############################################################
+
+# Load processed nhanes data file
+nhanes_ndi <- readRDS("../data/processed/nhanes_processed_linked_ndi_ogtt.rds")
+
+```
+
+## Descriptive statistics among included/excluded participants in NHANES 
+
+```{r}
+tab_descr_summary <- fread("../data/output/insind/tab_descr_byinclude.csv")
+
+# Clean up visual for markdown
+tab_descr_summary %>% filter(Variable != " 0") %>% 
+  kable()
+```
+
+
+## Distributions of fasting labs in NHANES
+
+```{r}
+recode_labs <- c("fg" = "FG, mg/dL", "fi" = "FI, uU/mL", "ogtt_2hg_cleaned"="2hrG, mg/dL", 
+                 "ftg" = "TG, mg/dL", "tc" = "TC, mg/dL", "hdl" = "HDL, mg/dL", 
+                 "ldl_friedewald"="LDL, mg/dL")
+
+## Fasting glycemic measures
+nhanes_ndi %>% 
+  select(SEQN, fastinglabs) %>% 
+  pivot_longer(-SEQN, names_to = "FastingLabs") %>% 
+  filter(!is.na(value)) %>% 
+  mutate_at("FastingLabs", ~factor(., levels = names(recode_labs))) %>%
+  filter(FastingLabs %in% c("fg","fi", "ogtt_2hg_cleaned")) %>% 
+  mutate(FastingLabs = recode(FastingLabs, !!!recode_labs)) %>%
+  ## Filter to subset of indices
+  ggplot(aes(x=value)) + 
+  facet_wrap(~FastingLabs, scale = "free") + 
+  geom_histogram() + 
+  ylab("Distribution, n") + xlab("Fasting blood levels") +
+  ggplot_theme_basic
+
+## Fasting lipids 
+nhanes_ndi %>% 
+  select(SEQN, fastinglabs) %>% 
+  pivot_longer(-SEQN, names_to = "FastingLabs") %>% 
+  filter(!is.na(value)) %>% 
+  mutate_at("FastingLabs", ~factor(., levels = names(recode_labs))) %>%
+  filter(!FastingLabs %in% c("fg","fi", "ogtt_2hg_cleaned")) %>% 
+  mutate(FastingLabs = recode(FastingLabs, !!!recode_labs)) %>%
+  ## Filter to subset of indices
+  ggplot(aes(x=value)) + 
+  facet_wrap(~FastingLabs, scale = "free") + 
+  geom_histogram() + 
+  ylab("Distribution, n") + xlab("Fasting blood levels") +
+  ggplot_theme_basic
+  
+```
+
+#### Heat map of Spearman correlations among fasting labs in NHANES
+
+```{r}
+library(ComplexHeatmap) ; library(circlize)
+
+cormat_fastlabs <- readRDS("../data/output/insind/tab_descr_corr_fastinglabs.rds")
+recode_labs_format <- names(recode_labs) ; names(recode_labs_format) <- recode_labs
+
+mat <- cormat_fastlabs$corr %>%
+  select(-level) %>% 
+  mutate_at("variable", ~recode(., !!!recode_labs)) %>% 
+  column_to_rownames("variable") %>% 
+  rename(recode_labs_format) %>%
+  as.matrix()
+
+## Heatmap of Spearman correlations among fasting labs 
+Heatmap(mat, rect_gp = gpar(col = "white", lwd = 1),
+  row_names_side = "left", column_title_side = "bottom",
+  name = "Spearman corr\n for fasting labs", 
+  row_names_gp = gpar(fontsize=9), column_names_gp = gpar(fontsize=9),
+  column_names_rot = 45,
+  col=colorRamp2(c(-1,0,1), c(palettes$NatExt$Blues[3], "#FFFFFF", palettes$NatExt$Reds[3]))
+  )
+
+```
+
+## Preliminary regression results
+
+```{r}
+
+## List of models
+models.l <- list(
+  base=c("age", "gender", "racethn_combn"),
+  bmi=c("age", "gender", "racethn_combn", "bmi"))
+
+recode_cvoutcomes <- c("CVD", "ASCVD", "CHF", "HTN", "Diabetes")
+names(recode_cvoutcomes) <- outcomes$cvrelated
+
+recode_mortoutcomes <- c("Any Death", "CVD Death","HD Death", "CBVD Death", "Diabetes Death")
+names(recode_mortoutcomes) <- outcomes$mortality
+
+# Load regression summary tables
+tab_glms_cvoutcomes <- fread("../data/output/insind/tab_glms_fastlabs_cvoutcomes_basebmi.csv")
+tab_coxph_mortality <- fread("../data/output/insind/tab_coxph_fastlabs_mortality_basebmi.csv")
+```
+
+#### CV-related outcomes 
+```{r}
+# Print abbreviated table output
+tab_glms_cvoutcomes <- tab_glms_cvoutcomes %>% 
+  mutate_at(c("beta", "low95CI", "up95CI"), ~round(., d=3)) %>%
+  mutate(P.value = ifelse(pval<0.01, format(pval, scientific=T, digits=2), round(pval, d=2))) %>%
+  mutate("Beta.95CI" = sprintf("%s (%s, %s)", beta, low95CI, up95CI)) %>%
+  mutate_at("exposure", ~recode(., !!!recode_labs)) %>%
+  select(
+    cycle_yrs, Covars=model_covars, Exposure=exposure, 
+    Outcome=outcome, Beta.95CI, P.value, N_Raw = n_exp_raw, N_Wt=n_exp_weighted
+    ) 
+
+# Base model --------------
+tab_glms_cvoutcomes %>% filter(!grepl("bmi", Covars)) %>% 
+  select(-Covars) %>% 
+  kable(caption = "Associations of fasting labs with prevalent CV-related outcomes, adjusting for Age/Sex/RaceEthn")
+
+# BMI model --------------
+tab_glms_cvoutcomes %>% filter(grepl("bmi", Covars)) %>% 
+  select(-Covars) %>% 
+  kable(caption = "Associations of fasting labs with prevalent CV-related outcomes, adjusting for Age/Sex/RaceEthn+BMI")
+
+```
+
+##### Mortality outcomes
+```{r}
+tab_coxph_mortality <- tab_coxph_mortality %>% 
+  mutate_at(c("HR", "low95CI_HR", "up95CI_HR"), ~round(., d=3)) %>%
+  mutate(P.value = ifelse(pval<0.01, format(pval, scientific=T, digits=2), round(pval, d=2))) %>%
+  mutate("HR.95CI" = sprintf("%s (%s, %s)", HR, low95CI_HR, up95CI_HR)) %>%
+  mutate_at("exposure", ~recode(., !!!recode_labs)) %>%
+  mutate_at("event_var", ~recode(., !!!recode_mortoutcomes)) %>%
+  arrange(event_var) %>% 
+  select(
+    cycle_yrs, N.years=n_yrs, Covars=model_covars, Exposure=exposure, 
+    Outcome=event_var, N_Events_Raw=n_event_raw, N_Events_Wt=n_event_weighted,
+    PersonYrs.Raw=n_person_time_raw, PersonYrs.Wt=n_person_time_weighted,
+    HR.95CI, P.value, Flag=flag_n_total)
+
+# Base model --------------
+tab_coxph_mortality %>% filter(!grepl("bmi", Covars)) %>% 
+  select(-Covars) %>% 
+  kable(caption = "Associations of fasting labs with mortality outcomes, adjusting for Age/Sex/RaceEthn")
+
+# BMI model --------------
+tab_coxph_mortality %>% filter(grepl("bmi", Covars)) %>% 
+  select(-Covars) %>% 
+  kable(caption = "Associations of fasting labs with mortality outcomes, adjusting for Age/Sex/RaceEthn+BMI")
+
+```

@@ -1,0 +1,1613 @@
+Component,Table,TableDesc,BeginYear,EndYear,Years
+Demographics,DEMO_D,Demographic Variables & Sample Weights,2005,2006,2005-2006
+Demographics,DEMO_E,Demographic Variables & Sample Weights,2007,2008,2007-2008
+Demographics,DEMO_C,Demographic Variables & Sample Weights,2003,2004,2003-2004
+Demographics,DEMO_B,Demographic Variables & Sample Weights,2001,2002,2001-2002
+Demographics,DEMO,Demographic Variables & Sample Weights,1999,2000,1999-2000
+Demographics,DEMO_F,Demographic Variables & Sample Weights,2009,2010,2009-2010
+Demographics,DEMO_G,Demographic Variables & Sample Weights,2011,2012,2011-2012
+Demographics,DEMO_H,Demographic Variables and Sample Weights,2013,2014,2013-2014
+Demographics,DEMO_I,Demographic Variables and Sample Weights,2015,2016,2015-2016
+Demographics,DEMO_J,Demographic Variables and Sample Weights,2017,2018,2017-2018
+Demographics,P_DEMO,Demographic Variables and Sample Weights,2017,2020,2017-2020
+Demographics,DEMO_L,Demographic Variables and Sample Weights,2021,2023,2021-2023
+Dietary,DRXIFF,Dietary Interview - Individual Foods,1999,2000,1999-2000
+Dietary,DRXTOT,Dietary Interview - Total Nutrient Intakes,1999,2000,1999-2000
+Dietary,DSQFILE1,"Dietary Supplement Use 30-Day - File 1, Supplement Counts",1999,2000,1999-2000
+Dietary,DRXTOT_B,Dietary Interview - Total Nutrient Intakes,2001,2002,2001-2002
+Dietary,DRXIFF_B,Dietary Interview - Individual Foods,2001,2002,2001-2002
+Dietary,FFQRAW_D,Food Frequency Questionnaire - Raw Questionnaire Responses,2005,2006,2005-2006
+Dietary,FFQDC_D,Food Frequency Questionnaire - Output from DietCalc Software,2005,2006,2005-2006
+Dietary,FFQRAW_C,Food Frequency Questionnaire - Raw Questionnaire Responses,2003,2004,2003-2004
+Dietary,FFQDC_C,Food Frequency Questionnaire - Output from DietCalc Software,2003,2004,2003-2004
+Dietary,DRXFCD_C,Dietary Interview Technical Support File - Food Codes,2003,2004,2003-2004
+Dietary,DSQFILE2,"Dietary Supplement Use 30-Day - File 2, Participant's Use of Supplements",1999,2000,1999-2000
+Dietary,DR1TOT_C,"Dietary Interview - Total Nutrient Intakes, First Day",2003,2004,2003-2004
+Dietary,DR2TOT_C,"Dietary Interview - Total Nutrient Intakes, Second Day",2003,2004,2003-2004
+Dietary,DR2IFF_C,"Dietary Interview - Individual Foods, Second Day",2003,2004,2003-2004
+Dietary,DS2TOT_F,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, Second Day",2009,2010,2009-2010
+Dietary,DTQ_F,Dietary Screener Questionnaire,2009,2010,2009-2010
+Dietary,DR1IFF_C,"Dietary Interview - Individual Foods, First Day",2003,2004,2003-2004
+Dietary,DS1IDS_F,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, First Day",2009,2010,2009-2010
+Dietary,DS2IDS_F,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, Second Day",2009,2010,2009-2010
+Dietary,DSQIDS_F,Dietary Supplement Use 30 Day - Individual Dietary Supplements,2009,2010,2009-2010
+Dietary,DSQTOT_F,Dietary Supplement Use 30-Day - Total Dietary Supplements,2009,2010,2009-2010
+Dietary,DS1TOT_F,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, First Day",2009,2010,2009-2010
+Dietary,DR1IFF_F,"Dietary Interview - Individual Foods, First Day",2009,2010,2009-2010
+Dietary,DR2IFF_F,"Dietary Interview - Individual Foods, Second Day",2009,2010,2009-2010
+Dietary,DR1TOT_F,"Dietary Interview - Total Nutrient Intakes, First Day",2009,2010,2009-2010
+Dietary,DR2TOT_F,"Dietary Interview - Total Nutrient Intakes, Second Day",2009,2010,2009-2010
+Dietary,DRXFCD_F,Dietary Interview Technical Support File - Food Codes,2009,2010,2009-2010
+Dietary,DRXMCD_F,Dietary Interview Technical Support File - Modification Codes,2009,2010,2009-2010
+Dietary,DS1IDS_E,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, First Day",2007,2008,2007-2008
+Dietary,DS2IDS_E,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, Second Day",2007,2008,2007-2008
+Dietary,DSQIDS_E,Dietary Supplement Use 30 Day - Individual Dietary Supplements,2007,2008,2007-2008
+Dietary,DSQTOT_E,Dietary Supplement Use 30-Day - Total Dietary Supplements,2007,2008,2007-2008
+Dietary,DS1TOT_E,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, First Day",2007,2008,2007-2008
+Dietary,DS2TOT_E,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, Second Day",2007,2008,2007-2008
+Dietary,DR1IFF_E,"Dietary Interview - Individual Foods, First Day",2007,2008,2007-2008
+Dietary,DR2IFF_E,"Dietary Interview - Individual Foods, Second Day",2007,2008,2007-2008
+Dietary,DR1TOT_E,"Dietary Interview - Total Nutrient Intakes, First Day",2007,2008,2007-2008
+Dietary,DR2TOT_E,"Dietary Interview - Total Nutrient Intakes, Second Day",2007,2008,2007-2008
+Dietary,DRXMCD_E,Dietary Interview Technical Support File - Modification Codes,2007,2008,2007-2008
+Dietary,DRXFCD_E,Dietary Interview Technical Support File - Food Codes,2007,2008,2007-2008
+Dietary,DSQ1_B,"Dietary Supplement Use 30-Day - File 1, Supplement Counts",2001,2002,2001-2002
+Dietary,DSQ2_B,"Dietary Supplement Use 30-Day - File 2, Participant's Use of Supplements",2001,2002,2001-2002
+Dietary,DSQ1_C,"Dietary Supplement Use 30-Day - File 1, Supplement Counts",2003,2004,2003-2004
+Dietary,DSQ2_C,"Dietary Supplement Use 30-Day - File 2, Participant's Use of Supplements",2003,2004,2003-2004
+Dietary,DSQ1_D,"Dietary Supplement Use 30-Day - File 1, Supplement Counts",2005,2006,2005-2006
+Dietary,DSQ2_D,"Dietary Supplement Use 30-Day - File 2, Participant's Use of Supplements",2005,2006,2005-2006
+Dietary,DR1TOT_G,"Dietary Interview - Total Nutrient Intakes, First Day",2011,2012,2011-2012
+Dietary,DR2TOT_G,"Dietary Interview - Total Nutrient Intakes, Second Day",2011,2012,2011-2012
+Dietary,DR1IFF_G,"Dietary Interview - Individual Foods, First Day",2011,2012,2011-2012
+Dietary,DR2IFF_G,"Dietary Interview - Individual Foods, Second Day",2011,2012,2011-2012
+Dietary,DRXMCD_G,Dietary Interview Technical Support File - Modification Codes,2011,2012,2011-2012
+Dietary,DRXFCD_G,Dietary Interview Technical Support File - Food Codes,2011,2012,2011-2012
+Dietary,DSQIDS_G,Dietary Supplement Use 30 Day - Individual Dietary Supplements,2011,2012,2011-2012
+Dietary,DSQTOT_G,Dietary Supplement Use 30-Day - Total Dietary Supplements,2011,2012,2011-2012
+Dietary,DS1IDS_G,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, First Day",2011,2012,2011-2012
+Dietary,DS2IDS_G,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, Second Day",2011,2012,2011-2012
+Dietary,DS1TOT_G,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, First Day",2011,2012,2011-2012
+Dietary,DS2TOT_G,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, Second Day",2011,2012,2011-2012
+Dietary,DR1IFF_D,"Dietary Interview - Individual Foods, First Day",2005,2006,2005-2006
+Dietary,DR1TOT_D,"Dietary Interview - Total Nutrient Intakes, First Day",2005,2006,2005-2006
+Dietary,DR2TOT_D,"Dietary Interview - Total Nutrient Intakes, Second Day",2005,2006,2005-2006
+Dietary,DRXFCD_D,Dietary Interview Technical Support File - Food Codes,2005,2006,2005-2006
+Dietary,DRXMCD_D,Dietary Interview Technical Support File - Modification Codes,2005,2006,2005-2006
+Dietary,DRXMCD_C,Dietary Interview Technical Support File - Modification Codes,2003,2004,2003-2004
+Dietary,DR2IFF_D,"Dietary Interview - Individual Foods, Second Day",2005,2006,2005-2006
+Dietary,DR1TOT_H,"Dietary Interview - Total Nutrient Intakes, First Day",2013,2014,2013-2014
+Dietary,DR2TOT_H,"Dietary Interview - Total Nutrient Intakes, Second Day",2013,2014,2013-2014
+Dietary,DR1IFF_H,"Dietary Interview - Individual Foods, First Day",2013,2014,2013-2014
+Dietary,DR2IFF_H,"Dietary Interview - Individual Foods, Second Day",2013,2014,2013-2014
+Dietary,DRXFCD_H,Dietary Interview Technical Support File - Food Codes,2013,2014,2013-2014
+Dietary,DS1IDS_H,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, First Day",2013,2014,2013-2014
+Dietary,DSQIDS_H,Dietary Supplement Use 30-Day - Individual Dietary Supplements,2013,2014,2013-2014
+Dietary,DS2IDS_H,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, Second Day",2013,2014,2013-2014
+Dietary,DS1TOT_H,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, First Day",2013,2014,2013-2014
+Dietary,DS2TOT_H,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, Second Day",2013,2014,2013-2014
+Dietary,DSQTOT_H,Dietary Supplement Use 30-Day - Total Dietary Supplements,2013,2014,2013-2014
+Dietary,DR1TOT_I,"Dietary Interview - Total Nutrient Intakes, First Day",2015,2016,2015-2016
+Dietary,DR2TOT_I,"Dietary Interview - Total Nutrient Intakes, Second Day",2015,2016,2015-2016
+Dietary,DR1IFF_I,"Dietary Interview - Individual Foods, First Day",2015,2016,2015-2016
+Dietary,DR2IFF_I,"Dietary Interview - Individual Foods, Second Day",2015,2016,2015-2016
+Dietary,DRXFCD_I,Dietary Interview Technical Support File - Food Codes,2015,2016,2015-2016
+Dietary,DSQTOT_I,Dietary Supplement Use 30-Day - Total Dietary Supplements,2015,2016,2015-2016
+Dietary,DS1IDS_I,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, First Day",2015,2016,2015-2016
+Dietary,DS2IDS_I,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, Second Day",2015,2016,2015-2016
+Dietary,DS1TOT_I,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, First Day",2015,2016,2015-2016
+Dietary,DS2TOT_I,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, Second Day",2015,2016,2015-2016
+Dietary,DSQIDS_I,Dietary Supplement Use 30-Day - Individual Dietary Supplements,2015,2016,2015-2016
+Dietary,DR1TOT_J,"Dietary Interview - Total Nutrient Intakes, First Day",2017,2018,2017-2018
+Dietary,DR2TOT_J,"Dietary Interview - Total Nutrient Intakes, Second Day",2017,2018,2017-2018
+Dietary,DR1IFF_J,"Dietary Interview - Individual Foods, First Day",2017,2018,2017-2018
+Dietary,DR2IFF_J,"Dietary Interview - Individual Foods, Second Day",2017,2018,2017-2018
+Dietary,DS1IDS_J,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, First Day",2017,2018,2017-2018
+Dietary,DSQTOT_J,Dietary Supplement Use 30-Day - Total Dietary Supplements,2017,2018,2017-2018
+Dietary,DS2IDS_J,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, Second Day",2017,2018,2017-2018
+Dietary,DS1TOT_J,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, First Day",2017,2018,2017-2018
+Dietary,DS2TOT_J,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, Second Day",2017,2018,2017-2018
+Dietary,DSQIDS_J,Dietary Supplement Use 30-Day - Individual Dietary Supplements,2017,2018,2017-2018
+Dietary,P_DSQIDS,Dietary Supplement Use 30-Day - Individual Dietary Supplements,2017,2020,2017-2020
+Dietary,P_DSQTOT,Dietary Supplement Use 30-Day - Total Dietary Supplements,2017,2020,2017-2020
+Dietary,P_DR1TOT,"Dietary Interview - Total Nutrient Intakes, First Day",2017,2020,2017-2020
+Dietary,P_DR2TOT,"Dietary Interview - Total Nutrient Intakes, Second Day",2017,2020,2017-2020
+Dietary,P_DR1IFF,"Dietary Interview - Individual Foods, First Day",2017,2020,2017-2020
+Dietary,P_DR2IFF,"Dietary Interview - Individual Foods, Second Day",2017,2020,2017-2020
+Dietary,P_DRXFCD,Dietary Interview Technical Support File - Food Codes,2017,2020,2017-2020
+Dietary,P_DS1IDS,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, First Day",2017,2020,2017-2020
+Dietary,P_DS1TOT,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, First Day",2017,2020,2017-2020
+Dietary,P_DS2IDS,"Dietary Supplement Use 24-Hour - Individual Dietary Supplements, Second Day",2017,2020,2017-2020
+Dietary,P_DS2TOT,"Dietary Supplement Use 24-Hour - Total Dietary Supplements, Second Day",2017,2020,2017-2020
+Dietary,DRXFCD_L,Dietary Interview Technical Support File - Food Codes,2021,2023,2021-2023
+Dietary,DR1IFF_L,"Dietary Interview - Individual Foods, First Day",2021,2023,2021-2023
+Dietary,DR1TOT_L,"Dietary Interview - Total Nutrient Intakes, First Day",2021,2023,2021-2023
+Dietary,DR2IFF_L,"Dietary Interview - Individual Foods, Second Day",2021,2023,2021-2023
+Dietary,DR2TOT_L,"Dietary Interview - Total Nutrient Intakes, Second Day",2021,2023,2021-2023
+Dietary,DSPI,Dietary Supplement Database - Product Information,1999,2023,1999-2023
+Dietary,DSBI,Dietary Supplement Database - Blend Information,1999,2023,1999-2023
+Dietary,DSII,Dietary Supplement Database - Ingredient Information,1999,2023,1999-2023
+Dietary,DSQTOT_L,Dietary Supplement Use 30-Day - Total Dietary Supplements,2021,2023,2021-2023
+Dietary,DSQIDS_L,Dietary Supplement Use 30-Day - Individual Dietary Supplements,2021,2023,2021-2023
+Examination,BPX_D,Blood Pressure,2005,2006,2005-2006
+Examination,BMX_D,Body Measures,2005,2006,2005-2006
+Examination,VIX_E,Vision,2007,2008,2007-2008
+Examination,BPX_E,Blood Pressure,2007,2008,2007-2008
+Examination,OPXFDT_E,Ophthalmology - Frequency Doubling Technology,2007,2008,2007-2008
+Examination,OHX_E,Oral Health,2007,2008,2007-2008
+Examination,DXXFEM_E,Dual Energy X-ray Absorptiometry - Femur,2007,2008,2007-2008
+Examination,BPX,Blood Pressure,1999,2000,1999-2000
+Examination,BMX,Body Measures,1999,2000,1999-2000
+Examination,CVX,Cardiovascular Fitness,1999,2000,1999-2000
+Examination,AUX1,Audiometry,1999,2000,1999-2000
+Examination,AUXTYM,Audiometry - Tympanometry,1999,2000,1999-2000
+Examination,BIX,Bioelectrical Impedance Analysis,1999,2000,1999-2000
+Examination,BAX,Balance,1999,2000,1999-2000
+Examination,LEXABPI,Lower Extremity Disease - Ankle Brachial Blood Pressure Index,1999,2000,1999-2000
+Examination,LEXPN,Lower Extremity Disease - Peripheral Neuropathy,1999,2000,1999-2000
+Examination,MSX,Muscle Strength,1999,2000,1999-2000
+Examination,OHXDENT,Oral Health - Dentition,1999,2000,1999-2000
+Examination,OHXPERIO,Oral Health - Periodontal,1999,2000,1999-2000
+Examination,OHXREF,Oral Health - Recommendation of Care,1999,2000,1999-2000
+Examination,SEQ,Shared Exclusion Questions,1999,2000,1999-2000
+Examination,TB,Tuberculosis,1999,2000,1999-2000
+Examination,VIX,Vision,1999,2000,1999-2000
+Examination,BMX_E,Body Measures,2007,2008,2007-2008
+Examination,DXX_2_B,"Dual-Energy X-ray Absorptiometry - Whole Body, Second Exam",2001,2002,2001-2002
+Examination,AUX_E,Audiometry,2007,2008,2007-2008
+Examination,AUXTYM_E,Audiometry - Tympanometry,2007,2008,2007-2008
+Examination,AUX_D,Audiometry,2005,2006,2005-2006
+Examination,AUXTYM_D,Audiometry - Tympanometry,2005,2006,2005-2006
+Examination,DXXFEM_D,Dual Energy X-ray Absorptiometry - Femur,2005,2006,2005-2006
+Examination,OPXFDT_D,Ophthalmology - Frequency Doubling Technology,2005,2006,2005-2006
+Examination,OHX_D,Oral Health,2005,2006,2005-2006
+Examination,PAXRAW_D,Physical Activity Monitor,2005,2006,2005-2006
+Examination,VIX_D,Vision,2005,2006,2005-2006
+Examination,AUX_C,Audiometry,2003,2004,2003-2004
+Examination,AUXTYM_C,Audiometry - Tympanometry,2003,2004,2003-2004
+Examination,BAX_C,Balance,2003,2004,2003-2004
+Examination,BIX_C,Bioelectrical Impedance Analysis,2003,2004,2003-2004
+Examination,BPX_C,Blood Pressure,2003,2004,2003-2004
+Examination,BMX_C,Body Measures,2003,2004,2003-2004
+Examination,CVX_C,Cardiovascular Fitness,2003,2004,2003-2004
+Examination,DEX_C,Dermatology,2003,2004,2003-2004
+Examination,LEXAB_C,Lower Extremity Disease - Ankle Brachial Blood Pressure Index,2003,2004,2003-2004
+Examination,LEXPN_C,Lower Extremity Disease - Peripheral Neuropathy,2003,2004,2003-2004
+Examination,OHXADD_C,Oral Health - Addendum,2003,2004,2003-2004
+Examination,OHXDEN_C,Oral Health - Dentition,2003,2004,2003-2004
+Examination,OHXPRL_C,Oral Health - Periodontal/Lower,2003,2004,2003-2004
+Examination,OHXPRU_C,Oral Health - Periodontal/Upper,2003,2004,2003-2004
+Examination,OHXREF_C,Oral Health - Recommendation of Care,2003,2004,2003-2004
+Examination,PAXRAW_C,Physical Activity Monitor,2003,2004,2003-2004
+Examination,VIX_C,Vision,2003,2004,2003-2004
+Examination,AUX_B,Audiometry,2001,2002,2001-2002
+Examination,AUXTYM_B,Audiometry - Tympanometry,2001,2002,2001-2002
+Examination,BAX_B,Balance,2001,2002,2001-2002
+Examination,BIX_B,Bioelectrical Impedance Analysis,2001,2002,2001-2002
+Examination,BMX_B,Body Measures,2001,2002,2001-2002
+Examination,BPX_B,Blood Pressure,2001,2002,2001-2002
+Examination,CVX_B,Cardiovascular Fitness,2001,2002,2001-2002
+Examination,LEXPN_B,Lower Extremity Disease - Peripheral Neuropathy,2001,2002,2001-2002
+Examination,MSX_B,Muscle Strength,2001,2002,2001-2002
+Examination,OHXDEN_B,Oral Health - Dentition,2001,2002,2001-2002
+Examination,OHXPRL_B,Oral Health - Periodontal/Lower,2001,2002,2001-2002
+Examination,OHXPRU_B,Oral Health - Periodontal/Upper,2001,2002,2001-2002
+Examination,OHXREF_B,Oral Health - Recommendation of Care,2001,2002,2001-2002
+Examination,VIX_B,Vision,2001,2002,2001-2002
+Examination,LEXAB_B,Lower Extremity Disease - Ankle Brachial Blood Pressure Index,2001,2002,2001-2002
+Examination,ENX_E,Exhaled Nitric Oxide,2007,2008,2007-2008
+Examination,ENX_F,Exhaled Nitric Oxide,2009,2010,2009-2010
+Examination,ARX_F,Arthritis Body Measures,2009,2010,2009-2010
+Examination,BMX_F,Body Measures,2009,2010,2009-2010
+Examination,BPX_F,Blood Pressure,2009,2010,2009-2010
+Examination,SPX_E,Spirometry - Pre and Post-Bronchodilator,2007,2008,2007-2008
+Examination,OHXDEN_F,Oral Health - Dentition,2009,2010,2009-2010
+Examination,SPXRAW_E,Spirometry - Raw Curve Data,2007,2008,2007-2008
+Examination,SPX_F,Spirometry - Pre and Post-Bronchodilator,2009,2010,2009-2010
+Examination,SPXRAW_F,Spirometry - Raw Curve Data,2009,2010,2009-2010
+Examination,OHXPER_F,Oral Health - Periodontal,2009,2010,2009-2010
+Examination,OHXREF_F,Oral Health - Recommendation of Care,2009,2010,2009-2010
+Examination,AUX_F,Audiometry,2009,2010,2009-2010
+Examination,AUXTYM_F,Audiometry - Tympanometry,2009,2010,2009-2010
+Examination,AUXAR_F,Audiometry - Acoustic Reflex,2009,2010,2009-2010
+Examination,DXXAG_C,Dual Energy X-ray Absorptiometry - Android/Gynoid,2003,2004,2003-2004
+Examination,DXXAG_D,Dual Energy X-ray Absorptiometry - Android/Gynoid,2005,2006,2005-2006
+Examination,DXXSPN_F,Dual Energy X-ray Absorptiometry - Spine,2009,2010,2009-2010
+Examination,DXXFEM_F,Dual Energy X-ray Absorptiometry - Femur,2009,2010,2009-2010
+Examination,AUXAR_E,Audiometry - Acoustic Reflex,2007,2008,2007-2008
+Examination,AUXAR_D,Audiometry - Acoustic Reflex,2005,2006,2005-2006
+Examination,TBX_G,Tuberculosis,2011,2012,2011-2012
+Examination,BPX_G,Blood Pressure,2011,2012,2011-2012
+Examination,ENX_G,Exhaled Nitric Oxide,2011,2012,2011-2012
+Examination,SPX_G,Spirometry - Pre and Post-Bronchodilator,2011,2012,2011-2012
+Examination,SPXRAW_G,Spirometry - Raw Curve Data,2011,2012,2011-2012
+Examination,OHXPER_G,Oral Health - Periodontal,2011,2012,2011-2012
+Examination,OHXREF_G,Oral Health - Recommendation of Care,2011,2012,2011-2012
+Examination,OPXRET_D,Ophthalmology - Retinal Imaging,2005,2006,2005-2006
+Examination,OPXRET_E,Ophthalmology - Retinal Imaging,2007,2008,2007-2008
+Examination,AUXAR,Audiometry - Acoustic Reflex,1999,2000,1999-2000
+Examination,AUXAR_B,Audiometry - Acoustic Reflex,2001,2002,2001-2002
+Examination,AUXAR_C,Audiometry - Acoustic Reflex,2003,2004,2003-2004
+Examination,DXXSPN_D,Dual Energy X-ray Absorptiometry - Spine,2005,2006,2005-2006
+Examination,DXXSPN_E,Dual Energy X-ray Absorptiometry - Spine,2007,2008,2007-2008
+Examination,MGX_G,Muscle Strength - Grip Test,2011,2012,2011-2012
+Examination,BPX_H,Blood Pressure,2013,2014,2013-2014
+Examination,DXXSPN_H,Dual-Energy X-ray Absorptiometry - Spine,2013,2014,2013-2014
+Examination,DXXFEM_H,Dual-Energy X-ray Absorptiometry - Femur,2013,2014,2013-2014
+Examination,DXXVFA_H,Dual-Energy X-ray Absorptiometry - Vertebral Fracture Assessment,2013,2014,2013-2014
+Examination,BMX_H,Body Measures,2013,2014,2013-2014
+Examination,DXXFRX_H,Dual-Energy X-ray Absorptiometry - FRAX Score,2013,2014,2013-2014
+Examination,BMX_G,Body Measures,2011,2012,2011-2012
+Examination,CSX_H,Taste & Smell,2013,2014,2013-2014
+Examination,AUX_G,Audiometry,2011,2012,2011-2012
+Examination,AUXAR_G,Audiometry - Acoustic Reflex,2011,2012,2011-2012
+Examination,AUXTYM_G,Audiometry - Tympanometry,2011,2012,2011-2012
+Examination,MGX_H,Muscle Strength - Grip Test,2013,2014,2013-2014
+Examination,OHXDEN_H,Oral Health - Dentition,2013,2014,2013-2014
+Examination,OHXPER_H,Oral Health - Periodontal,2013,2014,2013-2014
+Examination,OHXREF_H,Oral Health - Recommendation of Care,2013,2014,2013-2014
+Examination,BPX_I,Blood Pressure,2015,2016,2015-2016
+Examination,BMX_I,Body Measures,2015,2016,2015-2016
+Examination,OHXDEN_I,Oral Health - Dentition,2015,2016,2015-2016
+Examination,OHXREF_I,Oral Health - Recommendation of Care,2015,2016,2015-2016
+Examination,FLXCLN_G,Fluorosis - Clinical,2011,2012,2011-2012
+Examination,FLXCLN_H,Fluorosis - Clinical,2013,2014,2013-2014
+Examination,OHXDEN_G,Oral Health - Dentition,2011,2012,2011-2012
+Examination,DXXAAC_H,Dual-Energy X-ray Absorptiometry - Abdominal Aortic Calcification,2013,2014,2013-2014
+Examination,DXXT4_H,Dual-Energy X-ray Absorptiometry - T4 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXT5_H,Dual-Energy X-ray Absorptiometry - T5 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXT6_H,Dual-Energy X-ray Absorptiometry - T6 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXT7_H,Dual-Energy X-ray Absorptiometry - T7 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXT8_H,Dual-Energy X-ray Absorptiometry - T8 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXT9_H,Dual-Energy X-ray Absorptiometry - T9 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXT10_H,Dual-Energy X-ray Absorptiometry - T10 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXT11_H,Dual-Energy X-ray Absorptiometry - T11 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXT12_H,Dual-Energy X-ray Absorptiometry - T12 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXL1_H,Dual-Energy X-ray Absorptiometry - L1 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXL2_H,Dual-Energy X-ray Absorptiometry - L2 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXL3_H,Dual-Energy X-ray Absorptiometry - L3 Vertebrae Morphology,2013,2014,2013-2014
+Examination,DXXL4_H,Dual-Energy X-ray Absorptiometry - L4 Vertebrae Morphology,2013,2014,2013-2014
+Examination,FLXCLN_I,Fluorosis - Clinical,2015,2016,2015-2016
+Examination,BPX_J,Blood Pressure,2017,2018,2017-2018
+Examination,BMX_J,Body Measures,2017,2018,2017-2018
+Examination,OHXDEN_J,Oral Health - Dentition,2017,2018,2017-2018
+Examination,DXX_G,Dual-Energy X-ray Absorptiometry - Whole Body,2011,2012,2011-2012
+Examination,OHXREF_J,Oral Health - Recommendation of Care,2017,2018,2017-2018
+Examination,AUX_I,Audiometry,2015,2016,2015-2016
+Examination,DXX_I,Dual-Energy X-ray Absorptiometry - Whole Body,2015,2016,2015-2016
+Examination,DXX_H,Dual-Energy X-ray Absorptiometry - Whole Body,2013,2014,2013-2014
+Examination,DXXFEM_J,Dual-Energy X-ray Absorptiometry - Femur,2017,2018,2017-2018
+Examination,DXX_J,Dual-Energy X-ray Absorptiometry - Whole Body,2017,2018,2017-2018
+Examination,AUXAR_I,Audiometry - Acoustic Reflex,2015,2016,2015-2016
+Examination,AUXTYM_I,Audiometry - Tympanometry,2015,2016,2015-2016
+Examination,AUXWBR_I,Audiometry – Wideband Reflectance,2015,2016,2015-2016
+Examination,DXXSPN_J,Dual-Energy X-ray Absorptiometry - Spine,2017,2018,2017-2018
+Examination,LUX_J,Liver Ultrasound Transient Elastography,2017,2018,2017-2018
+Examination,FLXCLN_F,Fluorosis - Clinical,2009,2010,2009-2010
+Examination,DXXAG_G,Dual-Energy X-ray Absorptiometry - Android/Gynoid Measurements,2011,2012,2011-2012
+Examination,PAXDAY_G,Physical Activity Monitor - Day,2011,2012,2011-2012
+Examination,PAXHD_G,Physical Activity Monitor - Header,2011,2012,2011-2012
+Examination,PAXHR_G,Physical Activity Monitor - Hour,2011,2012,2011-2012
+Examination,PAXMIN_G,Physical Activity Monitor - Minute,2011,2012,2011-2012
+Examination,PAXDAY_H,Physical Activity Monitor - Day,2013,2014,2013-2014
+Examination,PAXHD_H,Physical Activity Monitor - Header,2013,2014,2013-2014
+Examination,PAXHR_H,Physical Activity Monitor - Hour,2013,2014,2013-2014
+Examination,PAXMIN_H,Physical Activity Monitor - Minute,2013,2014,2013-2014
+Examination,DXXAG_H,Dual-Energy X-ray Absorptiometry - Android/Gynoid Measurements,2013,2014,2013-2014
+Examination,DXXAG_I,Dual-Energy X-ray Absorptiometry - Android/Gynoid Measurements,2015,2016,2015-2016
+Examination,DXXAG_J,Dual-Energy X-ray Absorptiometry - Android/Gynoid Measurements,2017,2018,2017-2018
+Examination,BPXO_J,Blood Pressure - Oscillometric Measurements,2017,2018,2017-2018
+Examination,P_BMX,Body Measures,2017,2020,2017-2020
+Examination,P_BPXO,Blood Pressure - Oscillometric Measurement,2017,2020,2017-2020
+Examination,P_OHXREF,Oral Health - Recommendation of Care,2017,2020,2017-2020
+Examination,P_OHXDEN,Oral Health - Dentition,2017,2020,2017-2020
+Examination,P_DXXFEM,Dual-Energy X-ray Absorptiometry - Femur,2017,2020,2017-2020
+Examination,P_DXXSPN,Dual-Energy X-ray Absorptiometry - Spine,2017,2020,2017-2020
+Examination,AUX_J,Audiometry,2017,2018,2017-2018
+Examination,AUXAR_J,Audiometry - Acoustic Reflex,2017,2018,2017-2018
+Examination,AUXTYM_J,Audiometry - Tympanometry,2017,2018,2017-2018
+Examination,AUXWBR_J,Audiometry - Wideband Reflectance,2017,2018,2017-2018
+Examination,P_AUXWBR,Audiometry - Wideband Reflectance,2017,2020,2017-2020
+Examination,P_AUXTYM,Audiometry - Tympanometry,2017,2020,2017-2020
+Examination,P_AUXAR,Audiometry - Acoustic Reflex,2017,2020,2017-2020
+Examination,P_AUX,Audiometry,2017,2020,2017-2020
+Examination,P_LUX,Liver Ultrasound Transient Elastography,2017,2020,2017-2020
+Examination,BMX_L,Body Measures,2021,2023,2021-2023
+Examination,BPXO_L,Blood Pressure - Oscillometric Measurements,2021,2023,2021-2023
+Examination,LUX_L,Liver Ultrasound Transient Elastography,2021,2023,2021-2023
+Examination,BAX_L,Balance,2021,2023,2021-2023
+Laboratory,PbCd_D,"Cadmium, Lead, & Total Mercury - Blood",2005,2006,2005-2006
+Laboratory,HEPC_E,"Hepatitis C: Confirmed Antibody, RNA (HCV-RNA), & Genotype",2007,2008,2007-2008
+Laboratory,HEPA_E,Hepatitis A Antibody,2007,2008,2007-2008
+Laboratory,HEPBD_E,"Hepatitis B: Core antibody, Surface atigen, and Hepatitis D: antibody",2007,2008,2007-2008
+Laboratory,HEPB_S_E,Hepatitis B Surface Antibody,2007,2008,2007-2008
+Laboratory,CRP_E,C-Reactive Protein (CRP),2007,2008,2007-2008
+Laboratory,PSA_E,Prostate Specific Antigen (PSA),2007,2008,2007-2008
+Laboratory,CBC_E,Complete Blood Count with 5-part Differential - Whole Blood,2007,2008,2007-2008
+Laboratory,GLU_E,Plasma Fasting Glucose & Insulin,2007,2008,2007-2008
+Laboratory,GHB_E,Glycohemoglobin,2007,2008,2007-2008
+Laboratory,FASTQX_E,Fasting Questionnaire,2007,2008,2007-2008
+Laboratory,UCPREG_E,Pregnancy Test - Urine,2007,2008,2007-2008
+Laboratory,THYROD_E,Thyroid Profile,2007,2008,2007-2008
+Laboratory,FERTIN_E,Ferritin,2007,2008,2007-2008
+Laboratory,TFR_E,Transferrin Receptor,2007,2008,2007-2008
+Laboratory,UHM_E,Metals - Urine,2007,2008,2007-2008
+Laboratory,UHG_E,Mercury: Inorganic - Urine,2007,2008,2007-2008
+Laboratory,UIO_E,Iodine - Urine,2007,2008,2007-2008
+Laboratory,UAS_E,Arsenics - Total & Speciated - Urine,2007,2008,2007-2008
+Laboratory,PbCd_E,"Cadmium, Lead, & Total Mercury - Blood",2007,2008,2007-2008
+Laboratory,ALB_CR_E,Albumin & Creatinine - Urine,2007,2008,2007-2008
+Laboratory,BIOPRO_E,Standard Biochemistry Profile,2007,2008,2007-2008
+Laboratory,HIV_E,HIV Antibody Test,2007,2008,2007-2008
+Laboratory,PP_D,Pesticides - Environmental - Urine,2005,2006,2005-2006
+Laboratory,L24PP_C,Pesticides - Environmental - Urine,2003,2004,2003-2004
+Laboratory,TCHOL_E,Cholesterol - Total,2007,2008,2007-2008
+Laboratory,TRIGLY_E,Cholesterol - LDL & Triglycerides,2007,2008,2007-2008
+Laboratory,L26UPP_C,"Pesticides - Current Use - Urine (Formerly Priority Pesticides, Non-persistent Pesticide Metabolites)",2003,2004,2003-2004
+Laboratory,L06PHY_C,Phytoestrogens - Urine,2003,2004,2003-2004
+Laboratory,L06VIT_C,Vitamin C,2003,2004,2003-2004
+Laboratory,PHTHTE_D,Phthalates - Urine,2005,2006,2005-2006
+Laboratory,OPD_D,Organophosphate Insecticides - Diakyl Phosphate Metabolites - Urine,2005,2006,2005-2006
+Laboratory,OGTT_E,Oral Glucose Tolerance Test,2007,2008,2007-2008
+Laboratory,VOC_D,Volatile Organic Compounds - Water & Related Questionnaire Items,2005,2006,2005-2006
+Laboratory,UPP_D,"Pesticides - Current Use - Urine (Formerly Priority Pesticides, Non-persistent Pesticide Metabolites)",2005,2006,2005-2006
+Laboratory,HDL_E,Cholesterol - HDL,2007,2008,2007-2008
+Laboratory,COTNAL_E,Cotinine - Serum & Total NNAL - Urine,2007,2008,2007-2008
+Laboratory,SSNH4THY,Thyroid Profile (Surplus),2001,2002,2001-2002
+Laboratory,SSCHL_A,Sex Steroid Hormone - Men (Surplus),1999,2000,1999-2000
+Laboratory,SSCHL_B,Sex Steroid Hormone - Men (Surplus),2001,2002,2001-2002
+Laboratory,SSCHL_C,Sex Steroid Hormone - Men (Surplus),2003,2004,2003-2004
+Laboratory,SSMEL_C,Melamine - Urine (Surplus),2003,2004,2003-2004
+Laboratory,L02HBS,Hepatitis B Surface Antibody,1999,2000,1999-2000
+Laboratory,L02HPA_a,Hepatitis A Antibody,1999,2000,1999-2000
+Laboratory,PH,Fasting Questionnaire,1999,2000,1999-2000
+Laboratory,PHPYPA,"Phthalates, Phytoestrogens & PAHs - Urine PHPYPA Urinary Phthalates",1999,2000,1999-2000
+Laboratory,UC,Pregnancy Test - Urine,1999,2000,1999-2000
+Laboratory,LAB03,"HIV Antibody Test, CD4+ T Lymphocytes & CD8+ T Cells",1999,2000,1999-2000
+Laboratory,LAB04,Volatile Organic Compounds - Blood & Water,1999,2000,1999-2000
+Laboratory,LAB05,Chlamydia & Gonorrhea - Urine,1999,2000,1999-2000
+Laboratory,LAB06,"Cadmium, Lead, Mercury, Cotinine & Nutritional Biochemistries",1999,2000,1999-2000
+Laboratory,LAB06HM,Metals - Urine,1999,2000,1999-2000
+Laboratory,LAB07,Latex,1999,2000,1999-2000
+Laboratory,LAB10,Glycohemoglobin,1999,2000,1999-2000
+Laboratory,LAB10AM,"Plasma Fasting Glucose, Serum C-peptide & Insulin",1999,2000,1999-2000
+Laboratory,LAB11,C-Reactive Protein (CRP),1999,2000,1999-2000
+Laboratory,Lab13,Cholesterol - Total & HDL,1999,2000,1999-2000
+Laboratory,LAB13AM,Cholesterol - LDL & Triglycerides,1999,2000,1999-2000
+Laboratory,LAB16,Albumin & Creatinine - Urine,1999,2000,1999-2000
+Laboratory,LAB17,Cryptosporidum & Toxoplasma,1999,2000,1999-2000
+Laboratory,LAB18,Standard Biochemistry Profile & Hormones,1999,2000,1999-2000
+Laboratory,LAB18T4,Thyroid - Stimulating Hormone & Thyroxine (TSH & T4),1999,2000,1999-2000
+Laboratory,LAB19,"Measles, Rubella, & Varicella",1999,2000,1999-2000
+Laboratory,LAB20,Lead - Dust,1999,2000,1999-2000
+Laboratory,LAB21,Volatile Organic Compounds (VOC) - Personal Exposure Badge,1999,2000,1999-2000
+Laboratory,LAB25,Complete Blood Count with 5-part Differential - Whole Blood,1999,2000,1999-2000
+Laboratory,LAB22,Mercury - Hair,1999,2000,1999-2000
+Laboratory,LAB28POC,"Dioxins, Furans, & Coplanar PCBs",1999,2000,1999-2000
+Laboratory,l13_b,Cholesterol - Total & HDL,2001,2002,2001-2002
+Laboratory,l13_c,Cholesterol - Total & HDL,2003,2004,2003-2004
+Laboratory,TCHOL_D,Cholesterol - Total,2005,2006,2005-2006
+Laboratory,HDL_D,Cholesterol - HDL,2005,2006,2005-2006
+Laboratory,l11p_2_b,"Prostate-specific Antigen (PSA), Second Exam",2001,2002,2001-2002
+Laboratory,L11_2_b,"C-Reactive Protein & Others, Second Exam",2001,2002,2001-2002
+Laboratory,ApoB_E,Apolipoprotein B,2007,2008,2007-2008
+Laboratory,SSFOL_A,Folic Acid - Unmetabolized (Surplus),1999,2000,1999-2000
+Laboratory,lab09,Herpes Simplex Virus Type-1 & Type-2,1999,2000,1999-2000
+Laboratory,l09_b,Herpes Simplex Virus Type-1 & Type-2,2001,2002,2001-2002
+Laboratory,l09_c,Herpes Simplex Virus Type-1 & Type-2,2003,2004,2003-2004
+Laboratory,HSV_D,Herpes Simplex Virus Type-1 & Type-2,2005,2006,2005-2006
+Laboratory,HSV_E,Herpes Simplex Virus Type-1 & Type-2,2007,2008,2007-2008
+Laboratory,l13_2_b,"Cholesterol - Total, HDL, LDL  & Triglycerides, Second Exam",2001,2002,2001-2002
+Laboratory,VIT_B6_D,Vitamin B6,2005,2006,2005-2006
+Laboratory,EPH_E,Environmental Phenols,2007,2008,2007-2008
+Laboratory,PFC_E,Polyfluoroalkyl Chemicals,2007,2008,2007-2008
+Laboratory,PP_E,Pesticides - Environmental - Urine,2007,2008,2007-2008
+Laboratory,PHTHTE_E,Phthalates - Urine,2007,2008,2007-2008
+Laboratory,L19_2_B,"Measles, Rubella, & Varicella, Second Exam",2001,2002,2001-2002
+Laboratory,L16_2_B,"Creatinine & Albumin - Urine, Second Exam",2001,2002,2001-2002
+Laboratory,l25_2_b,"Complete Blood Count with 5-part Differential - Whole Blood, Second Exam",2001,2002,2001-2002
+Laboratory,l39_2_b,Erythrocyte Protoporphyrin,2001,2002,2001-2002
+Laboratory,VIT_2_B,"Vitamin A, Vitamin E, & Carotenoids, Second Exam",2001,2002,2001-2002
+Laboratory,PERNT_D,"Perchlorate, Nitrate & Thiocyanate - Urine",2005,2006,2005-2006
+Laboratory,L02_B,Hepatitis B: Core Antibody & Surface Antigen; Hepatitis C: Confirmed Antibody & RNA (HCV-RNA); Hepatitis D Antibody,2001,2002,2001-2002
+Laboratory,Lab02,Hepatitis B: Core Antibody & Surface Antigen; Hepatitis C: Confirmed Antibody & RNA (HCV-RNA); Hepatitis D Antibody,1999,2000,1999-2000
+Laboratory,SSANA_A,Autoantibodies - Immunofluorescence & Immunoprecipitation Analyses (Surplus),1999,2004,1999-2004
+Laboratory,AL_IGE_D,Allergen Specific IgE(s) & Total IgE - Serum,2005,2006,2005-2006
+Laboratory,CBC_D,Complete Blood Count with 5-Part Differential - Whole Blood,2005,2006,2005-2006
+Laboratory,CRP_D,C-Reactive Protein (CRP),2005,2006,2005-2006
+Laboratory,EPH_D,Environmental Phenols & Parabens,2005,2006,2005-2006
+Laboratory,EPP_D,Erythrocyte Protoporphyrin,2005,2006,2005-2006
+Laboratory,FERTIN_D,Ferritin,2005,2006,2005-2006
+Laboratory,FOLATE_D,Folate - RBC & Serum,2005,2006,2005-2006
+Laboratory,GHB_D,Glycohemoglobin,2005,2006,2005-2006
+Laboratory,HEPA_D,Hepatitis A Antibody,2005,2006,2005-2006
+Laboratory,HEPBD_D,"Hepatitis B: Core antibody, Surface antigen, and Hepatitis D: antibody",2005,2006,2005-2006
+Laboratory,HEPB_S_D,Hepatitis B Surface Antibody,2005,2006,2005-2006
+Laboratory,HEPC_D,"Hepatitis C: Confirmed Antibody, RNA (HCV-RNA), & Genotype",2005,2006,2005-2006
+Laboratory,HCY_D,Homocysteine,2005,2006,2005-2006
+Laboratory,HIV_D,"HIV Antibody Test, CD4+ T Lymphocytes & CD8+ T Cells",2005,2006,2005-2006
+Laboratory,FETIB_D,"Iron, Total Iron Binding Capacity (TIBC), & Transferrin Saturation",2005,2006,2005-2006
+Laboratory,PTH_D,Parathyroid Hormone,2005,2006,2005-2006
+Laboratory,WPIN_D,"Perchlorate, Nitrate & Iodide - Tap Water",2005,2006,2005-2006
+Laboratory,FASTQX_D,Fasting Questionnaire,2005,2006,2005-2006
+Laboratory,GLU_D,Plasma Fasting Glucose & Insulin,2005,2006,2005-2006
+Laboratory,PFC_D,Polyfluoroalkyl Chemicals,2005,2006,2005-2006
+Laboratory,PSA_D,Prostate Specific Antigen (PSA),2005,2006,2005-2006
+Laboratory,COT_D,Cotinine - Serum,2005,2006,2005-2006
+Laboratory,BIOPRO_D,Standard Biochemistry Profile,2005,2006,2005-2006
+Laboratory,UAS_D,Arsenics - Total & Speciated - Urine,2005,2006,2005-2006
+Laboratory,IHg_D,Mercury: Inorganic - Blood,2005,2006,2005-2006
+Laboratory,TFR_D,Transferrin Receptor,2005,2006,2005-2006
+Laboratory,TRIGLY_D,"Cholesterol - LDL, Triglyceride & Apoliprotein (ApoB)",2005,2006,2005-2006
+Laboratory,OGTT_D,Oral Glucose Tolerance Test,2005,2006,2005-2006
+Laboratory,ALB_CR_D,Albumin & Creatinine - Urine,2005,2006,2005-2006
+Laboratory,CHLMDA_D,Chlamydia & Gonorrhea - Urine,2005,2006,2005-2006
+Laboratory,UIO_D,Iodine - Urine,2005,2006,2005-2006
+Laboratory,UHG_D,Mercury: Inorganic - Urine,2005,2006,2005-2006
+Laboratory,UHM_D,Metals - Urine,2005,2006,2005-2006
+Laboratory,UCPREG_D,Pregnancy Test - Urine,2005,2006,2005-2006
+Laboratory,VITAEC_D,"Vitamin A, Vitamin E & Carotenoids",2005,2006,2005-2006
+Laboratory,B12_D,Vitamin B12,2005,2006,2005-2006
+Laboratory,VIC_D,Vitamin C,2005,2006,2005-2006
+Laboratory,L02_C,Hepatitis B: Core Antibody & Surface Antigen; Hepatitis C: Confirmed Antibody & RNA (HCV-RNA); Hepatitis D Antibody,2003,2004,2003-2004
+Laboratory,L02HBS_C,Hepatitis B Surface Antibody,2003,2004,2003-2004
+Laboratory,L02HPA_C,Hepatitis A Antibody,2003,2004,2003-2004
+Laboratory,L03_C,"HIV Antibody Test, CD4+ T Lymphocytes & CD8+ T Cells",2003,2004,2003-2004
+Laboratory,L04PER_C,Perchlorate - Urine,2003,2004,2003-2004
+Laboratory,L04VOC_C,"Volatile Organic Compounds - Blood, Water, & Related Questionnaire Items",2003,2004,2003-2004
+Laboratory,L05_C,Chlamydia & Gonorrhea - Urine,2003,2004,2003-2004
+Laboratory,L06AGE_C,Acrylamide & Glycidamide,2003,2004,2003-2004
+Laboratory,L06BMT_C,"Cadmium, Lead, & Total Mercury - Blood",2003,2004,2003-2004
+Laboratory,L06MH_C,Methylmalonic acid & Homocysteine,2003,2004,2003-2004
+Laboratory,L06NB_C,"Folate - RBC & Serum, and Vitamin B12",2003,2004,2003-2004
+Laboratory,L06COT_C,Cotinine - Serum,2003,2004,2003-2004
+Laboratory,L06TFR_C,Ferritin & Transferrin Receptor,2003,2004,2003-2004
+Laboratory,L06HM_C,Metals - Urine,2003,2004,2003-2004
+Laboratory,L06UIO_C,Iodine - Urine,2003,2004,2003-2004
+Laboratory,L06UAS_C,Arsenics - Total & Speciated - Urine,2003,2004,2003-2004
+Laboratory,L06UHG_C,Mercury: Inorganic - Urine,2003,2004,2003-2004
+Laboratory,L10_C,Glycohemoglobin,2003,2004,2003-2004
+Laboratory,L10AM_C,"Plasma Fasting Glucose, Serum C-peptide & Insulin",2003,2004,2003-2004
+Laboratory,L11_C,"C-Reactive Protein (CRP), Bone Alkaline Phosphatase (BAP) & Parathyroid Hormone (PTH)",2003,2004,2003-2004
+Laboratory,L11PSA_C,Prostate Specific Antigen (PSA),2003,2004,2003-2004
+Laboratory,L13AM_C,Cholesterol - LDL & Triglycerides,2003,2004,2003-2004
+Laboratory,L16_C,Albumin & Creatinine - Urine,2003,2004,2003-2004
+Laboratory,L17_C,Toxoplasma (IgG) & Toxoplasma (IgM),2003,2004,2003-2004
+Laboratory,L19_C,"Measles, Rubella, & Varicella",2003,2004,2003-2004
+Laboratory,L20_C,Lead - Dust,2003,2004,2003-2004
+Laboratory,L24EPH_C,Environmental Phenols,2003,2004,2003-2004
+Laboratory,L24PFC_C,Polyfluoroalkyl Chemicals,2003,2004,2003-2004
+Laboratory,L24PH_C,Phthalates - Urine,2003,2004,2003-2004
+Laboratory,L25_C,Complete Blood Count with 5-part Differential - Whole Blood,2003,2004,2003-2004
+Laboratory,L26OPD_C,Organophosphate Insecticides - Diakyl Phosphate Metabolites - Urine,2003,2004,2003-2004
+Laboratory,L28DFP_C,"Dioxins, Furans, & Coplanar PCBs",2003,2004,2003-2004
+Laboratory,L28NPB_C,Non-dioxin-like Polychlorinated Biphenyls,2003,2004,2003-2004
+Laboratory,L28OCP_C,Pesticides - Organochlorine Metabolites - Serum (Surplus),2003,2004,2003-2004
+Laboratory,L28PBE_C,Brominated Flame Retardants (BFRs),2003,2004,2003-2004
+Laboratory,L31PAH_C,Polyaromatic Hydrocarbons (PAHs) - Urine,2003,2004,2003-2004
+Laboratory,L35_C,Methicillin - Resistant Staphylococcus aureus (MRSA),2003,2004,2003-2004
+Laboratory,L36_C,"Syphilis-IgG, Syphilis Rapid Plasma Reagin (RPR) & Treponema pallidum Particle Agglutination (TP-PA)",2003,2004,2003-2004
+Laboratory,L39EPP_C,Erythrocyte Protoporphyrin & Selenium,2003,2004,2003-2004
+Laboratory,L40_C,Standard Biochemistry Profile,2003,2004,2003-2004
+Laboratory,L40FE_C,"Iron, Total Iron Binding Capacity (TIBC), & Transferrin Saturation",2003,2004,2003-2004
+Laboratory,L43_C,Vitamin B6,2003,2004,2003-2004
+Laboratory,L45VIT_C,"Vitamin A, Vitamin E & Carotenoids",2003,2004,2003-2004
+Laboratory,L52SER_C,"Human Papillomavirus (HPV) - 6, 11, 16 & 18 Antibody - Serum: 4-plex CLIA",2003,2004,2003-2004
+Laboratory,PH_C,Fasting Questionnaire,2003,2004,2003-2004
+Laboratory,UC_C,Pregnancy Test - Urine,2003,2004,2003-2004
+Laboratory,l34_b,Bacterial vaginosis (BV) & Trichomonas vaginalis,2001,2002,2001-2002
+Laboratory,SSQFEV_C,Coxiella Burnetii (Q Fever) Antibodies - Serum (Surplus),2003,2004,2003-2004
+Laboratory,SSMUMP_C,Mumps Antibody - Serum (Surplus),2003,2004,2003-2004
+Laboratory,SSVARI_C,Varicella-Zoster Virus Antibody (Surplus),2003,2004,2003-2004
+Laboratory,l34_c,Bacterial vaginosis (BV) & Trichomonas vaginalis,2003,2004,2003-2004
+Laboratory,SSCYST_B,Cystatin C (Surplus),2001,2002,2001-2002
+Laboratory,SSHSV1_B,Herpes Simplex Virus Type-1 (Surplus),2001,2002,2001-2002
+Laboratory,SSMUMP_B,Mumps Antibody - Serum (Surplus),2001,2002,2001-2002
+Laboratory,SSNO3P_B,"Perchlorate, Nitrate & Thiocyanate - Urine (Surplus)",2001,2002,2001-2002
+Laboratory,PFC_Pool,Polyfluoroalkyl Chemicals - Pooled Samples (Surplus),2001,2002,2001-2002
+Laboratory,SSTFR_B,Transferrin Receptor - Pregnant Women (Surplus),2001,2002,2001-2002
+Laboratory,SSVARI_B,Varicella-Zoster Virus Antibody (Surplus),2001,2002,2001-2002
+Laboratory,PH_B,Fasting Questionnaire,2001,2002,2001-2002
+Laboratory,PHPYPA_B,"Phthalates, Phytoestrogens & PAHs - Urine",2001,2002,2001-2002
+Laboratory,UC_B,Pregnancy Test - Urine,2001,2002,2001-2002
+Laboratory,L02HBS_B,Hepatitis B Surface Antibody,2001,2002,2001-2002
+Laboratory,L02HPA_B,Hepatitis A Antibody,2001,2002,2001-2002
+Laboratory,L03_B,"HIV Antibody Test, CD4+ T Lymphocytes & CD8+ T Cells",2001,2002,2001-2002
+Laboratory,L04VOC_B,Volatile Organic Compounds - Blood & Water,2001,2002,2001-2002
+Laboratory,L05_B,Chlamydia & Gonorrhea - Urine,2001,2002,2001-2002
+Laboratory,L06_B,"Cadmium, Lead, Mercury, Cotinine & Nutritional Biochemistries",2001,2002,2001-2002
+Laboratory,L06VIT_B,"Vitamin A, Vitamin E & Carotenoids",2001,2002,2001-2002
+Laboratory,L06VID_B,Vitamin D,2001,2002,2001-2002
+Laboratory,L06UIO_B,Iodine - Urine,2001,2002,2001-2002
+Laboratory,L06HM_B,Metals - Urine,2001,2002,2001-2002
+Laboratory,L10_B,Glycohemoglobin,2001,2002,2001-2002
+Laboratory,L10AM_B,"Plasma Fasting Glucose, Serum C-peptide & Insulin",2001,2002,2001-2002
+Laboratory,L11_B,"C-Reactive protein (CRP), Fibrinogen, Bone Alkaline Phosphatase & Urinary N-telopeptides",2001,2002,2001-2002
+Laboratory,L11PSA_B,Prostate specific antigen (PSA),2001,2002,2001-2002
+Laboratory,L13AM_B,Cholesterol - LDL & Triglycerides,2001,2002,2001-2002
+Laboratory,L16_B,Albumin & Creatinine - Urine,2001,2002,2001-2002
+Laboratory,L17_B,"Toxoplasma (IgG), Toxoplasma (IgM),Toxoplasma (Dye),Toxoplasma Differential Agglutination, & Toxoplasma (Avidity)",2001,2002,2001-2002
+Laboratory,L19_B,"Measles, Rubella, & Varicella",2001,2002,2001-2002
+Laboratory,L20_B,Lead - Dust,2001,2002,2001-2002
+Laboratory,L25_B,Complete Blood Count with 5-part Differential - Whole Blood,2001,2002,2001-2002
+Laboratory,l26PP_B,"Pesticides - Current Use - Urine (Formerly Priority Pesticides, Non-persistent Pesticide Metabolites)",2001,2002,2001-2002
+Laboratory,L28POC_B,"Dioxins, Furans, & Coplanar PCBs",2001,2002,2001-2002
+Laboratory,L35_B,Methicillin - Resistant Staphylococcus aureus (MRSA),2001,2002,2001-2002
+Laboratory,L36_B,"Syphilis-IgG, Syphilis Rapid Plasma Reagin (RPR) & Treponema pallidum Particle Agglutination (TP-PA)",2001,2002,2001-2002
+Laboratory,L39_B,Erythrocyte Protoporphyrin,2001,2002,2001-2002
+Laboratory,L40_B,Standard Biochemistry Profile,2001,2002,2001-2002
+Laboratory,L40T4_B,Thyroid - Stimulating Hormone & Thyroxine (TSH & T4),2001,2002,2001-2002
+Laboratory,L40FE_B,"Iron, Total Iron Binding Capacity (TIBC), & Transferrin Saturation",2001,2002,2001-2002
+Laboratory,VID_2_B,"Vitamin D, Second Exam",2001,2002,2001-2002
+Laboratory,L06_2_B,"Cadmium, Lead, Total Mercury, Ferritin, Serum Folate, RBC Folate, Vitamin B12, Homocysteine, Methylmalonic acid, Cotinine - Blood, Second Exam",2001,2002,2001-2002
+Laboratory,L10_2_B,"Glycohemoglobin, Plasma Glucose, Serum C-peptide, & Insulin, Second Exam",2001,2002,2001-2002
+Laboratory,L40_2_B,"Standard Biochemistry Profile, Follicle Stimulating Hormone & Luteinizing Hormone, Second Exam",2001,2002,2001-2002
+Laboratory,SSCYST_A,Cystatin C - Serum (Surplus),1999,2000,1999-2000
+Laboratory,SSHSV1_A,Herpes Simplex Virus Type-1 (Surplus),1999,2000,1999-2000
+Laboratory,SSMUMP_A,Mumps Antibody - Serum (Surplus),1999,2000,1999-2000
+Laboratory,SSPFC_A,Perfluoroalkyl Chemicals - Serum (Surplus),1999,2000,1999-2000
+Laboratory,SSTFR_A,Transferrin Receptor - Pregnant Women (Surplus),1999,2000,1999-2000
+Laboratory,SSVARI_A,Varicella-Zoster Virus Antibody (Surplus),1999,2000,1999-2000
+Laboratory,L37SWA_C,Human Papillomavirus (HPV) DNA - Vaginal Swab: Digene Hybrid Capture & Prototype Line Blot Assay,2003,2004,2003-2004
+Laboratory,L37SWR_C,Human Papillomavirus (HPV) DNA - Vaginal Swab: Roche Linear Array,2003,2004,2003-2004
+Laboratory,HPVSWR_E,Human Papillomavirus (HPV) DNA - Vaginal Swab: Digene Hybrid Capture & Roche Linear Array,2007,2008,2007-2008
+Laboratory,L06VID_C,Vitamin D,2003,2004,2003-2004
+Laboratory,UPP_E,"Pesticides - Current Use - Urine (Formerly Priority Pesticides, Non-persistent Pesticide Metabolites)",2007,2008,2007-2008
+Laboratory,CHLMDA_E,Chlamydia & Gonorrhea - Urine,2007,2008,2007-2008
+Laboratory,SSUSG_E,Urine Specific Gravity Measurement (Surplus),2007,2008,2007-2008
+Laboratory,PERNT_E,"Perchlorate, Nitrate & Thiocyanate - Urine",2007,2008,2007-2008
+Laboratory,LAB26PP,"Pesticides - Current Use - Urine (Formerly Priority Pesticides, Non-persistent Pesticide Metabolites)",1999,2000,1999-2000
+Laboratory,PHYTO_D,Phytoestrogens - Urine,2005,2006,2005-2006
+Laboratory,UCPREG_F,Pregnancy Test - Urine,2009,2010,2009-2010
+Laboratory,FOLATE_E,Folate - RBC & Serum,2007,2008,2007-2008
+Laboratory,HDL_F,Cholesterol - HDL,2009,2010,2009-2010
+Laboratory,FOLATE_F,Folate - RBC & Serum,2009,2010,2009-2010
+Laboratory,HEPA_F,Hepatitis A Antibody,2009,2010,2009-2010
+Laboratory,HEPBD_F,"Hepatitis B: Core antibody, Surface antigen, and Hepatitis D: antibody",2009,2010,2009-2010
+Laboratory,HIV_F,HIV Antibody Test,2009,2010,2009-2010
+Laboratory,HSV_F,Herpes Simplex Virus Type-1 & Type-2,2009,2010,2009-2010
+Laboratory,MMRV_F,"Measles, Mumps, Rubella & Varicella",2009,2010,2009-2010
+Laboratory,PbCd_F,"Cadmium, Lead, & Total Mercury - Blood",2009,2010,2009-2010
+Laboratory,TCHOL_F,Cholesterol - Total,2009,2010,2009-2010
+Laboratory,TGEMA_F,Tissue Transglutaminase Assay (IgA-TTG) & IgA Endomyseal Antibody Assay (IgA EMA),2009,2010,2009-2010
+Laboratory,UHG_F,Mercury: Inorganic - Urine,2009,2010,2009-2010
+Laboratory,CBC_F,Complete Blood Count with 5-part Differential - Whole Blood,2009,2010,2009-2010
+Laboratory,COTNAL_F,Cotinine - Serum & Total NNAL - Urine,2009,2010,2009-2010
+Laboratory,GHB_F,Glycohemoglobin,2009,2010,2009-2010
+Laboratory,ORHPV_F,Human Papillomavirus (HPV) - Oral Rinse,2009,2010,2009-2010
+Laboratory,IHg_F,Mercury: Inorganic - Blood,2009,2010,2009-2010
+Laboratory,BIOPRO_F,Standard Biochemistry Profile,2009,2010,2009-2010
+Laboratory,UAS_F,Arsenics - Total & Speciated - Urine,2009,2010,2009-2010
+Laboratory,UHM_F,Metals - Urine,2009,2010,2009-2010
+Laboratory,PSA_F,Prostate Specific Antigen (PSA),2009,2010,2009-2010
+Laboratory,ALB_CR_F,Albumin & Creatinine - Urine,2009,2010,2009-2010
+Laboratory,CHLMDA_F,Chlamydia - Urine,2009,2010,2009-2010
+Laboratory,CRP_F,C-Reactive Protein (CRP),2009,2010,2009-2010
+Laboratory,FASTQX_F,Fasting Questionnaire,2009,2010,2009-2010
+Laboratory,GLU_F,Plasma Fasting Glucose & Insulin,2009,2010,2009-2010
+Laboratory,HEPB_S_F,Hepatitis B Surface Antibody,2009,2010,2009-2010
+Laboratory,HEPC_F,"Hepatitis C: Confirmed Antibody, RNA (HCV-RNA), & Genotype",2009,2010,2009-2010
+Laboratory,UIO_F,Iodine - Urine,2009,2010,2009-2010
+Laboratory,UCFLOW_F,Urine Flow Rate,2009,2010,2009-2010
+Laboratory,UCOSMO_F,Osmolality - Urine,2009,2010,2009-2010
+Laboratory,SSFA_C,Fatty Acids - Plasma (Surplus),2003,2004,2003-2004
+Laboratory,OGTT_F,Oral Glucose Tolerance Test,2009,2010,2009-2010
+Laboratory,TRIGLY_F,Cholesterol - LDL & Triglycerides,2009,2010,2009-2010
+Laboratory,THYROD_F,Thyroid Profile,2009,2010,2009-2010
+Laboratory,EPH_F,Environmental Phenols,2009,2010,2009-2010
+Laboratory,PP_F,Pesticides - Environmental - Urine,2009,2010,2009-2010
+Laboratory,VOCWB_D,Volatile Organic Compounds - Blood & Related Questionnaire Items,2005,2006,2005-2006
+Laboratory,PFC_F,Polyfluoroalkyl Chemicals,2009,2010,2009-2010
+Laboratory,HPVSWR_F,Human Papillomavirus (HPV) DNA - Vaginal Swab: Digene Hybrid Capture & Roche Linear Array,2009,2010,2009-2010
+Laboratory,FERTIN_F,Ferritin,2009,2010,2009-2010
+Laboratory,TFR_F,Transferrin Receptor,2009,2010,2009-2010
+Laboratory,HEPE_F,Hepatitis E : IgG & IgM Antibodies,2009,2010,2009-2010
+Laboratory,ApoB_F,Apolipoprotein B,2009,2010,2009-2010
+Laboratory,SSEBV_C,Epstein-Barr Virus (VCA IgG) - Serum (Surplus),2003,2004,2003-2004
+Laboratory,SSEBV_D,Epstein-Barr Virus (VCA IgG) - Serum (Surplus),2005,2006,2005-2006
+Laboratory,SSEBV_E,Epstein-Barr Virus (VCA IgG) - Serum (Surplus),2007,2008,2007-2008
+Laboratory,SSEBV_F,Epstein-Barr Virus (VCA IgG) - Serum (Surplus),2009,2010,2009-2010
+Laboratory,PHTHTE_F,Phthalates - Urine,2009,2010,2009-2010
+Laboratory,SSHCVR_C,Hepatitis C RNA (HCV-RNA) & HCV Genotype (Surplus),2003,2004,2003-2004
+Laboratory,OPD_E,Organophosphate Insecticides - Diakyl Phosphate Metabolites - Urine,2007,2008,2007-2008
+Laboratory,SSOL_A,Monoclonal gammopathy of undetermined significance (MGUS) (Surplus),1999,2000,1999-2000
+Laboratory,SSOL_C,Monoclonal gammopathy of undetermined significance (MGUS) (Surplus),2003,2004,2003-2004
+Laboratory,SSOL_B,Monoclonal gammopathy of undetermined significance (MGUS) (Surplus),2001,2002,2001-2002
+Laboratory,SSAFB_A,Aflatoxin B1-lysine - Serum (Surplus),1999,2000,1999-2000
+Laboratory,PHYTO_E,Phytoestrogens - Urine,2007,2008,2007-2008
+Laboratory,PHYTO_F,Phytoestrogens - Urine,2009,2010,2009-2010
+Laboratory,SSHPV_F,Human Papillomavirus (HPV) Viral Load - Oral Rinse - Oral High-Risk HPV Infections (Surplus),2009,2010,2009-2010
+Laboratory,PAH_E,Polyaromatic Hydrocarbons (PAHs) - Urine,2007,2008,2007-2008
+Laboratory,CARB_D,Pesticides - Carbamates & Organophosphorus Metabolites - Urine,2005,2006,2005-2006
+Laboratory,ALDUST_D,Allergens - Household Dust,2005,2006,2005-2006
+Laboratory,TCHOL_G,Cholesterol - Total,2011,2012,2011-2012
+Laboratory,UHM_G,Metals - Urine,2011,2012,2011-2012
+Laboratory,HEPA_G,Hepatitis A Antibody,2011,2012,2011-2012
+Laboratory,HIV_G,HIV Antibody Test,2011,2012,2011-2012
+Laboratory,HSV_G,Herpes Simplex Virus Type-1 & Type-2,2011,2012,2011-2012
+Laboratory,PbCd_G,"Cadmium, Lead, Total Mercury, Selenium, & Manganese - Blood",2011,2012,2011-2012
+Laboratory,ALB_CR_G,Albumin & Creatinine - Urine,2011,2012,2011-2012
+Laboratory,BIOPRO_G,Standard Biochemistry Profile,2011,2012,2011-2012
+Laboratory,IHgEM_G,"Mercury: Inorganic, Ethyl and Methyl - Blood",2011,2012,2011-2012
+Laboratory,CBC_G,Complete Blood Count with 5-part Differential - Whole Blood,2011,2012,2011-2012
+Laboratory,TGEMA_G,Tissue Transglutaminase Assay (IgA-TTG) & IgA Endomyseal Antibody Assay (IgA EMA),2011,2012,2011-2012
+Laboratory,ORHPV_G,Human Papillomavirus (HPV) - Oral Rinse,2011,2012,2011-2012
+Laboratory,COTNAL_G,Cotinine - Serum & Total NNAL - Urine,2011,2012,2011-2012
+Laboratory,UAS_G,Arsenics - Total & Speciated - Urine,2011,2012,2011-2012
+Laboratory,UHG_G,Mercury: Inorganic - Urine,2011,2012,2011-2012
+Laboratory,TB_G,Tuberculosis - Quantiferon_In_Gold,2011,2012,2011-2012
+Laboratory,HEPB_S_G,Hepatitis B Surface Antibody,2011,2012,2011-2012
+Laboratory,HEPBD_G,"Hepatitis B: Core antibody, Surface antigen, and Hepatitis D: antibody",2011,2012,2011-2012
+Laboratory,HEPC_G,"Hepatitis C: Confirmed Antibody, RNA (HCV-RNA), & Genotype",2011,2012,2011-2012
+Laboratory,HEPE_G,Hepatitis E : IgG & IgM Antibodies,2011,2012,2011-2012
+Laboratory,PHTHTE_G,Phthalates & Plasticizers Metabolites - Urine,2011,2012,2011-2012
+Laboratory,PP_G,Pesticides - Environmental - Urine,2011,2012,2011-2012
+Laboratory,THYROD_G,Thyroid Profile,2011,2012,2011-2012
+Laboratory,UCFLOW_G,Urine Flow Rate,2011,2012,2011-2012
+Laboratory,UCOSMO_G,Osmolality - Urine,2011,2012,2011-2012
+Laboratory,UCPREG_G,Pregnancy Test - Urine,2011,2012,2011-2012
+Laboratory,PAH_D,Polyaromatic Hydrocarbons (PAHs) - Urine,2005,2006,2005-2006
+Laboratory,FOLFMS_E,Folate Forms - Individual - Serum,2007,2008,2007-2008
+Laboratory,CUSEZN_G,"Copper, Selenium & Zinc - Serum",2011,2012,2011-2012
+Laboratory,FOLATE_G,Folate - RBC,2011,2012,2011-2012
+Laboratory,MMA_G,Methylmalonic Acid,2011,2012,2011-2012
+Laboratory,VITB12_G,Vitamin B12,2011,2012,2011-2012
+Laboratory,CMV_G,Cytomegalovirus IgG & IgM Antibodies - Serum,2011,2012,2011-2012
+Laboratory,CAFE_F,Caffeine & Caffeine Metabolites - Urine,2009,2010,2009-2010
+Laboratory,IHg_E,Mercury: Inorganic - Blood,2007,2008,2007-2008
+Laboratory,DOXPOL_D,"Polychlorinated dibenzo-p-dioxins (PCDDs), Dibenzofurans (PCDFs) & Coplanar Polychlorinated Biphenyls (cPCBs)  - Pooled Samples",2005,2006,2005-2006
+Laboratory,BFRPOL_D,Brominated Flame Retardants (BFRs) - Pooled Samples,2005,2006,2005-2006
+Laboratory,PCBPOL_D,Non-dioxin-like Polychlorinated Biphenyls & Mono-ortho-substituted Polychlorinated Biphenyls - Pooled Samples,2005,2006,2005-2006
+Laboratory,PSTPOL_D,Pesticides - Organochlorine Pesticides - Pooled Samples,2005,2006,2005-2006
+Laboratory,BFRPOL_E,Brominated Flame Retardants (BFRs) - Pooled Samples,2007,2008,2007-2008
+Laboratory,PCBPOL_E,Non-dioxin-like Polychlorinated Biphenyls & Mono-ortho-substituted Polychlorinated Biphenyls - Pooled Samples,2007,2008,2007-2008
+Laboratory,PSTPOL_E,Pesticides - Organochlorine Pesticides - Pooled Samples,2007,2008,2007-2008
+Laboratory,HPVSER_E,"Human Papillomavirus (HPV) - 6, 11, 16 & 18 Antibody – Serum: 4-plex CLIA",2007,2008,2007-2008
+Laboratory,SSBFR_B,Brominated Flame Retardants (BFRs) - Pooled Samples (Surplus),2001,2002,2001-2002
+Laboratory,UHMS_G,Metals - Urine - Special Sample,2011,2012,2011-2012
+Laboratory,UASS_G,Arsenics - Total & Speciated - Urine - Special Sample,2011,2012,2011-2012
+Laboratory,HDL_G,Cholesterol - HDL,2011,2012,2011-2012
+Laboratory,TST_G,Total Testosterone,2011,2012,2011-2012
+Laboratory,GHB_G,Glycohemoglobin,2011,2012,2011-2012
+Laboratory,UIO_G,Iodine - Urine,2011,2012,2011-2012
+Laboratory,SSPCB_B,Non-dioxin-like Polychlorinated Biphenyls - Pooled Samples (Surplus Sera),2001,2002,2001-2002
+Laboratory,FASTQX_G,Fasting Questionnaire,2011,2012,2011-2012
+Laboratory,CHLMDA_G,Chlamydia - Urine,2011,2012,2011-2012
+Laboratory,SSPST_B,Pesticides - Organochlorine Metabolites - Serum - Pooled Samples (Surplus),2001,2002,2001-2002
+Laboratory,PERNTS_G,"Perchlorate, Nitrate & Thiocyanate - Urine - Special Sample",2011,2012,2011-2012
+Laboratory,SSTOXO_F,Toxoplasma Gondii Antibody - Serum (Surplus),2009,2010,2009-2010
+Laboratory,UPHOPM_E,"Pyrethroids, Herbicides, & OP Metabolites - Urine",2007,2008,2007-2008
+Laboratory,UVOC_G,Volatile Organic Compound (VOC) Metabolites - Urine,2011,2012,2011-2012
+Laboratory,UVOCS_G,Volatile Organic Compound (VOC) Metabolites - Urine - Special Sample,2011,2012,2011-2012
+Laboratory,HPVSER_F,"Human Papillomavirus (HPV) - 6, 11, 16 & 18 Antibody - Serum",2009,2010,2009-2010
+Laboratory,EPH_G,Environmental Phenols & Parabens,2011,2012,2011-2012
+Laboratory,PERNT_G,"Perchlorate, Nitrate & Thiocyanate - Urine",2011,2012,2011-2012
+Laboratory,GLU_G,Plasma Fasting Glucose & Insulin,2011,2012,2011-2012
+Laboratory,OGTT_G,Oral Glucose Tolerance Test,2011,2012,2011-2012
+Laboratory,ApoB_G,Apolipoprotein B,2011,2012,2011-2012
+Laboratory,HPVSRM_D,"Human Papillomavirus (HPV) - Multiplexed 6, 11, 16, 18, 31, 33, 45, 52 & 58 Antibody – Serum: 9-plex CLIA",2005,2006,2005-2006
+Laboratory,TRIGLY_G,Cholesterol - LDL & Triglycerides,2011,2012,2011-2012
+Laboratory,DOXPOL_E,"Polychlorinated dibenzo-p-dioxins (PCDDs), Dibenzofurans (PCDFs) & Coplanar Polychlorinated Biphenyls (cPCBs) - Pooled Samples",2007,2008,2007-2008
+Laboratory,PFC_G,Polyfluoroalkyl Chemicals,2011,2012,2011-2012
+Laboratory,VIT_B6_E,Vitamin B6,2007,2008,2007-2008
+Laboratory,SSUVOC_D,Volatile Organic Compound (VOC) Metabolites - Urine (Surplus),2005,2006,2005-2006
+Laboratory,PAH_G,Polyaromatic Hydrocarbons (PAHs) - Urine,2011,2012,2011-2012
+Laboratory,PAHS_G,Polyaromatic Hydrocarbons (PAHs)- Urine - Special Sample,2011,2012,2011-2012
+Laboratory,HPVSWR_G,Human Papillomavirus (HPV) DNA - Vaginal Swab: Digene Hybrid Capture & Roche Linear Array,2011,2012,2011-2012
+Laboratory,PERNT_F,"Perchlorate, Nitrate & Thiocyanate - Urine",2009,2010,2009-2010
+Laboratory,SSPOLI_F,"Poliovirus Serotypes 1, 2, & 3 Antibodies - Serum (Surplus)",2009,2010,2009-2010
+Laboratory,CARB_E,Pesticides - Carbamates & Organophosphorus Metabolites - Urine,2007,2008,2007-2008
+Laboratory,UPHOPM_F,"Pyrethroids, Herbicides, & OP Metabolites - Urine",2009,2010,2009-2010
+Laboratory,SSSAL_D,Salmonella & Campylobacter Antibodies (Surplus),2005,2006,2005-2006
+Laboratory,VOC_E,Volatile Organic Compounds - Water & Related Questionnaire Items,2007,2008,2007-2008
+Laboratory,AMDGYD_D,Acrylamide & Glycidamide,2005,2006,2005-2006
+Laboratory,TELO_A,Telomere Mean and Standard Deviation (Surplus),1999,2000,1999-2000
+Laboratory,TFA_F,Trans Fatty Acids,2009,2010,2009-2010
+Laboratory,TFA_A,Trans Fatty Acids,1999,2000,1999-2000
+Laboratory,SSHCV_E,Hepatitis C Antibody Reflex Testing - Serum (Surplus),2007,2012,2007-2012
+Laboratory,ApoB_H,Apolipoprotein B,2013,2014,2013-2014
+Laboratory,CBC_H,Complete Blood Count with 5-part Differential - Whole Blood,2013,2014,2013-2014
+Laboratory,HDL_H,Cholesterol - HDL,2013,2014,2013-2014
+Laboratory,TCHOL_H,Cholesterol - Total,2013,2014,2013-2014
+Laboratory,GHB_H,Glycohemoglobin,2013,2014,2013-2014
+Laboratory,BIOPRO_H,Standard Biochemistry Profile,2013,2014,2013-2014
+Laboratory,CUSEZN_H,"Copper, Selenium & Zinc - Serum",2013,2014,2013-2014
+Laboratory,HEPA_H,Hepatitis A,2013,2014,2013-2014
+Laboratory,HEPB_S_H,Hepatitis B: Surface Antibody,2013,2014,2013-2014
+Laboratory,HEPBD_H,"Hepatitis B: Core antibody, Surface antigen, and Hepatitis D: antibody",2013,2014,2013-2014
+Laboratory,HIV_H,HIV Antibody Test,2013,2014,2013-2014
+Laboratory,HSV_H,Herpes Simplex Virus Type-1 & Type-2,2013,2014,2013-2014
+Laboratory,OGTT_H,Oral Glucose Tolerance Test,2013,2014,2013-2014
+Laboratory,PERNT_H,"Perchlorate, Nitrate & Thiocyanate - Urine",2013,2014,2013-2014
+Laboratory,PFAS_H,Perfluoroalkyl and Polyfluoroalkyl Substances (formerly Polyfluoroalkyl Chemicals - PFC),2013,2014,2013-2014
+Laboratory,TGEMA_H,Tissue Transglutaminase Assay (IgA-TTG) & IgA Endomyseal Antibody Assay (IgA EMA),2013,2014,2013-2014
+Laboratory,TRIGLY_H,Cholesterol - LDL & Triglycerides,2013,2014,2013-2014
+Laboratory,TST_H,Sex Steroid Hormone - Serum,2013,2014,2013-2014
+Laboratory,UCFLOW_H,Urine Flow Rate,2013,2014,2013-2014
+Laboratory,UCPREG_H,Pregnancy Test - Urine,2013,2014,2013-2014
+Laboratory,UHG_H,Mercury: Inorganic - Urine,2013,2014,2013-2014
+Laboratory,UM_H,Metals - Urine,2013,2014,2013-2014
+Laboratory,UIO_H,Iodine - Urine,2013,2014,2013-2014
+Laboratory,GLU_H,Plasma Fasting Glucose,2013,2014,2013-2014
+Laboratory,TELO_B,Telomere Mean and Standard Deviation (Surplus),2001,2002,2001-2002
+Laboratory,DEET_E,DEET and Metabolites,2007,2008,2007-2008
+Laboratory,DEET_F,DEET and Metabolites,2009,2010,2009-2010
+Laboratory,UAM_E,Atrazine and Metabolites,2007,2008,2007-2008
+Laboratory,PAH_F,Polyaromatic Hydrocarbons -Urine,2009,2010,2009-2010
+Laboratory,FLDEP_H,Fluoride - Plasma,2013,2014,2013-2014
+Laboratory,FLDEW_H,Fluoride - Water,2013,2014,2013-2014
+Laboratory,HEPC_H,Hepatitis C: RNA (HCV-RNA) and Hepatitis C Genotype,2013,2014,2013-2014
+Laboratory,HEPE_H,Hepatitis E: IgG & IgM Antibodies,2013,2014,2013-2014
+Laboratory,IHGEM_H,"Mercury: Inorganic, Ethyl and Methyl - Blood",2013,2014,2013-2014
+Laboratory,ORHPV_H,Human Papillomavirus (HPV) - Oral Rinse,2013,2014,2013-2014
+Laboratory,PBCD_H,"Lead, Cadmium, Total Mercury, Selenium, and Manganese - Blood",2013,2014,2013-2014
+Laboratory,TRICH_H,Trichomonas - Urine,2013,2014,2013-2014
+Laboratory,UASS_H,Arsenics - Speciated - Urine - Special Sample,2013,2014,2013-2014
+Laboratory,UTAS_H,Arsenic - Total - Urine,2013,2014,2013-2014
+Laboratory,VITB12_H,Vitamin B12,2013,2014,2013-2014
+Laboratory,CHLMDA_H,Chlamydia - Urine,2013,2014,2013-2014
+Laboratory,VIT_B6_F,Vitamin B6,2009,2010,2009-2010
+Laboratory,UAS_H,Arsenics - Speciated - Urine,2013,2014,2013-2014
+Laboratory,UTASS_H,Arsenic - Total - Urine - Special Sample,2013,2014,2013-2014
+Laboratory,UMS_H,Metals - Urine - Special Sample,2013,2014,2013-2014
+Laboratory,FASTQX_H,Fasting Questionnaire,2013,2014,2013-2014
+Laboratory,VID_B,Vitamin D,2001,2002,2001-2002
+Laboratory,VID_C,Vitamin D,2003,2004,2003-2004
+Laboratory,VID_D,Vitamin D,2005,2006,2005-2006
+Laboratory,VID_E,Vitamin D,2007,2008,2007-2008
+Laboratory,VID_F,Vitamin D,2009,2010,2009-2010
+Laboratory,VOCWB_E,Volatile Organic Compounds - Blood & Related Questionnaire Items,2007,2008,2007-2008
+Laboratory,VOCMWB_E,Volatile Organic Compounds - Trihalomethanes/MTBE/Nitromethane - Blood,2007,2008,2007-2008
+Laboratory,SSTOXO_G,Toxoplasma gondii Antibody - Serum (Surplus),2011,2012,2011-2012
+Laboratory,SSUCSH_A,Cytomegalovirus shedding - Urine (Surplus),1999,2004,1999-2004
+Laboratory,INS_H,Insulin,2013,2014,2013-2014
+Laboratory,HPVP_H,Human Papillomavirus (HPV) DNA Results from Penile Swab Samples: Roche Linear Array,2013,2014,2013-2014
+Laboratory,PERNTS_H,"Perchlorate, Nitrate & Thiocyanate - Urine - Special Sample",2013,2014,2013-2014
+Laboratory,HPVSWR_H,Human Papillomavirus (HPV) DNA - Vaginal Swab: Roche Cobas & Roche Linear Array,2013,2014,2013-2014
+Laboratory,SSPFAS_H,Perfluoroalkyl and Polyfluoroalkyl Substances - Linear and Branched PFOS and PFOA Isomers (Surplus),2013,2014,2013-2014
+Laboratory,SSAMH_A,Anti-Mullerian Hormone (AMH) & Inhibin-B (Surplus),1999,2000,1999-2000
+Laboratory,SSAMH_B,Anti-Mullerian Hormone (AMH) & Inhibin-B (Surplus),2001,2002,2001-2002
+Laboratory,SSAMH_C,Anti-Mullerian Hormone (AMH) & Inhibin-B (Surplus),2003,2004,2003-2004
+Laboratory,EPHPP_H,Personal Care and Consumer Product Chemicals and Metabolites,2013,2014,2013-2014
+Laboratory,COT_H,Cotinine and Hydroxycotinine - Serum,2013,2014,2013-2014
+Laboratory,SSTOCA_G,Antibody to Toxocara spp. (Surplus),2011,2012,2011-2012
+Laboratory,SSTOXO_H,Toxoplasma gondii Antibody - Serum (Surplus),2013,2014,2013-2014
+Laboratory,SSTOCA_H,Antibody to Toxocara spp. (Surplus),2013,2014,2013-2014
+Laboratory,PHTHTE_H,Phthalates and Plasticizers Metabolites - Urine,2013,2014,2013-2014
+Laboratory,ALB_CR_H,Albumin & Creatinine - Urine,2013,2014,2013-2014
+Laboratory,VOC_F,Volatile Organic Compounds (VOCs) - Water,2009,2010,2009-2010
+Laboratory,VOCWB_G,Volatile Organic Compounds (VOCs) - Blood,2011,2012,2011-2012
+Laboratory,VOCWB_H,Volatile Organic Compounds and Trihalomethanes/MTBE - Blood,2013,2014,2013-2014
+Laboratory,VOCMWB_F,Volatile Organic Compounds (VOCs) - Trihalomethanes/MTBE/Nitromethane - Blood,2009,2010,2009-2010
+Laboratory,PAH_H,Polycyclic Aromatic Hydrocarbons (PAH) - Urine,2013,2014,2013-2014
+Laboratory,DEET_G,DEET and Metabolites,2011,2012,2011-2012
+Laboratory,DEET_H,DEET and Metabolites,2013,2014,2013-2014
+Laboratory,SSPHTE_H,Phthalates and Plasticizers Metabolites - Urine (Surplus),2013,2014,2013-2014
+Laboratory,VOCWBS_H,Volatile Organic Compounds (VOCs) and Trihalomethanes/MTBE - Blood - Special Sample,2013,2014,2013-2014
+Laboratory,PAHS_H,Polycyclic Aromatic Hydrocarbons (PAH) - Urine - Special Sample,2013,2014,2013-2014
+Laboratory,SSCMVG_A,Cytomegalovirus Genotypes - Urine (Surplus),1999,2004,1999-2004
+Laboratory,DOXPOL_F,"Polychlorinated dibenzo-p-dioxins (PCDDs), Dibenzofurans (PCDFs) & Coplanar Polychlorinated Biphenyls (cPCBs) - Pooled Samples",2009,2010,2009-2010
+Laboratory,SSNORO_A,Norovirus antibody - Serum,1999,2000,1999-2000
+Laboratory,SSNORO_C,Norovirus antibody - Serum,2003,2004,2003-2004
+Laboratory,VOCWB_F,Volatile Organic Compounds (VOCs) - Blood,2009,2010,2009-2010
+Laboratory,SSFLRT_H,Flame Retardant Metabolites - Urine (Surplus),2013,2014,2013-2014
+Laboratory,SSPFAC_H,Perfluoroalkyl and Polyfluoroalkyl Substances in US children 3-11 Years of Age,2013,2014,2013-2014
+Laboratory,PSTPOL_F,Pesticides - Organochlorine Pesticides - Pooled Samples,2009,2010,2009-2010
+Laboratory,BFRPOL_F,Brominated Flame Retardants (BFRs) - Pooled Samples,2009,2010,2009-2010
+Laboratory,PCBPOL_F,Non-dioxin-like Polychlorinated Biphenyls & Mono-ortho-substituted Polychlorinated Biphenyls - Pooled Samples,2009,2010,2009-2010
+Laboratory,UCPREG_I,Pregnancy Test - Urine,2015,2016,2015-2016
+Laboratory,POOLTF_F,Pooled-Sample Technical Support File,2009,2010,2009-2010
+Laboratory,FLDEW_I,Fluoride - Water,2015,2016,2015-2016
+Laboratory,FLDEP_I,Fluoride - Plasma,2015,2016,2015-2016
+Laboratory,UCFLOW_I,Urine Flow Rate,2015,2016,2015-2016
+Laboratory,HSV_I,Herpes Simplex Virus Type-1 & Type-2,2015,2016,2015-2016
+Laboratory,CHLMDA_I,Chlamydia - Urine,2015,2016,2015-2016
+Laboratory,TRICH_I,Trichomonas - Urine,2015,2016,2015-2016
+Laboratory,GHB_I,Glycohemoglobin,2015,2016,2015-2016
+Laboratory,CBC_I,Complete Blood Count with 5-Part Differential - Whole Blood,2015,2016,2015-2016
+Laboratory,ALB_CR_I,Albumin & Creatinine - Urine,2015,2016,2015-2016
+Laboratory,FASTQX_I,Fasting Questionnaire,2015,2016,2015-2016
+Laboratory,HEPA_I,Hepatitis A,2015,2016,2015-2016
+Laboratory,HEPB_S_I,Hepatitis B: Surface Antibody,2015,2016,2015-2016
+Laboratory,HEPBD_I,"Hepatitis B: Core antibody, Surface antigen, and Hepatitis D: antibody",2015,2016,2015-2016
+Laboratory,HEPE_I,Hepatitis E: IgG & IgM Antibodies,2015,2016,2015-2016
+Laboratory,VID_G,Vitamin D,2011,2012,2011-2012
+Laboratory,BIOPRO_I,Standard Biochemistry Profile,2015,2016,2015-2016
+Laboratory,HDL_I,Cholesterol - High-Density Lipoprotein (HDL),2015,2016,2015-2016
+Laboratory,TCHOL_I,Cholesterol - Total,2015,2016,2015-2016
+Laboratory,HEPC_I,Hepatitis C: RNA (HCV-RNA) and Hepatitis C Genotype,2015,2016,2015-2016
+Laboratory,HCAA_H,Heterocyclic Aromatic Amines - Urine,2013,2014,2013-2014
+Laboratory,HSCRP_I,High-Sensitivity C-Reactive Protein (hs-CRP),2015,2016,2015-2016
+Laboratory,HCAAS_H,Heterocyclic Aromatic Amines (HCAA) - Urine - Special Sample,2013,2014,2013-2014
+Laboratory,SSHEPC_H,Hepatitis C: Confirmed Antibody (INNO-LIA),2013,2014,2013-2014
+Laboratory,CRCO_I,Chromium & Cobalt,2015,2016,2015-2016
+Laboratory,HIV_I,HIV Antibody Test,2015,2016,2015-2016
+Laboratory,MMA_H,Methylmalonic Acid,2013,2014,2013-2014
+Laboratory,UMS_I,Metals - Urine - Special Sample,2015,2016,2015-2016
+Laboratory,UTASS_I,Arsenic - Total - Urine - Special Sample,2015,2016,2015-2016
+Laboratory,UASS_I,Speciated Arsenics - Urine - Special Sample,2015,2016,2015-2016
+Laboratory,IHGEM_I,"Mercury: Inorganic, Ethyl and Methyl - Blood",2015,2016,2015-2016
+Laboratory,PBCD_I,"Lead, Cadmium, Total Mercury, Selenium & Manganese - Blood",2015,2016,2015-2016
+Laboratory,GLU_I,Plasma Fasting Glucose,2015,2016,2015-2016
+Laboratory,INS_I,Insulin,2015,2016,2015-2016
+Laboratory,OGTT_I,Oral Glucose Tolerance Test,2015,2016,2015-2016
+Laboratory,ORHPV_I,Human Papillomavirus (HPV) - Oral Rinse,2015,2016,2015-2016
+Laboratory,VOCMWB_G,Volatile Organic Compounds (VOCs) - Trihalomethanes/MTBE/Nitromethane - Blood,2011,2012,2011-2012
+Laboratory,UVOC_H,Volatile Organic Compound (VOC) Metabolites - Urine,2013,2014,2013-2014
+Laboratory,UVOCS_H,Volatile Organic Compound (VOC) Metabolites - Urine - Special Sample,2013,2014,2013-2014
+Laboratory,SSMHHT_I,"Mono-2-ethyl-5-hydroxyhexyl terephthalate, mono-2-ethyl-5-carboxypentyl terephthalate, and monooxoisononyl phthalate - Urine (Surplus)",2015,2016,2015-2016
+Laboratory,PCBPOL_G,Non-dioxin-like Polychlorinated Biphenyls & Mono-ortho-substituted Polychlorinated Biphenyls - Pooled Samples,2011,2012,2011-2012
+Laboratory,POOLTF_G,Pooled-Sample Technical Support File,2011,2012,2011-2012
+Laboratory,PSTPOL_G,Pesticides - Organochlorine Pesticides - Pooled Samples,2011,2012,2011-2012
+Laboratory,BFRPOL_G,Brominated Flame Retardants (BFRs) - Pooled Samples,2011,2012,2011-2012
+Laboratory,CUSEZN_I,"Copper, Selenium & Zinc - Serum",2015,2016,2015-2016
+Laboratory,UAS_I,Speciated Arsenics - Urine,2015,2016,2015-2016
+Laboratory,UTAS_I,Arsenic - Total - Urine,2015,2016,2015-2016
+Laboratory,UM_I,Metals - Urine,2015,2016,2015-2016
+Laboratory,UIO_I,Iodine - Urine,2015,2016,2015-2016
+Laboratory,UHG_I,Mercury: Inorganic - Urine,2015,2016,2015-2016
+Laboratory,VOCWB_I,Volatile Organic Compounds and Trihalomethanes/MTBE - Blood,2015,2016,2015-2016
+Laboratory,VOCWBS_I,Volatile Organic Compounds and Trihalomethanes/MTBE – Blood – Special Sample,2015,2016,2015-2016
+Laboratory,VID_H,Vitamin D,2013,2014,2013-2014
+Laboratory,PHTHTE_I,Phthalates and Plasticizers Metabolites - Urine,2015,2016,2015-2016
+Laboratory,UVOC_I,Volatile Organic Compound (VOC) Metabolites - Urine,2015,2016,2015-2016
+Laboratory,UVOCS_I,Volatile Organic Compound (VOC) Metabolites - Urine - Special Sample,2015,2016,2015-2016
+Laboratory,PCBPOL_H,Non-dioxin-like Polychlorinated Biphenyls & Mono-ortho-substituted Polychlorinated Biphenyls - Serum - Pooled Samples,2013,2014,2013-2014
+Laboratory,BFRPOL_H,Brominated Flame Retardants (BFRs) - Pooled Samples,2013,2014,2013-2014
+Laboratory,POOLTF_H,Pooled-Sample Technical Support File,2013,2014,2013-2014
+Laboratory,PSTPOL_H,Pesticides - Organochlorine Pesticides - Pooled Samples,2013,2014,2013-2014
+Laboratory,PFAS_I,Perfluoroalkyl and Polyfluoroalkyl,2015,2016,2015-2016
+Laboratory,TRIGLY_I,Cholesterol - Low - Density Lipoprotein (LDL) & Triglycerides,2015,2016,2015-2016
+Laboratory,TST_I,Sex Steroid Hormone - Serum,2015,2016,2015-2016
+Laboratory,ALD_H,Aldehydes - Serum,2013,2014,2013-2014
+Laboratory,ALDS_H,Aldehydes - Serum - Special Sample,2013,2014,2013-2014
+Laboratory,SSCMV_A,Cytomegalovirus Antibodies - Serum (Surplus),1999,2000,1999-2000
+Laboratory,SSCMV_B,Cytomegalovirus Antibodies - Serum (Surplus),2001,2002,2001-2002
+Laboratory,SSCMV_C,Cytomegalovirus Antibodies - Serum (Surplus),2003,2004,2003-2004
+Laboratory,EPHPP_I,Personal Care and Consumer Product Chemicals and Metabolites,2015,2016,2015-2016
+Laboratory,UADM_I,Aromatic Diamines - Urine,2015,2016,2015-2016
+Laboratory,HPVSWC_I,Human Papillomavirus (HPV) DNA - Vaginal Swab: Roche Cobas High-Risk,2015,2016,2015-2016
+Laboratory,HPVSWR_I,Human Papillomavirus (HPV) DNA - Vaginal Swab: Roche Linear Array,2015,2016,2015-2016
+Laboratory,FOLATE_H,Folate - RBC,2013,2014,2013-2014
+Laboratory,FOLFMS_H,Folate Forms - Total & Individual - Serum,2013,2014,2013-2014
+Laboratory,FOLFMS_G,Folate Forms - Total & Individual - Serum,2011,2012,2011-2012
+Laboratory,FOLFMS_I,Folate Forms - Total & Individual - Serum,2015,2016,2015-2016
+Laboratory,FOLATE_I,Folate - RBC,2015,2016,2015-2016
+Laboratory,FAS_G,Fatty Acids - Serum,2011,2012,2011-2012
+Laboratory,SSNEON_I,Neonicotinoids - Urine - Surplus,2015,2016,2015-2016
+Laboratory,CAFE_G,Caffeine & Caffeine Metabolites - Urine,2011,2012,2011-2012
+Laboratory,APOB_I,Apolipoprotein B,2015,2016,2015-2016
+Laboratory,VNA_H,Volatile N-Nitrosamine Compounds (VNAs) - Urine,2013,2014,2013-2014
+Laboratory,VNAS_H,Volatile N-Nitrosamine Compounds (VNAs) - Urine - Special Sample,2013,2014,2013-2014
+Laboratory,FERTIN_I,Ferritin,2015,2016,2015-2016
+Laboratory,TFR_I,Transferrin Receptor,2015,2016,2015-2016
+Laboratory,SSANA2_G,Autoantibodies - Immunofluorescence Analyses (Surplus),2011,2012,2011-2012
+Laboratory,SSPFSU_H,Perfluoroalkyl and Polyfluoroalkyl Substances,2013,2014,2013-2014
+Laboratory,SSDEET_I,DEET Metabolites - Urine - Surplus,2015,2016,2015-2016
+Laboratory,HPVSER_D,"Human Papillomavirus (HPV) - 6, 11, 16 & 18 Antibody – Serum: 4-plex CLIA",2005,2006,2005-2006
+Laboratory,HPVSWR_D,Human Papillomavirus (HPV) DNA - Vaginal Swab: Digene Hybrid Capture & Roche Linear Array,2005,2006,2005-2006
+Laboratory,SSANA2_A,Autoantibodies - Immunofluorescence Analyses (Surplus),1999,2004,1999-2004
+Laboratory,COT_I,Cotinine and Hydroxycotinine - Serum,2015,2016,2015-2016
+Laboratory,UCOTS_H,"Cotinine, Hydroxycotinine, & Other Nicotine Metabolites and Analogs - Urine - Special Sample",2013,2014,2013-2014
+Laboratory,UCOT_H,"Cotinine, Hydroxycotinine, & Other Nicotine Metabolites and Analogs - Urine",2013,2014,2013-2014
+Laboratory,UCOT_I,"Cotinine, Hydroxycotinine, & Other Nicotine Metabolites and Analogs - Urine",2015,2016,2015-2016
+Laboratory,UCOTS_I,"Cotinine, Hydroxycotinine, & Other Nicotine Metabolites and Analogs - Urine - Special Sample",2015,2016,2015-2016
+Laboratory,TSNA_H,Tobacco-specific Nitrosamines (TSNAs) - Urine,2013,2014,2013-2014
+Laboratory,SSCA_B,Cancer antigen CA125 and CA15.3 - Serum (Surplus),2001,2002,2001-2002
+Laboratory,DEET_I,DEET Metabolite - Urine,2015,2016,2015-2016
+Laboratory,PCBPOL_I,Non-dioxin-like Polychlorinated Biphenyls & Mono-ortho-substituted Polychlorinated Biphenyls - Pooled Samples,2015,2016,2015-2016
+Laboratory,PSTPOL_I,Pesticides - Organochlorine Pesticides - Pooled Samples,2015,2016,2015-2016
+Laboratory,UCFLOW_J,Urine Flow Rate,2017,2018,2017-2018
+Laboratory,FASTQX_J,Fasting Questionnaire,2017,2018,2017-2018
+Laboratory,SSFR_G,Flame Retardants - Urine  (Surplus),2011,2012,2011-2012
+Laboratory,BFRPOL_I,Brominated Flame Retardants (BFRs) - Pooled Samples,2015,2016,2015-2016
+Laboratory,GHB_J,Glycohemoglobin,2017,2018,2017-2018
+Laboratory,HPVP_I,Human Papillomavirus (HPV) DNA - Penile Swabs: Roche Linear Array,2015,2016,2015-2016
+Laboratory,ALB_CR_J,Albumin & Creatinine - Urine,2017,2018,2017-2018
+Laboratory,UCPREG_J,Urine Pregnancy Test,2017,2018,2017-2018
+Laboratory,HIV_J,HIV Antibody Test,2017,2018,2017-2018
+Laboratory,HEPA_J,Hepatitis A,2017,2018,2017-2018
+Laboratory,HEPB_S_J,Hepatitis B: Surface Antibody,2017,2018,2017-2018
+Laboratory,HEPBD_J,"Hepatitis B: Core antibody, Surface antigen, and Hepatitis D: antibody",2017,2018,2017-2018
+Laboratory,HEPC_J,"Hepatitis C: RNA (HCV-RNA), Confirmed Antibody (INNO-LIA), & Genotype",2017,2018,2017-2018
+Laboratory,HEPE_J,Hepatitis E: IgG & IgM Antibodies,2017,2018,2017-2018
+Laboratory,CBC_J,Complete Blood Count with 5-Part Differential,2017,2018,2017-2018
+Laboratory,HSCRP_J,High-Sensitivity C-Reactive Protein,2017,2018,2017-2018
+Laboratory,TCHOL_J,Cholesterol - Total,2017,2018,2017-2018
+Laboratory,HDL_J,Cholesterol - High - Density Lipoprotein (HDL),2017,2018,2017-2018
+Laboratory,BIOPRO_J,Standard Biochemistry Profile,2017,2018,2017-2018
+Laboratory,POOLTF_I,Pooled-Sample Technical Support File,2015,2016,2015-2016
+Laboratory,UPHOPM_G,"Pyrethroids, Herbicides, & Organophosphorus Metabolites - Urine",2011,2012,2011-2012
+Laboratory,PERNT_I,"Perchlorate, Nitrate & Thiocyanate - Urine",2015,2016,2015-2016
+Laboratory,PERNTS_I,"Perchlorate, Nitrate & Thiocyanate - Urine - Special Sample",2015,2016,2015-2016
+Laboratory,AMDGYD_H,Acrylamide & Glycidamide,2013,2014,2013-2014
+Laboratory,AMDGYD_I,Acrylamide & Glycidamide,2015,2016,2015-2016
+Laboratory,ETHOX_H,Ethylene Oxide,2013,2014,2013-2014
+Laboratory,ETHOX_I,Ethylene Oxide,2015,2016,2015-2016
+Laboratory,OPD_G,Organophosphate Insecticides - Dialkyl Phosphate Metabolites - Urine,2011,2012,2011-2012
+Laboratory,FETIB_J,Iron Status - Serum,2017,2018,2017-2018
+Laboratory,AMDGDS_H,Acrylamide & Glycidamide - Special Sample,2013,2014,2013-2014
+Laboratory,ETHOXS_H,Ethylene Oxide - Special Sample,2013,2014,2013-2014
+Laboratory,PBCD_J,"Lead, Cadmium, Total Mercury, Selenium, & Manganese - Blood",2017,2018,2017-2018
+Laboratory,CRCO_J,Chromium & Cobalt,2017,2018,2017-2018
+Laboratory,IHGEM_J,"Mercury: Inorganic, Ethyl and Methyl - Blood",2017,2018,2017-2018
+Laboratory,CMV_J,Cytomegalovirus IgG & IgM Antibodies - Serum,2017,2018,2017-2018
+Laboratory,AA_H,Aromatic Amines - Urine,2013,2014,2013-2014
+Laboratory,AAS_H,Aromatic Amines - Urine - Special Sample,2013,2014,2013-2014
+Laboratory,FORMAL_I,Formaldehyde,2015,2016,2015-2016
+Laboratory,GLU_J,Plasma Fasting Glucose,2017,2018,2017-2018
+Laboratory,COT_J,Cotinine and Hydroxycotinine - Serum,2017,2018,2017-2018
+Laboratory,SSPT_I,Pertussis and tetanus – Serum (Surplus),2015,2016,2015-2016
+Laboratory,FORMAS_H,Formaldehyde - Special Sample,2013,2014,2013-2014
+Laboratory,FORMAL_H,Formaldehyde,2013,2014,2013-2014
+Laboratory,SSHE4_B,Human epididymal secretory protein E4 (HE4) - Serum (Surplus),2001,2002,2001-2002
+Laboratory,INS_J,Insulin,2017,2018,2017-2018
+Laboratory,FERTIN_J,Ferritin,2017,2018,2017-2018
+Laboratory,VIC_J,Vitamin C,2017,2018,2017-2018
+Laboratory,SSCT_H,Chlamydia Pgp3 (plasmid gene product 3) ELISA (enzyme linked immunosorbent assay) and multiplex bead array (MBA) results,2013,2014,2013-2014
+Laboratory,SSCT_I,Chlamydia Pgp3 (plasmid gene product 3) ELISA (enzyme linked immunosorbent assay) and multiplex bead array (MBA) results,2015,2016,2015-2016
+Laboratory,SSFR_I,Flame Retardants - Urine (Surplus),2015,2016,2015-2016
+Laboratory,CAFE_H,Caffeine & Caffeine Metabolites - Urine,2013,2014,2013-2014
+Laboratory,TRIGLY_J,Cholesterol - Low-Density Lipoproteins (LDL) & Triglycerides,2017,2018,2017-2018
+Laboratory,FOLATE_J,Folate - RBC,2017,2018,2017-2018
+Laboratory,FOLFMS_J,Folate Forms - Total & Individual - Serum,2017,2018,2017-2018
+Laboratory,PAH_I,Polycyclic Aromatic Hydrocarbons (PAH) - Urine,2015,2016,2015-2016
+Laboratory,PAHS_I,Polycyclic Aromatic Hydrocarbons (PAH) - Urine - Special Sample,2015,2016,2015-2016
+Laboratory,UPHOPM_H,"Pyrethroids, Herbicides, & Organophosphorus Metabolites - Urine",2013,2014,2013-2014
+Laboratory,UAS_J,Arsenics - Speciated - Urine,2017,2018,2017-2018
+Laboratory,UTAS_J,Arsenic - Total - Urine,2017,2018,2017-2018
+Laboratory,UM_J,Metals - Urine,2017,2018,2017-2018
+Laboratory,UCM_J,Chromium - Urine,2017,2018,2017-2018
+Laboratory,UHG_J,Mercury: Inorganic - Urine,2017,2018,2017-2018
+Laboratory,UNI_J,Nickel - Urine,2017,2018,2017-2018
+Laboratory,UIO_J,Iodine - Urine,2017,2018,2017-2018
+Laboratory,VOCWB_J,Volatile Organic Compounds and Trihalomethanes/MTBE - Blood,2017,2018,2017-2018
+Laboratory,PFAS_J,Perfluoroalkyl and Polyfluoroalkyl Substances,2017,2018,2017-2018
+Laboratory,PHTHTE_J,Phthalates and Plasticizers Metabolites - Urine,2017,2018,2017-2018
+Laboratory,SSSNFL_H,Serum Neurofilament Light Chain - Serum,2013,2014,2013-2014
+Laboratory,SSPFAS_J,Perfluoroalkyl and Polyfluoroalkyl Substances (Surplus),2017,2018,2017-2018
+Laboratory,SSDFS_A,Autoantibodies - Anti-DFS70 Autoantibody Analyses (Surplus),1999,2004,1999-2004
+Laboratory,SSDFS_G,Autoantibodies - Anti-DFS70 Autoantibody Analyses (Surplus),2011,2012,2011-2012
+Laboratory,OPD_I,Organophosphate Insecticides - Dialkyl Phosphate Metabolites - Urine,2015,2016,2015-2016
+Laboratory,SSGLYP_H,Glyphosate (GLYP) - Urine,2013,2014,2013-2014
+Laboratory,SSCARD_A,"Glycated albumin, Beta-2 Microglobulin, Cystatin C (Surplus)",1999,2004,1999-2004
+Laboratory,TFR_J,Transferrin Receptor,2017,2018,2017-2018
+Laboratory,VID_I,Vitamin D,2015,2016,2015-2016
+Laboratory,P_FASTQX,Fasting Questionnaire,2017,2020,2017-2020
+Laboratory,P_GHB,Glycohemoglobin,2017,2020,2017-2020
+Laboratory,P_TRIGLY,Cholesterol - Low-Density Lipoproteins (LDL) & Triglycerides,2017,2020,2017-2020
+Laboratory,P_HDL,Cholesterol - High - Density Lipoprotein (HDL),2017,2020,2017-2020
+Laboratory,P_TCHOL,Cholesterol - Total,2017,2020,2017-2020
+Laboratory,P_GLU,Plasma Fasting Glucose,2017,2020,2017-2020
+Laboratory,P_ALB_CR,Albumin & Creatinine - Urine,2017,2020,2017-2020
+Laboratory,P_CBC,Complete Blood Count with 5-Part Differential in Whole Blood,2017,2020,2017-2020
+Laboratory,P_FETIB,Iron Status - Serum,2017,2020,2017-2020
+Laboratory,P_UCFLOW,Urine Flow Rate,2017,2020,2017-2020
+Laboratory,P_BIOPRO,Standard Biochemistry Profile,2017,2020,2017-2020
+Laboratory,P_CMV,Cytomegalovirus IgG & IgM Antibodies - Serum,2017,2020,2017-2020
+Laboratory,SSKL_E,Klotho - Serum (Surplus),2007,2008,2007-2008
+Laboratory,P_HSCRP,High-Sensitivity C-Reactive Protein,2017,2020,2017-2020
+Laboratory,SSKL_F,Klotho - Serum (Surplus),2009,2010,2009-2010
+Laboratory,SSKL_G,Klotho - Serum (Surplus),2011,2012,2011-2012
+Laboratory,SSKL_H,Klotho - Serum (Surplus),2013,2014,2013-2014
+Laboratory,SSKL_I,Klotho - Serum (Surplus),2015,2016,2015-2016
+Laboratory,P_FERTIN,Ferritin,2017,2020,2017-2020
+Laboratory,P_UCPREG,Urine Pregnancy Test,2017,2020,2017-2020
+Laboratory,SSCGA_B,"Cancer antigen CA125, CA15.3 and HE4 IgG antibodies - Serum (Surplus)",2001,2002,2001-2002
+Laboratory,P_INS,Insulin,2017,2020,2017-2020
+Laboratory,SSBNP_A,N-terminal Pro-BNP (Surplus),1999,2004,1999-2004
+Laboratory,P_PBCD,"Lead, Cadmium, Total Mercury, Selenium, & Manganese - Blood",2017,2020,2017-2020
+Laboratory,P_IHGEM,"Inorganic, Ethyl and Methyl - Blood",2017,2020,2017-2020
+Laboratory,P_FOLATE,Folate - RBC,2017,2020,2017-2020
+Laboratory,P_FOLFMS,Folate Forms - Total & Individual - Serum,2017,2020,2017-2020
+Laboratory,P_CRCO,Chromium & Cobalt,2017,2020,2017-2020
+Laboratory,P_UAS,Arsenics - Speciated - Urine,2017,2020,2017-2020
+Laboratory,P_UTAS,Arsenic - Total - Urine,2017,2020,2017-2020
+Laboratory,P_UCM,Chromium - Urine,2017,2020,2017-2020
+Laboratory,P_UHG,Mercury: Inorganic - Urine,2017,2020,2017-2020
+Laboratory,P_UIO,Iodine - Urine,2017,2020,2017-2020
+Laboratory,P_UNI,Nickel - Urine,2017,2020,2017-2020
+Laboratory,P_UM,Metals - Urine,2017,2020,2017-2020
+Laboratory,P_VOCWB,Volatile Organic Compounds and Trihalomethanes/MTBE - Blood,2017,2020,2017-2020
+Laboratory,VITAEC_J,"Vitamin A, Vitamin E & Carotenoids",2017,2018,2017-2018
+Laboratory,OPD_J,Organophosphate Insecticides - Dialkyl Phosphate Metabolites - Urine,2017,2018,2017-2018
+Laboratory,FR_J,Flame Retardants - Urine,2017,2018,2017-2018
+Laboratory,SSTROP_A,High-sensitivity cardiac troponins (Surplus),1999,2004,1999-2004
+Laboratory,UCOT_J,"Cotinine, Hydroxycotinine, & Other Nicotine Metabolites and Analogs - Urine",2017,2018,2017-2018
+Laboratory,VID_J,Vitamin D,2017,2018,2017-2018
+Laboratory,P_TFR,Transferrin Receptor,2017,2020,2017-2020
+Laboratory,PERNT_J,"Perchlorate, Nitrate & Thiocyanate - Urine",2017,2018,2017-2018
+Laboratory,P_COT,Cotinine and Hydroxycotinine - Serum,2017,2020,2017-2020
+Laboratory,UVOC_J,Volatile Organic Compound (VOC) Metabolites - Urine,2017,2018,2017-2018
+Laboratory,SSAGP_I,Alpha-1-Acid Glycoprotein - Serum (Surplus),2015,2016,2015-2016
+Laboratory,P_HEPA,Hepatitis A,2017,2020,2017-2020
+Laboratory,P_HEPB_S,Hepatitis B Surface Antibody,2017,2020,2017-2020
+Laboratory,P_HEPC,"Hepatitis C: RNA (HCV-RNA), Confirmed Antibody (INNO-LIA), & Genotype",2017,2020,2017-2020
+Laboratory,P_HEPE,Hepatitis E: IgG & IgM Antibodies,2017,2020,2017-2020
+Laboratory,P_UVOC,Volatile Organic Compound (VOC) Metabolites - Urine,2017,2020,2017-2020
+Laboratory,P_HEPBD,"Hepatitis B: Core antibody, Surface antigen, and Hepatitis D: antibody",2017,2020,2017-2020
+Laboratory,SSUVOC_J,Volatile Organic Compound (VOC) Metabolites II - Urine (Surplus),2017,2018,2017-2018
+Laboratory,P_UVOC2,Volatile Organic Compound (VOC) Metabolites II - Urine,2017,2020,2017-2020
+Laboratory,UFLDE_I,Fluoride - Urine,2015,2016,2015-2016
+Laboratory,SSCLTY_I,Chlorinated Tyrosine – Serum (Surplus),2015,2016,2015-2016
+Laboratory,SSGLYP_I,Glyphosate (GLYP) - Urine (Surplus),2015,2016,2015-2016
+Laboratory,ETHOX_J,Ethylene Oxide,2017,2018,2017-2018
+Laboratory,P_ETHOX,Ethylene Oxide,2017,2020,2017-2020
+Laboratory,UPHOPM_I,"Pyrethroids, Herbicides, & Organophosphorus Metabolites - Urine",2015,2016,2015-2016
+Laboratory,SSFR_J,Flame Retardants - Urine (Surplus),2017,2018,2017-2018
+Laboratory,FAS_H,Fatty Acids - Serum,2013,2014,2013-2014
+Laboratory,SSTERP_H,Terpenes – Serum (Surplus),2013,2014,2013-2014
+Laboratory,P_FR,Flame Retardants - Urine,2017,2020,2017-2020
+Laboratory,DOXPOL_G,"Polychlorinated dibenzo-p-dioxins (PCDDs), Dibenzofurans (PCDFs) & Coplanar Polychlorinated Biphenyls (cPCBs) - Pooled Samples",2011,2012,2011-2012
+Laboratory,SSGLYP_J,Glyphosate (GLYP) - Urine (Surplus),2017,2018,2017-2018
+Laboratory,SSAGP_J,Alpha-1-Acid Glycoprotein - Serum (Surplus),2017,2018,2017-2018
+Laboratory,P_OPD,Organophosphate Insecticides - Dialkyl Phosphate Metabolites - Urine,2017,2020,2017-2020
+Laboratory,P_SSFR,Flame Retardants - Urine (Surplus),2017,2020,2017-2020
+Laboratory,P_PERNT,"Perchlorate, Nitrate & Thiocyanate - Urine",2017,2020,2017-2020
+Laboratory,UCPREG_L,Urine Pregnancy Test,2021,2023,2021-2023
+Laboratory,AGP_L,alpha-1-Acid Glycoprotein,2021,2023,2021-2023
+Laboratory,FERTIN_L,Ferritin,2021,2023,2021-2023
+Laboratory,TFR_L,Transferrin Receptor,2021,2023,2021-2023
+Laboratory,CBC_L,Complete Blood Count with 5-Part Differential in Whole Blood,2021,2023,2021-2023
+Laboratory,FOLATE_L,Folate - RBC,2021,2023,2021-2023
+Laboratory,TST_L,Sex Steroid Hormone Panel - Serum,2021,2023,2021-2023
+Laboratory,P_SSAGP,Alpha-1-Acid Glycoprotein - Serum (Surplus),2017,2020,2017-2020
+Laboratory,P_PFAS,Perfluoroalkyl and Polyfluoroalkyl Substances,2017,2020,2017-2020
+Laboratory,INS_L,Insulin,2021,2023,2021-2023
+Laboratory,GLU_L,Plasma Fasting Glucose,2021,2023,2021-2023
+Laboratory,FASTQX_L,Fasting Questionnaire,2021,2023,2021-2023
+Laboratory,GHB_L,Glycohemoglobin,2021,2023,2021-2023
+Laboratory,FOLFMS_L,Serum Folate Forms - Total & Individual - Serum,2021,2023,2021-2023
+Laboratory,VID_L,Vitamin D,2021,2023,2021-2023
+Laboratory,PBCD_L,"Lead, Cadmium, Total Mercury, Selenium, & Manganese – Blood",2021,2023,2021-2023
+Laboratory,IHGEM_L,"Mercury:  Inorganic, Ethyl, and Methyl - Blood",2021,2023,2021-2023
+Laboratory,DOXPOL_I,"Polychlorinated dibenzo-p-dioxins (PCDDs), Dibenzofurans (PCDFs) & Coplanar Polychlorinated Biphenyls (cPCBs) - Pooled Samples",2015,2016,2015-2016
+Laboratory,HEPA_L,Hepatitis A,2021,2023,2021-2023
+Laboratory,HEPB_S_L,Hepatitis B Surface Antibody,2021,2023,2021-2023
+Laboratory,UPHOPM_J,"Pyrethroids, Herbicides, & Organophosphorus Metabolites – Urine",2017,2018,2017-2018
+Laboratory,HSCRP_L,High-Sensitivity C-Reactive Protein,2021,2023,2021-2023
+Laboratory,HDL_L,Cholesterol – High-Density Lipoprotein,2021,2023,2021-2023
+Laboratory,TCHOL_L,Cholesterol - Total,2021,2023,2021-2023
+Laboratory,SSTST_J,Sex Steroid Hormone Panel - Serum (Surplus),2017,2018,2017-2018
+Laboratory,P_TST,Sex Steroid Hormone Panel - Serum,2017,2020,2017-2020
+Laboratory,SSEVD_A,Enterovirus D68 (EV-D68) - Serum (Surplus),1999,2000,1999-2000
+Laboratory,SSEVD_B,Enterovirus D68 (EV-D68) - Serum (Surplus),2001,2002,2001-2002
+Laboratory,SSEVD_C,Enterovirus D68 (EV-D68) - Serum (Surplus),2003,2004,2003-2004
+Laboratory,SSEVD_D,Enterovirus D68 (EV-D68) - Serum (Surplus),2005,2006,2005-2006
+Laboratory,SSEVD_E,Enterovirus D68 (EV-D68) - Serum (Surplus),2007,2008,2007-2008
+Laboratory,SSEVD_F,Enterovirus D68 (EV-D68) - Serum (Surplus),2009,2010,2009-2010
+Laboratory,SSEVD_G,Enterovirus D68 (EV-D68) - Serum (Surplus),2011,2012,2011-2012
+Laboratory,SSEVD_H,Enterovirus D68 (EV-D68) - Serum (Surplus),2013,2014,2013-2014
+Laboratory,SSEVD_I,Enterovirus D68 (EV-D68) - Serum (Surplus),2015,2016,2015-2016
+Laboratory,SSEVD_J,Enterovirus D68 (EV-D68) - Serum (Surplus),2017,2018,2017-2018
+Laboratory,SSCAFE_A,Caffeine & Caffeine Metabolites - Urine (Surplus),1999,2000,1999-2000
+Laboratory,SSCAFE_B,Caffeine & Caffeine Metabolites - Urine (Surplus),2001,2002,2001-2002
+Laboratory,SSNEON_J,Neonicotinoids - Urine (Surplus),2017,2018,2017-2018
+Laboratory,ALB_CR_L,Albumin & Creatinine - Urine,2021,2023,2021-2023
+Laboratory,P_SSMMRV,"Measles, Mumps, Rubella, & Varicella – Serum (Surplus)",2017,2020,2017-2020
+Laboratory,DOXPOL_H,"Polychlorinated dibenzo-p-dioxins (PCDDs), Dibenzofurans (PCDFs) & Coplanar Polychlorinated Biphenyls (cPCBs) - Pooled Samples",2013,2014,2013-2014
+Laboratory,FAR_L,Fatty Acids - Washed RBCs,2021,2023,2021-2023
+Laboratory,FFMR_L,Folate Forms - Total & Individual – Washed RBCs,2021,2023,2021-2023
+Laboratory,BIOPRO_L,Standard Biochemistry Profile,2021,2023,2021-2023
+Laboratory,VOCWB_L,Volatile Organic Compounds and Trihalomethanes/MTBE - Blood,2021,2023,2021-2023
+Laboratory,TRIGLY_L,Cholesterol - Low-Density Lipoproteins (LDL) & Triglycerides,2021,2023,2021-2023
+Laboratory,SSUVCM_J,Volatile Organic Compound (VOC) Metabolites: Benzene and Methylating Agent Biomarkers – Urine (Surplus),2017,2018,2017-2018
+Laboratory,P_SSUVCM,Volatile Organic Compound (VOC) Metabolites: Benzene and Methylating Agent Biomarkers - Urine (Surplus),2017,2020,2017-2020
+Laboratory,PAH_J,Polycyclic Aromatic Hydrocarbons (PAH) - Urine,2017,2018,2017-2018
+Laboratory,EPHPP_J,Personal Care and Consumer Product Chemicals and Metabolites,2017,2018,2017-2018
+Laboratory,BCHE_L,Butyrylcholinesterase Activity & Concentration,2021,2023,2021-2023
+Laboratory,HEPBD_L,"Hepatitis B: Core antibody, Surface antigen, and Hepatitis D: antibody",2021,2023,2021-2023
+Laboratory,HEPC_L,"Hepatitis C: RNA (HCV-RNA), Confirmed Antibody (INNO-LIA), & Genotype",2021,2023,2021-2023
+Laboratory,HEPE_L,Hepatitis E: IgG & IgM Antibodies,2021,2023,2021-2023
+Laboratory,P_SSEBVA,Epstein-Barr Virus Serology - Serum (Surplus),2017,2020,2017-2020
+Laboratory,P_SSCMVA,Cytomegalovirus Serology - Serum (Surplus),2017,2020,2017-2020
+Laboratory,SSHOLO_G,Holotranscobalamin – Serum (Surplus),2011,2012,2011-2012
+Laboratory,P_SSPOLI,"Poliovirus Serotypes 1, 2, & 3 Antibodies - Serum (Surplus)",2017,2020,2017-2020
+Laboratory,COT_L,Cotinine and Hydroxycotinine - Serum,2021,2023,2021-2023
+Laboratory,PFAS_L,Perfluoroalkyl and Polyfluoroalkyl Substances,2021,2023,2021-2023
+Laboratory,DEET_J,DEET Metabolite – Urine,2017,2018,2017-2018
+Questionnaire,ACQ_D,Acculturation,2005,2006,2005-2006
+Questionnaire,ALQ_D,Alcohol Use,2005,2006,2005-2006
+Questionnaire,ALQ_E,Alcohol Use,2007,2008,2007-2008
+Questionnaire,AGQ_D,Allergy,2005,2006,2005-2006
+Questionnaire,BHQ_D,Bowel Health,2005,2006,2005-2006
+Questionnaire,BPQ_D,Blood Pressure & Cholesterol,2005,2006,2005-2006
+Questionnaire,CDQ_D,Cardiovascular Health,2005,2006,2005-2006
+Questionnaire,HSQ_D,Current Health Status,2005,2006,2005-2006
+Questionnaire,DPQ_D,Mental Health - Depression Screener,2005,2006,2005-2006
+Questionnaire,DEQ_D,Dermatology,2005,2006,2005-2006
+Questionnaire,DBQ_D,Diet Behavior & Nutrition,2005,2006,2005-2006
+Questionnaire,BHQ_E,Bowel Health,2007,2008,2007-2008
+Questionnaire,BPQ_E,Blood Pressure & Cholesterol,2007,2008,2007-2008
+Questionnaire,CDQ_E,Cardiovascular Health,2007,2008,2007-2008
+Questionnaire,RXQ_RX,Prescription Medications,1999,2000,1999-2000
+Questionnaire,ECQ_E,Early Childhood,2007,2008,2007-2008
+Questionnaire,HSQ_E,Current Health Status,2007,2008,2007-2008
+Questionnaire,IMQ_E,Immunization,2007,2008,2007-2008
+Questionnaire,KIQ_P_E,Prostate Conditions,2007,2008,2007-2008
+Questionnaire,KIQ_U_E,Kidney Conditions - Urology,2007,2008,2007-2008
+Questionnaire,MCQ_E,Medical Conditions,2007,2008,2007-2008
+Questionnaire,OHQ_E,Oral Health,2007,2008,2007-2008
+Questionnaire,PAQ_E,Physical Activity,2007,2008,2007-2008
+Questionnaire,PFQ_E,Physical Functioning,2007,2008,2007-2008
+Questionnaire,PUQMEC_E,Pesticide Use,2007,2008,2007-2008
+Questionnaire,SMQFAM_E,Smoking - Household Smokers,2007,2008,2007-2008
+Questionnaire,SMQRTU_E,Smoking - Recent Tobacco Use,2007,2008,2007-2008
+Questionnaire,SSQ_E,Social Support,2007,2008,2007-2008
+Questionnaire,VIQ_E,Vision,2007,2008,2007-2008
+Questionnaire,WHQ_E,Weight History,2007,2008,2007-2008
+Questionnaire,WHQMEC_E,Weight History - Youth,2007,2008,2007-2008
+Questionnaire,HIQ_E,Health Insurance,2007,2008,2007-2008
+Questionnaire,OSQ_E,Osteoporosis,2007,2008,2007-2008
+Questionnaire,AUQ_E,Audiometry,2007,2008,2007-2008
+Questionnaire,RDQ_E,Respiratory Health,2007,2008,2007-2008
+Questionnaire,SXQ_E,Sexual Behavior,2007,2008,2007-2008
+Questionnaire,DIQ_E,Diabetes,2007,2008,2007-2008
+Questionnaire,HUQ_E,Hospital Utilization & Access to Care,2007,2008,2007-2008
+Questionnaire,SMQ_E,Smoking - Cigarette Use,2007,2008,2007-2008
+Questionnaire,SLQ_E,Sleep Disorders,2007,2008,2007-2008
+Questionnaire,ACQ_E,Acculturation,2007,2008,2007-2008
+Questionnaire,DPQ_E,Mental Health - Depression Screener,2007,2008,2007-2008
+Questionnaire,HOQ_E,Housing Characteristics,2007,2008,2007-2008
+Questionnaire,DUQ_E,Drug Use,2007,2008,2007-2008
+Questionnaire,RHQ_E,Reproductive Health,2007,2008,2007-2008
+Questionnaire,RXQ_RX_E,Prescription Medications,2007,2008,2007-2008
+Questionnaire,CIQGAD,Mental Health - Generalized Anxiety Disorder,1999,2000,1999-2000
+Questionnaire,CIQMDEP,Mental Health - Depression,1999,2000,1999-2000
+Questionnaire,CIQPANIC,Mental Health - Panic Disorder,1999,2000,1999-2000
+Questionnaire,CBQ_E,Consumer Behavior,2007,2008,2007-2008
+Questionnaire,ACQ,Acculturation,1999,2000,1999-2000
+Questionnaire,ALQ,Alcohol Use,1999,2000,1999-2000
+Questionnaire,AUQ,Audiometry,1999,2000,1999-2000
+Questionnaire,BAQ,Balance,1999,2000,1999-2000
+Questionnaire,BPQ,Blood Pressure & Cholesterol,1999,2000,1999-2000
+Questionnaire,CDQ,Cardiovascular Health,1999,2000,1999-2000
+Questionnaire,CFQ,Cognitive Functioning,1999,2000,1999-2000
+Questionnaire,HSQ,Current Health Status,1999,2000,1999-2000
+Questionnaire,DEQ,Dermatology,1999,2000,1999-2000
+Questionnaire,DIQ,Diabetes,1999,2000,1999-2000
+Questionnaire,DBQ,Diet Behavior & Nutrition,1999,2000,1999-2000
+Questionnaire,DUQ,Drug Use,1999,2000,1999-2000
+Questionnaire,ECQ,Early Childhood,1999,2000,1999-2000
+Questionnaire,FSQ,Food Security,1999,2000,1999-2000
+Questionnaire,HIQ,Health Insurance,1999,2000,1999-2000
+Questionnaire,HUQ,Hospital Utilization & Access to Care,1999,2000,1999-2000
+Questionnaire,HOQ,Housing Characteristics,1999,2000,1999-2000
+Questionnaire,IMQ,Immunization,1999,2000,1999-2000
+Questionnaire,KIQ,Kidney Conditions,1999,2000,1999-2000
+Questionnaire,DBQ_E,Diet Behavior & Nutrition,2007,2008,2007-2008
+Questionnaire,MCQ,Medical Conditions,1999,2000,1999-2000
+Questionnaire,MPQ,Miscellaneous Pain,1999,2000,1999-2000
+Questionnaire,OCQ,Occupation,1999,2000,1999-2000
+Questionnaire,OHQ,Oral Health,1999,2000,1999-2000
+Questionnaire,OSQ,Osteoporosis,1999,2000,1999-2000
+Questionnaire,RXQ_ANA,Analgesic Pain Relievers,1999,2000,1999-2000
+Questionnaire,PUQ,Pesticide Use,1999,2000,1999-2000
+Questionnaire,PAQ,Physical Activity,1999,2000,1999-2000
+Questionnaire,PAQIAF,Physical Activity - Individual Activities,1999,2000,1999-2000
+Questionnaire,PFQ,Physical Functioning,1999,2000,1999-2000
+Questionnaire,RHQ,Reproductive Health,1999,2000,1999-2000
+Questionnaire,RDQ,Respiratory Health,1999,2000,1999-2000
+Questionnaire,SXQ,Sexual Behavior,1999,2000,1999-2000
+Questionnaire,SMQMEC,Smoking - Adult Recent Tobacco Use & Youth Cigarette/Tobacco Use,1999,2000,1999-2000
+Questionnaire,SMQ,Smoking - Cigarette/Tobacco Use - Adult,1999,2000,1999-2000
+Questionnaire,SSQ,Social Support,1999,2000,1999-2000
+Questionnaire,TBQ,Tuberculosis,1999,2000,1999-2000
+Questionnaire,VIQ,Vision,1999,2000,1999-2000
+Questionnaire,WHQ,Weight History,1999,2000,1999-2000
+Questionnaire,CDQ_C,Cardiovascular Health,2003,2004,2003-2004
+Questionnaire,HCQ_E,Hepatitis C Follow Up,2007,2008,2007-2008
+Questionnaire,INQ_E,Income,2007,2008,2007-2008
+Questionnaire,FSQ_E,Food Security,2007,2008,2007-2008
+Questionnaire,WHQ_B,Weight History,2001,2002,2001-2002
+Questionnaire,AQQ_E,Air Quality,2007,2008,2007-2008
+Questionnaire,AUQ_D,Audiometry,2005,2006,2005-2006
+Questionnaire,DIQ_D,Diabetes,2005,2006,2005-2006
+Questionnaire,DUQ_D,Drug Use,2005,2006,2005-2006
+Questionnaire,ECQ_D,Early Childhood,2005,2006,2005-2006
+Questionnaire,FSQ_D,Food Security,2005,2006,2005-2006
+Questionnaire,HIQ_D,Health Insurance,2005,2006,2005-2006
+Questionnaire,HCQ_D,Hepatitis C Follow Up,2005,2006,2005-2006
+Questionnaire,HUQ_D,Hospital Utilization & Access to Care,2005,2006,2005-2006
+Questionnaire,HOQ_D,Housing Characteristics,2005,2006,2005-2006
+Questionnaire,IMQ_D,Immunization,2005,2006,2005-2006
+Questionnaire,KIQ_U_D,Kidney Conditions - Urology,2005,2006,2005-2006
+Questionnaire,MCQ_D,Medical Conditions,2005,2006,2005-2006
+Questionnaire,OHQ_D,Oral Health,2005,2006,2005-2006
+Questionnaire,OSQ_D,Osteoporosis,2005,2006,2005-2006
+Questionnaire,PUQMEC_D,Pesticide Use,2005,2006,2005-2006
+Questionnaire,PAQ_D,Physical Activity,2005,2006,2005-2006
+Questionnaire,PAQIAF_D,Physical Activity - Individual Activities,2005,2006,2005-2006
+Questionnaire,PFQ_D,Physical Functioning,2005,2006,2005-2006
+Questionnaire,RXQ_RX_D,Prescription Medications,2005,2006,2005-2006
+Questionnaire,KIQ_P_D,Prostate Conditions,2005,2006,2005-2006
+Questionnaire,PSQ_D,Prostate Specific Antigen Follow-up,2005,2006,2005-2006
+Questionnaire,RHQ_D,Reproductive Health,2005,2006,2005-2006
+Questionnaire,RDQ_D,Respiratory Health,2005,2006,2005-2006
+Questionnaire,SXQ_D,Sexual Behavior,2005,2006,2005-2006
+Questionnaire,SLQ_D,Sleep Disorders,2005,2006,2005-2006
+Questionnaire,SMQ_D,Smoking - Cigarette Use,2005,2006,2005-2006
+Questionnaire,SMQFAM_D,Smoking - Household Smokers,2005,2006,2005-2006
+Questionnaire,SMQRTU_D,Smoking - Recent Tobacco Use,2005,2006,2005-2006
+Questionnaire,SSQ_D,Social Support,2005,2006,2005-2006
+Questionnaire,VIQ_D,Vision,2005,2006,2005-2006
+Questionnaire,WHQMEC_D,Weight History - Youth,2005,2006,2005-2006
+Questionnaire,WHQ_D,Weight History,2005,2006,2005-2006
+Questionnaire,ACQ_C,Acculturation,2003,2004,2003-2004
+Questionnaire,ALQ_C,Alcohol Use,2003,2004,2003-2004
+Questionnaire,RXQANA_C,Analgesic Pain Relievers,2003,2004,2003-2004
+Questionnaire,AUQ_C,Audiometry,2003,2004,2003-2004
+Questionnaire,BAQ_C,Balance,2003,2004,2003-2004
+Questionnaire,BPQ_C,Blood Pressure & Cholesterol,2003,2004,2003-2004
+Questionnaire,HSQ_C,Current Health Status,2003,2004,2003-2004
+Questionnaire,DEQ_C,Dermatology,2003,2004,2003-2004
+Questionnaire,DIQ_C,Diabetes,2003,2004,2003-2004
+Questionnaire,DBQ_C,Diet Behavior & Nutrition,2003,2004,2003-2004
+Questionnaire,DUQ_C,Drug Use,2003,2004,2003-2004
+Questionnaire,ECQ_C,Early Childhood,2003,2004,2003-2004
+Questionnaire,SMQFAM_C,Smoking - Household Smokers,2003,2004,2003-2004
+Questionnaire,FSQ_C,Food Security,2003,2004,2003-2004
+Questionnaire,HIQ_C,Health Insurance,2003,2004,2003-2004
+Questionnaire,HOQ_C,Housing Characteristics,2003,2004,2003-2004
+Questionnaire,HCQ_C,Hepatitis C Follow Up,2003,2004,2003-2004
+Questionnaire,HUQ_C,Hospital Utilization & Access to Care,2003,2004,2003-2004
+Questionnaire,IMQ_C,Immunization,2003,2004,2003-2004
+Questionnaire,KIQ_U_C,Kidney Conditions - Urology,2003,2004,2003-2004
+Questionnaire,MCQ_C,Medical Conditions,2003,2004,2003-2004
+Questionnaire,MPQ_C,Miscellaneous Pain,2003,2004,2003-2004
+Questionnaire,OCQ_C,Occupation,2003,2004,2003-2004
+Questionnaire,OHQ_C,Oral Health,2003,2004,2003-2004
+Questionnaire,OSQ_C,Osteoporosis,2003,2004,2003-2004
+Questionnaire,PUQ_C,Pesticide Use,2003,2004,2003-2004
+Questionnaire,PAQ_C,Physical Activity,2003,2004,2003-2004
+Questionnaire,PAQIAF_C,Physical Activity - Individual Activities,2003,2004,2003-2004
+Questionnaire,PFQ_C,Physical Functioning,2003,2004,2003-2004
+Questionnaire,RXQ_RX_C,Prescription Medications,2003,2004,2003-2004
+Questionnaire,KIQ_P_C,Prostate Conditions,2003,2004,2003-2004
+Questionnaire,PSQ_C,Prostate Specific Antigen Follow-up,2003,2004,2003-2004
+Questionnaire,RHQ_C,Reproductive Health,2003,2004,2003-2004
+Questionnaire,RDQ_C,Respiratory Health,2003,2004,2003-2004
+Questionnaire,SMQ_C,Smoking - Cigarette/Tobacco Use - Adult,2003,2004,2003-2004
+Questionnaire,SMQMEC_C,Smoking - Adult Recent Tobacco Use & Youth Cigarette/Tobacco Use,2003,2004,2003-2004
+Questionnaire,SSQ_C,Social Support,2003,2004,2003-2004
+Questionnaire,SXQ_C,Sexual Behavior,2003,2004,2003-2004
+Questionnaire,VIQ_C,Vision,2003,2004,2003-2004
+Questionnaire,WHQ_C,Weight History,2003,2004,2003-2004
+Questionnaire,ACQ_B,Acculturation,2001,2002,2001-2002
+Questionnaire,ALQ_B,Alcohol Use,2001,2002,2001-2002
+Questionnaire,RXQANA_B,Analgesic Pain Relievers,2001,2002,2001-2002
+Questionnaire,AUQ_B,Audiometry,2001,2002,2001-2002
+Questionnaire,BAQ_B,Balance,2001,2002,2001-2002
+Questionnaire,BPQ_B,Blood Pressure & Cholesterol,2001,2002,2001-2002
+Questionnaire,CDQ_B,Cardiovascular Health,2001,2002,2001-2002
+Questionnaire,CFQ_B,Cognitive Functioning,2001,2002,2001-2002
+Questionnaire,HSQ_B,Current Health Status,2001,2002,2001-2002
+Questionnaire,DEQ_B,Dermatology,2001,2002,2001-2002
+Questionnaire,DIQ_B,Diabetes,2001,2002,2001-2002
+Questionnaire,DBQ_B,Diet Behavior & Nutrition,2001,2002,2001-2002
+Questionnaire,DUQ_B,Drug Use,2001,2002,2001-2002
+Questionnaire,ECQ_B,Early Childhood,2001,2002,2001-2002
+Questionnaire,SMQFAM_B,Smoking - Household Smokers,2001,2002,2001-2002
+Questionnaire,FSQ_B,Food Security,2001,2002,2001-2002
+Questionnaire,HIQ_B,Health Insurance,2001,2002,2001-2002
+Questionnaire,HCQ_B,Hepatitis C Follow Up,2001,2002,2001-2002
+Questionnaire,HUQ_B,Hospital Utilization & Access to Care,2001,2002,2001-2002
+Questionnaire,HOQ_B,Housing Characteristics,2001,2002,2001-2002
+Questionnaire,IMQ_B,Immunization,2001,2002,2001-2002
+Questionnaire,MCQ_B,Medical Conditions,2001,2002,2001-2002
+Questionnaire,MPQ_B,Miscellaneous Pain,2001,2002,2001-2002
+Questionnaire,OCQ_B,Occupation,2001,2002,2001-2002
+Questionnaire,OSQ_B,Osteoporosis,2001,2002,2001-2002
+Questionnaire,PUQ_B,Pesticide Use,2001,2002,2001-2002
+Questionnaire,PAQ_B,Physical Activity,2001,2002,2001-2002
+Questionnaire,PAQIAF_B,Physical Activity - Individual Activities,2001,2002,2001-2002
+Questionnaire,PFQ_B,Physical Functioning,2001,2002,2001-2002
+Questionnaire,KIQ_P_B,Prostate Conditions,2001,2002,2001-2002
+Questionnaire,RHQ_B,Reproductive Health,2001,2002,2001-2002
+Questionnaire,RDQ_B,Respiratory Health,2001,2002,2001-2002
+Questionnaire,SXQ_B,Sexual Behavior,2001,2002,2001-2002
+Questionnaire,SSQ_B,Social Support,2001,2002,2001-2002
+Questionnaire,SMQ_B,Smoking - Cigarette/Tobacco Use - Adult,2001,2002,2001-2002
+Questionnaire,SMQMEC_B,Smoking - Adult Recent Tobacco Use & Youth Cigarette/Tobacco Use,2001,2002,2001-2002
+Questionnaire,KIQ_U_B,Kidney Conditions - Urology,2001,2002,2001-2002
+Questionnaire,VIQ_B,Vision,2001,2002,2001-2002
+Questionnaire,RXQ_RX_B,Prescription Medications,2001,2002,2001-2002
+Questionnaire,CIQGAD_C,Mental Health - Generalized Anxiety Disorder,2003,2004,2003-2004
+Questionnaire,CIQDEP_C,Mental Health - Depression,2003,2004,2003-2004
+Questionnaire,CIQPAN_C,Mental Health - Panic Disorder,2003,2004,2003-2004
+Questionnaire,CIQPAN_B,Mental Health - Panic Disorder,2001,2002,2001-2002
+Questionnaire,CIQGAD_B,Mental Health - Generalized Anxiety Disorder,2001,2002,2001-2002
+Questionnaire,CIQDEP_B,Mental Health - Depression,2001,2002,2001-2002
+Questionnaire,SMQFAM,Smoking - Household Smokers,1999,2000,1999-2000
+Questionnaire,OHQ_B,Oral Health,2001,2002,2001-2002
+Questionnaire,CBQ_F,Consumer Behavior,2009,2010,2009-2010
+Questionnaire,SMQFAM_F,Smoking - Household Smokers,2009,2010,2009-2010
+Questionnaire,SMQRTU_F,Smoking - Recent Tobacco Use,2009,2010,2009-2010
+Questionnaire,BPQ_F,Blood Pressure & Cholesterol,2009,2010,2009-2010
+Questionnaire,RDQ_F,Respiratory Health,2009,2010,2009-2010
+Questionnaire,CDQ_F,Cardiovascular Health,2009,2010,2009-2010
+Questionnaire,ARQ_F,Arthritis,2009,2010,2009-2010
+Questionnaire,MCQ_F,Medical Conditions,2009,2010,2009-2010
+Questionnaire,DIQ_F,Diabetes,2009,2010,2009-2010
+Questionnaire,RHQ_F,Reproductive Health,2009,2010,2009-2010
+Questionnaire,DPQ_F,Mental Health - Depression Screener,2009,2010,2009-2010
+Questionnaire,PAQ_F,Physical Activity,2009,2010,2009-2010
+Questionnaire,AUQ_F,Audiometry,2009,2010,2009-2010
+Questionnaire,AQQ_F,Air Quality,2009,2010,2009-2010
+Questionnaire,PFQ_F,Physical Functioning,2009,2010,2009-2010
+Questionnaire,SMQ_F,Smoking - Cigarette Use,2009,2010,2009-2010
+Questionnaire,OHQ_F,Oral Health,2009,2010,2009-2010
+Questionnaire,HIQ_F,Health Insurance,2009,2010,2009-2010
+Questionnaire,SXQ_F,Sexual Behavior,2009,2010,2009-2010
+Questionnaire,INQ_F,Income,2009,2010,2009-2010
+Questionnaire,HUQ_F,Hospital Utilization & Access to Care,2009,2010,2009-2010
+Questionnaire,PUQMEC_F,Pesticide Use,2009,2010,2009-2010
+Questionnaire,OCQ_D,Occupation,2005,2006,2005-2006
+Questionnaire,IMQ_F,Immunization,2009,2010,2009-2010
+Questionnaire,OCQ_E,Occupation,2007,2008,2007-2008
+Questionnaire,OCQ_F,Occupation,2009,2010,2009-2010
+Questionnaire,ECQ_F,Early Childhood,2009,2010,2009-2010
+Questionnaire,SLQ_F,Sleep Disorders,2009,2010,2009-2010
+Questionnaire,WHQMEC_F,Weight History - Youth,2009,2010,2009-2010
+Questionnaire,BHQ_F,Bowel Health,2009,2010,2009-2010
+Questionnaire,OSQ_F,Osteoporosis,2009,2010,2009-2010
+Questionnaire,KIQ_U_F,Kidney Conditions - Urology,2009,2010,2009-2010
+Questionnaire,ALQ_F,Alcohol Use,2009,2010,2009-2010
+Questionnaire,ALQY_F,Alcohol Use (Ages 18-19),2009,2010,2009-2010
+Questionnaire,DUQ_F,Drug Use,2009,2010,2009-2010
+Questionnaire,CBQPFA_E,Consumer Behavior Phone Follow-up Module - Adult,2007,2008,2007-2008
+Questionnaire,CBQPFC_E,Consumer Behavior Phone Follow-up Module - Child,2007,2008,2007-2008
+Questionnaire,HCQ_F,Hepatitis C Follow Up,2009,2010,2009-2010
+Questionnaire,RXQ_RX_F,Prescription Medications,2009,2010,2009-2010
+Questionnaire,WHQ_F,Weight History,2009,2010,2009-2010
+Questionnaire,ACQ_F,Acculturation,2009,2010,2009-2010
+Questionnaire,HSQ_F,Current Health Status,2009,2010,2009-2010
+Questionnaire,DEQ_F,Dermatology,2009,2010,2009-2010
+Questionnaire,DBQ_F,Diet Behavior & Nutrition,2009,2010,2009-2010
+Questionnaire,HOQ_F,Housing Characteristics,2009,2010,2009-2010
+Questionnaire,TBQ_G,Tuberculosis,2011,2012,2011-2012
+Questionnaire,HIQ_G,Health Insurance,2011,2012,2011-2012
+Questionnaire,CBQPFA_F,Consumer Behavior Phone Follow-up Module - Adult,2009,2010,2009-2010
+Questionnaire,CBQPFC_F,Consumer Behavior Phone Follow-up Module - Child,2009,2010,2009-2010
+Questionnaire,FSQ_F,Food Security,2009,2010,2009-2010
+Questionnaire,BPQ_G,Blood Pressure & Cholesterol,2011,2012,2011-2012
+Questionnaire,CDQ_G,Cardiovascular Health,2011,2012,2011-2012
+Questionnaire,RDQ_G,Respiratory Health,2011,2012,2011-2012
+Questionnaire,PAQ_G,Physical Activity,2011,2012,2011-2012
+Questionnaire,PFQ_G,Physical Functioning,2011,2012,2011-2012
+Questionnaire,RXQASA_G,Preventive Aspirin Use,2011,2012,2011-2012
+Questionnaire,CKQ_G,Creatine Kinase,2011,2012,2011-2012
+Questionnaire,CSQ_G,Taste & Smell,2011,2012,2011-2012
+Questionnaire,DIQ_G,Diabetes,2011,2012,2011-2012
+Questionnaire,HUQ_G,Hospital Utilization & Access to Care,2011,2012,2011-2012
+Questionnaire,OHQ_G,Oral Health,2011,2012,2011-2012
+Questionnaire,ECQ_G,Early Childhood,2011,2012,2011-2012
+Questionnaire,SXQ_G,Sexual Behavior,2011,2012,2011-2012
+Questionnaire,SMQRTU_G,Smoking - Recent Tobacco Use,2011,2012,2011-2012
+Questionnaire,SMQ_G,Smoking - Cigarette Use,2011,2012,2011-2012
+Questionnaire,SMQFAM_G,Smoking - Household Smokers,2011,2012,2011-2012
+Questionnaire,OCQ_G,Occupation,2011,2012,2011-2012
+Questionnaire,HOQ_G,Housing Characteristics,2011,2012,2011-2012
+Questionnaire,PUQMEC_G,Pesticide Use,2011,2012,2011-2012
+Questionnaire,MCQ_G,Medical Conditions,2011,2012,2011-2012
+Questionnaire,IMQ_G,Immunization,2011,2012,2011-2012
+Questionnaire,HSQ_G,Current Health Status,2011,2012,2011-2012
+Questionnaire,DUQ_G,Drug Use,2011,2012,2011-2012
+Questionnaire,DLQ_H,Disability,2013,2014,2013-2014
+Questionnaire,DPQ_G,Mental Health - Depression Screener,2011,2012,2011-2012
+Questionnaire,SLQ_G,Sleep Disorders,2011,2012,2011-2012
+Questionnaire,ALQ_G,Alcohol Use,2011,2012,2011-2012
+Questionnaire,RHQ_G,Reproductive Health,2011,2012,2011-2012
+Questionnaire,DEQ_H,Dermatology,2013,2014,2013-2014
+Questionnaire,AUQ_G,Audiometry,2011,2012,2011-2012
+Questionnaire,WHQMEC_G,Weight History - Youth,2011,2012,2011-2012
+Questionnaire,DEQ_G,Dermatology,2011,2012,2011-2012
+Questionnaire,ACQ_G,Acculturation,2011,2012,2011-2012
+Questionnaire,RXQ_RX_G,Prescription Medications,2011,2012,2011-2012
+Questionnaire,HCQ_G,Hepatitis C Follow Up,2011,2012,2011-2012
+Questionnaire,WHQ_G,Weight History,2011,2012,2011-2012
+Questionnaire,KIQ_U_G,Kidney Conditions - Urology,2011,2012,2011-2012
+Questionnaire,DBQ_G,Diet Behavior & Nutrition,2011,2012,2011-2012
+Questionnaire,INQ_G,Income,2011,2012,2011-2012
+Questionnaire,CBQ_G,Consumer Behavior,2011,2012,2011-2012
+Questionnaire,OSQ_H,Osteoporosis,2013,2014,2013-2014
+Questionnaire,IMQ_H,Immunization,2013,2014,2013-2014
+Questionnaire,FSQ_G,Food Security,2011,2012,2011-2012
+Questionnaire,SXQ_H,Sexual Behavior,2013,2014,2013-2014
+Questionnaire,CDQ_H,Cardiovascular Health,2013,2014,2013-2014
+Questionnaire,BPQ_H,Blood Pressure & Cholesterol,2013,2014,2013-2014
+Questionnaire,MCQ_H,Medical Conditions,2013,2014,2013-2014
+Questionnaire,HIQ_H,Health Insurance,2013,2014,2013-2014
+Questionnaire,HUQ_H,Hospital Utilization & Access to Care,2013,2014,2013-2014
+Questionnaire,PAQ_H,Physical Activity,2013,2014,2013-2014
+Questionnaire,PFQ_H,Physical Functioning,2013,2014,2013-2014
+Questionnaire,HEQ_H,Hepatitis,2013,2014,2013-2014
+Questionnaire,ECQ_H,Early Childhood,2013,2014,2013-2014
+Questionnaire,DIQ_H,Diabetes,2013,2014,2013-2014
+Questionnaire,SMQFAM_H,Smoking - Household Smokers,2013,2014,2013-2014
+Questionnaire,SMQ_H,Smoking - Cigarette Use,2013,2014,2013-2014
+Questionnaire,SMQRTU_H,Smoking - Recent Tobacco Use,2013,2014,2013-2014
+Questionnaire,HOQ_H,Housing Characteristics,2013,2014,2013-2014
+Questionnaire,PUQMEC_H,Pesticide Use,2013,2014,2013-2014
+Questionnaire,SMQSHS_H,Smoking - Secondhand Smoke Exposure,2013,2014,2013-2014
+Questionnaire,INQ_H,Income,2013,2014,2013-2014
+Questionnaire,CSQ_H,Taste & Smell,2013,2014,2013-2014
+Questionnaire,DBQ_H,Diet Behavior & Nutrition,2013,2014,2013-2014
+Questionnaire,CBQ_H,Consumer Behavior,2013,2014,2013-2014
+Questionnaire,HSQ_H,Current Health Status,2013,2014,2013-2014
+Questionnaire,SLQ_H,Sleep Disorders,2013,2014,2013-2014
+Questionnaire,RXQASA_H,Preventive Aspirin Use,2013,2014,2013-2014
+Questionnaire,DUQ_H,Drug Use,2013,2014,2013-2014
+Questionnaire,WHQMEC_H,Weight History - Youth,2013,2014,2013-2014
+Questionnaire,ALQ_H,Alcohol Use,2013,2014,2013-2014
+Questionnaire,DPQ_H,Mental Health - Depression Screener,2013,2014,2013-2014
+Questionnaire,ACQ_H,Acculturation,2013,2014,2013-2014
+Questionnaire,WHQ_H,Weight History,2013,2014,2013-2014
+Questionnaire,RHQ_H,Reproductive Health,2013,2014,2013-2014
+Questionnaire,FSQ_H,Food Security,2013,2014,2013-2014
+Questionnaire,OHQ_H,Oral Health,2013,2014,2013-2014
+Questionnaire,OCQ_H,Occupation,2013,2014,2013-2014
+Questionnaire,CFQ_G,Cognitive Functioning,2011,2012,2011-2012
+Questionnaire,RXQ_RX_H,Prescription Medications,2013,2014,2013-2014
+Questionnaire,KIQ_U_H,Kidney Conditions - Urology,2013,2014,2013-2014
+Questionnaire,CKQ_H,Creatine Kinase,2013,2014,2013-2014
+Questionnaire,VTQ_H,Volatile Toxicant,2013,2014,2013-2014
+Questionnaire,VTQ_G,Volatile Toxicant,2011,2012,2011-2012
+Questionnaire,VTQ_F,Volatile Toxicant,2009,2010,2009-2010
+Questionnaire,CFQ_H,Cognitive Functioning,2013,2014,2013-2014
+Questionnaire,PFQ_I,Physical Functioning,2015,2016,2015-2016
+Questionnaire,CDQ_I,Cardiovascular Health,2015,2016,2015-2016
+Questionnaire,MCQ_I,Medical Conditions,2015,2016,2015-2016
+Questionnaire,BPQ_I,Blood Pressure & Cholesterol,2015,2016,2015-2016
+Questionnaire,HEQ_I,Hepatitis,2015,2016,2015-2016
+Questionnaire,DLQ_I,Disability,2015,2016,2015-2016
+Questionnaire,HIQ_I,Health Insurance,2015,2016,2015-2016
+Questionnaire,PAQ_I,Physical Activity,2015,2016,2015-2016
+Questionnaire,HUQ_I,Hospital Utilization & Access to Care,2015,2016,2015-2016
+Questionnaire,IMQ_I,Immunization,2015,2016,2015-2016
+Questionnaire,SMQSHS_I,Smoking - Secondhand Smoke Exposure,2015,2016,2015-2016
+Questionnaire,SMQRTU_I,Smoking - Recent Tobacco Use,2015,2016,2015-2016
+Questionnaire,SMQFAM_I,Smoking - Household Smokers,2015,2016,2015-2016
+Questionnaire,SMQ_I,Smoking - Cigarette Use,2015,2016,2015-2016
+Questionnaire,DIQ_I,Diabetes,2015,2016,2015-2016
+Questionnaire,OHQ_I,Oral Health,2015,2016,2015-2016
+Questionnaire,DEQ_I,Dermatology,2015,2016,2015-2016
+Questionnaire,HOQ_I,Housing Characteristics,2015,2016,2015-2016
+Questionnaire,DPQ_I,Mental Health - Depression Screener,2015,2016,2015-2016
+Questionnaire,HSQ_I,Current Health Status,2015,2016,2015-2016
+Questionnaire,SXQ_I,Sexual Behavior,2015,2016,2015-2016
+Questionnaire,INQ_I,Income,2015,2016,2015-2016
+Questionnaire,ACQ_I,Acculturation,2015,2016,2015-2016
+Questionnaire,ECQ_I,Early Childhood,2015,2016,2015-2016
+Questionnaire,OCQ_I,Occupation,2015,2016,2015-2016
+Questionnaire,PUQMEC_I,Pesticide Use,2015,2016,2015-2016
+Questionnaire,RHQ_I,Reproductive Health,2015,2016,2015-2016
+Questionnaire,WHQ_I,Weight History,2015,2016,2015-2016
+Questionnaire,WHQMEC_I,Weight History - Youth,2015,2016,2015-2016
+Questionnaire,SLQ_I,Sleep Disorders,2015,2016,2015-2016
+Questionnaire,AUQ_I,Audiometry,2015,2016,2015-2016
+Questionnaire,ALQ_I,Alcohol Use,2015,2016,2015-2016
+Questionnaire,KIQ_U_I,Kidney Conditions - Urology,2015,2016,2015-2016
+Questionnaire,DUQ_I,Drug Use,2015,2016,2015-2016
+Questionnaire,VTQ_I,Volatile Toxicant,2015,2016,2015-2016
+Questionnaire,RXQASA_I,Preventive Aspirin Use,2015,2016,2015-2016
+Questionnaire,CBQ_I,Consumer Behavior,2015,2016,2015-2016
+Questionnaire,DBQ_I,Diet Behavior & Nutrition,2015,2016,2015-2016
+Questionnaire,RXQ_RX_I,Prescription Medications,2015,2016,2015-2016
+Questionnaire,BPQ_J,Blood Pressure & Cholesterol,2017,2018,2017-2018
+Questionnaire,HUQ_J,Hospital Utilization & Access to Care,2017,2018,2017-2018
+Questionnaire,HEQ_J,Hepatitis,2017,2018,2017-2018
+Questionnaire,CDQ_J,Cardiovascular Health,2017,2018,2017-2018
+Questionnaire,PAQY_J,Physical Activity - Youth,2017,2018,2017-2018
+Questionnaire,PAQ_J,Physical Activity,2017,2018,2017-2018
+Questionnaire,IMQ_J,Immunization,2017,2018,2017-2018
+Questionnaire,HIQ_J,Health Insurance,2017,2018,2017-2018
+Questionnaire,DLQ_J,Disability,2017,2018,2017-2018
+Questionnaire,DIQ_J,Diabetes,2017,2018,2017-2018
+Questionnaire,PFQ_J,Physical Functioning,2017,2018,2017-2018
+Questionnaire,SMQRTU_J,Smoking - Recent Tobacco Use,2017,2018,2017-2018
+Questionnaire,SMQFAM_J,Smoking - Household Smokers,2017,2018,2017-2018
+Questionnaire,SMQSHS_J,Smoking - Secondhand Smoke Exposure,2017,2018,2017-2018
+Questionnaire,SMQ_J,Smoking - Cigarette Use,2017,2018,2017-2018
+Questionnaire,MCQ_J,Medical Conditions,2017,2018,2017-2018
+Questionnaire,OHQ_J,Oral Health,2017,2018,2017-2018
+Questionnaire,HSQ_J,Current Health Status,2017,2018,2017-2018
+Questionnaire,HOQ_J,Housing Characteristics,2017,2018,2017-2018
+Questionnaire,DEQ_J,Dermatology,2017,2018,2017-2018
+Questionnaire,INQ_J,Income,2017,2018,2017-2018
+Questionnaire,ACQ_J,Acculturation,2017,2018,2017-2018
+Questionnaire,RHQ_J,Reproductive Health,2017,2018,2017-2018
+Questionnaire,SLQ_J,Sleep Disorders,2017,2018,2017-2018
+Questionnaire,OCQ_J,Occupation,2017,2018,2017-2018
+Questionnaire,DPQ_J,Mental Health - Depression Screener,2017,2018,2017-2018
+Questionnaire,DUQ_J,Drug Use,2017,2018,2017-2018
+Questionnaire,ECQ_J,Early Childhood,2017,2018,2017-2018
+Questionnaire,OSQ_J,Osteoporosis,2017,2018,2017-2018
+Questionnaire,KIQ_U_J,Kidney Conditions - Urology,2017,2018,2017-2018
+Questionnaire,FSQ_I,Food Security,2015,2016,2015-2016
+Questionnaire,CBQ_J,Consumer Behavior,2017,2018,2017-2018
+Questionnaire,DBQ_J,Diet Behavior & Nutrition,2017,2018,2017-2018
+Questionnaire,RXQ_RX_J,Prescription Medications,2017,2018,2017-2018
+Questionnaire,WHQ_J,Weight History,2017,2018,2017-2018
+Questionnaire,WHQMEC_J,Weight History - Youth,2017,2018,2017-2018
+Questionnaire,RXQASA_J,Preventive Aspirin Use,2017,2018,2017-2018
+Questionnaire,AUQ_J,Audiometry,2017,2018,2017-2018
+Questionnaire,PUQMEC_J,Pesticide Use,2017,2018,2017-2018
+Questionnaire,ALQ_J,Alcohol Use,2017,2018,2017-2018
+Questionnaire,VTQ_J,Volatile Toxicant,2017,2018,2017-2018
+Questionnaire,P_DIQ,Diabetes,2017,2020,2017-2020
+Questionnaire,P_BPQ,Blood Pressure & Cholesterol,2017,2020,2017-2020
+Questionnaire,P_OHQ,Oral Health,2017,2020,2017-2020
+Questionnaire,P_DPQ,Mental Health - Depression Screener,2017,2020,2017-2020
+Questionnaire,P_SMQSHS,Smoking - Secondhand Smoke Exposure,2017,2020,2017-2020
+Questionnaire,CBQPFC_J,Consumer Behavior Phone Follow-up Module - Child,2017,2018,2017-2018
+Questionnaire,CBQPFA_J,Consumer Behavior Phone Follow-up Module - Adult,2017,2018,2017-2018
+Questionnaire,P_SLQ,Sleep Disorders,2017,2020,2017-2020
+Questionnaire,P_SMQRTU,Smoking - Recent Tobacco Use,2017,2020,2017-2020
+Questionnaire,P_RHQ,Reproductive Health,2017,2020,2017-2020
+Questionnaire,P_SMQ,Smoking - Cigarette Use,2017,2020,2017-2020
+Questionnaire,P_AUQ,Audiometry,2017,2020,2017-2020
+Questionnaire,P_PUQMEC,Pesticide Use,2017,2020,2017-2020
+Questionnaire,P_SMQFAM,Smoking - Household Smokers,2017,2020,2017-2020
+Questionnaire,P_RXQASA,Preventive Aspirin Use,2017,2020,2017-2020
+Questionnaire,P_CDQ,Cardiovascular Health,2017,2020,2017-2020
+Questionnaire,P_HEQ,Hepatitis,2017,2020,2017-2020
+Questionnaire,P_HIQ,Health Insurance,2017,2020,2017-2020
+Questionnaire,P_IMQ,Immunization,2017,2020,2017-2020
+Questionnaire,P_MCQ,Medical Conditions,2017,2020,2017-2020
+Questionnaire,P_PAQ,Physical Activity,2017,2020,2017-2020
+Questionnaire,P_PAQY,Physical Activity - Youth,2017,2020,2017-2020
+Questionnaire,FSQ_J,Food Security,2017,2018,2017-2018
+Questionnaire,P_HUQ,Hospital Utilization & Access to Care,2017,2020,2017-2020
+Questionnaire,P_KIQ_U,Kidney Conditions - Urology,2017,2020,2017-2020
+Questionnaire,P_ECQ,Early Childhood,2017,2020,2017-2020
+Questionnaire,P_HSQ,Current Health Status,2017,2020,2017-2020
+Questionnaire,P_DEQ,Dermatology,2017,2020,2017-2020
+Questionnaire,P_WHQMEC,Weight History - Youth,2017,2020,2017-2020
+Questionnaire,P_OSQ,Osteoporosis,2017,2020,2017-2020
+Questionnaire,P_VTQ,Volatile Toxicant,2017,2020,2017-2020
+Questionnaire,P_WHQ,Weight History,2017,2020,2017-2020
+Questionnaire,P_RXQ_RX,Prescription Medications,2017,2020,2017-2020
+Questionnaire,P_ACQ,Acculturation,2017,2020,2017-2020
+Questionnaire,P_DBQ,Diet Behavior & Nutrition,2017,2020,2017-2020
+Questionnaire,P_OCQ,Occupation,2017,2020,2017-2020
+Questionnaire,P_INQ,Income,2017,2020,2017-2020
+Questionnaire,P_ALQ,Alcohol Use,2017,2020,2017-2020
+Questionnaire,P_FSQ,Food Security,2017,2020,2017-2020
+Questionnaire,P_CBQPFC,Consumer Behavior Phone Follow-up Module – Child,2017,2020,2017-2020
+Questionnaire,P_CBQPFA,Consumer Behavior Phone Follow-up Module - Adult,2017,2020,2017-2020
+Questionnaire,AUQ_L,Audiometry,2021,2023,2021-2023
+Questionnaire,DIQ_L,Diabetes,2021,2023,2021-2023
+Questionnaire,RXQ_RX_L,Prescription Medications,2021,2023,2021-2023
+Questionnaire,RXQASA_L,Preventive Aspirin Use,2021,2023,2021-2023
+Questionnaire,HIQ_L,Health Insurance,2021,2023,2021-2023
+Questionnaire,HOQ_L,Housing Characteristics,2021,2023,2021-2023
+Questionnaire,HUQ_L,Hospital Utilization & Access to Care,2021,2023,2021-2023
+Questionnaire,OHQ_L,Oral Health,2021,2023,2021-2023
+Questionnaire,PAQ_L,Physical Activity,2021,2023,2021-2023
+Questionnaire,PAQY_L,Physical Activity - Youth,2021,2023,2021-2023
+Questionnaire,BPQ_L,Blood Pressure & Cholesterol,2021,2023,2021-2023
+Questionnaire,HEQ_L,Hepatitis,2021,2023,2021-2023
+Questionnaire,MCQ_L,Medical Conditions,2021,2023,2021-2023
+Questionnaire,IMQ_L,Immunization,2021,2023,2021-2023
+Questionnaire,BAQ_L,Balance,2021,2023,2021-2023
+Questionnaire,HSQ_L,Current Health Status,2021,2023,2021-2023
+Questionnaire,INQ_L,Income,2021,2023,2021-2023
+Questionnaire,WHQ_L,Weight History,2021,2023,2021-2023
+Questionnaire,DBQ_L,Diet Behavior & Nutrition,2021,2023,2021-2023
+Questionnaire,DEQ_L,Dermatology,2021,2023,2021-2023
+Questionnaire,ECQ_L,Early Childhood,2021,2023,2021-2023
+Questionnaire,KIQ_U_L,Kidney Conditions - Urology,2021,2023,2021-2023
+Questionnaire,ALQ_L,Alcohol Use,2021,2023,2021-2023
+Questionnaire,DPQ_L,Mental Health - Depression Screener,2021,2023,2021-2023
+Questionnaire,SMQ_L,Smoking - Cigarette Use,2021,2023,2021-2023
+Questionnaire,SMQFAM_L,Smoking - Household Smokers,2021,2023,2021-2023
+Questionnaire,SMQRTU_L,Smoking - Recent Tobacco Use,2021,2023,2021-2023
+Questionnaire,RHQ_L,Reproductive Health,2021,2023,2021-2023
+Questionnaire,SLQ_L,Sleep Disorders,2021,2023,2021-2023
+Questionnaire,OCQ_L,Occupation,2021,2023,2021-2023
+Questionnaire,FNQ_L,Functioning,2021,2023,2021-2023
+Questionnaire,ACQ_L,Acculturation,2021,2023,2021-2023
+Questionnaire,PUQMEC_L,Pesticide Use,2021,2023,2021-2023
+Questionnaire,VTQ_L,Volatile Toxicant,2021,2023,2021-2023
+Questionnaire,FSQ_L,Food Security,2021,2023,2021-2023
